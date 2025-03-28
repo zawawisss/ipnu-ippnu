@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import StatisticsCard from "./components/statistik";
 
 function Dashboard() {
   const [data, setData] = useState<{
@@ -29,13 +30,19 @@ function Dashboard() {
   }, []);
 
   return (
-    <>
     
-      <p> ANAK CABANG : {data.totalKecamatan} </p>
-      <p> RANTING : {data.totalDesa} </p>
-      <p> KOMISARIAT : {data.totalSekolahMaarif} </p>
-      <p> Anggota : {data.totalAnggota} </p>
-
+    <div className="min-h-screen bg-background flex flex-col">
+    <main className="container mx-auto px-4 py-8 flex-grow">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">Statistik PC IPNU-IPPNU Ponorogo</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <StatisticsCard title={"Anak Cabang"} value={data.totalKecamatan} icon={"lucide:building"} color={"primary"} />
+        <StatisticsCard title={"Ranting"} value={data.totalDesa} icon={"lucide:git-branch"} color={"success"} />
+        <StatisticsCard title={"Sekolah Ma'arif"} value={data.totalSekolahMaarif} icon={"lucide:school"} color={"warning"} />
+        <StatisticsCard title={"Anggota"} value={data.totalAnggota} icon={"lucide:user-plus"} color={"primary"} />
+        </div>
+        </div>
+      </main>
         <h2>List Kecamatan</h2>
         <table>
             <thead>
@@ -72,7 +79,8 @@ function Dashboard() {
                 ))}
             </tbody>
         </table>
-    </>
+        </div>
+  
   );
 }
 
