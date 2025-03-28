@@ -1,37 +1,26 @@
+
+import KecamatanDetail from "@/app/components/pac-data";
 import db from "@/lib/db";
 import Anggota from "@/models/Anggota";
 import Desa from "@/models/Desa";
 import Kecamatan from "@/models/Kecamatan";
 import Sekolah from "@/models/Sekolah";
+import { Chip } from "@heroui/react";
 import mongoose from "mongoose";
 
 interface Props {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-async function detail({ params }: Props) {
-  await db();
+async function Hasil({ params }: Props) {
   const { id } = await params;
 
-  // Validasi ID
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return <div>ID Kecamatan tidak valid</div>;
-  }
-
-  const kecamatanId = id;
-  const kecamatan = await Kecamatan.findOne({ _id: kecamatanId });
-  const desaList = await Desa.find({ kecamatan_id: id });
-  const sekolahList = await Sekolah.find({ kecamatan_id: id })
-  const anggotaList = await Anggota.find({kecamatan_id:id})
-
   return (
-    <>
-      <div>
-        <h1>Kecamatan: {kecamatan.kecamatan}</h1>
-        <p>Status SP: {kecamatan.status_sp}</p>
-        <p>Tanggal SP: {kecamatan.tanggal_berakhir}</p>
-      </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      <main className="container mx-auto px-4 py-8 flex-grow">
+      <div className="text-center mb-8 sm:mb-12">
+      <KecamatanDetail id={id} />
+      {/* 
       <div>
         <h2>Daftar Desa</h2>
         {desaList.length === 0 ? (
@@ -119,10 +108,11 @@ async function detail({ params }: Props) {
               ))}
             </tbody>
           </table>
-        )}
+        )} */}
       </div>
-    </>
+      </main>
+    </div>
   );
 }
 
-export default detail;
+export default Hasil;
