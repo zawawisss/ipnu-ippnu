@@ -10,7 +10,7 @@ interface Props {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function detail({ params }: Props) {
+async function detail({ params }: Props) {
   await db();
   const { id } = await params;
 
@@ -124,3 +124,5 @@ export default async function detail({ params }: Props) {
     </>
   );
 }
+
+export default detail;
