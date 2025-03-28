@@ -11,17 +11,16 @@ import {
   NavbarMenuToggle,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import ThemeSwitch from "./theme-switch";
 import React from "react";
 
-const menuItems = [
-  { name: "Home", href: "#" },
-  { name: "Statistik PAC", href: "#" },
-  { name: "Tentang Kami", href: "#" },
-];
 
 function AppNavbar() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false); // ✅ pindahkan ke sini
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false); //
+  const menuItems = [
+    { name: "Home", href: "#" },
+    { name: "Statistik PAC", href: "#" },
+    { name: "Tentang Kami", href: "#" },
+  ];
 
   return (
     <Navbar
@@ -64,9 +63,6 @@ function AppNavbar() {
       </NavbarContent>
 
       <NavbarContent justify="end">
-        <NavbarItem>
-          <ThemeSwitch />
-        </NavbarItem>
         <NavbarItem>
           <Button
             color="primary"
