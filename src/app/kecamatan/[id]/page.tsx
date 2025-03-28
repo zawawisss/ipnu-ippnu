@@ -6,7 +6,8 @@ import Sekolah from "@/models/Sekolah";
 import mongoose from "mongoose";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function detail({ params }: Props) {
