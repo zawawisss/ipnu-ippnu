@@ -19,7 +19,7 @@ import { useTheme } from "next-themes";
 function AppNavbar() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false); //
   const menuItems = [
-    { name: "Home", href: "#" },
+    { name: "Home", href: "pelajarnuponorogo.vercel.app" },
     { name: "Statistik PAC", href: "#" },
     { name: "Tentang Kami", href: "#" },
   ];
