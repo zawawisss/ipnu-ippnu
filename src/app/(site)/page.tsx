@@ -1,8 +1,8 @@
 // /app/page.tsx
 "use client";
 import React, { useEffect, useState } from "react";
-import StatisticsCard from "./components/statistik";
-import PACTable from "./components/pac-table";
+import StatisticsCard from "../components/statistik";
+import PACTable from "../components/pac-table";
 import { Divider } from "@heroui/react";
 
 function Dashboard() {

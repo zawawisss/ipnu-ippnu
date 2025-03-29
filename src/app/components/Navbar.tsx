@@ -19,7 +19,7 @@ import { useTheme } from "next-themes";
 function AppNavbar() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false); //
   const menuItems = [
-    { name: "Home", href: "pelajarnuponorogo.vercel.app" },
+    { name: "Home", href: "/" },
     { name: "Statistik PAC", href: "#" },
     { name: "Tentang Kami", href: "#" },
   ];
@@ -97,6 +97,8 @@ function AppNavbar() {
           <Button
             color="primary"
             variant="solid"
+            as={Link}
+            href="/login"
             isIconOnly
             className="sm:hidden"
           >
@@ -105,6 +107,8 @@ function AppNavbar() {
           <Button
             color="primary"
             variant="solid"
+            as={Link}
+            href='/login'
             startContent={<Icon icon="lucide:user" />}
             className="hidden sm:flex"
           >
