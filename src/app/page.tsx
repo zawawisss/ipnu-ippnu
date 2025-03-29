@@ -1,7 +1,9 @@
+// /app/page.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import StatisticsCard from "./components/statistik";
 import PACTable from "./components/pac-table";
+import { Divider } from "@heroui/react";
 
 function Dashboard() {
   const [data, setData] = useState<{
@@ -55,9 +57,10 @@ function Dashboard() {
             />
           </div>
         </div>
+        <Divider className="my-6 sm:my-8" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           <div className="lg:col-span-full overflow-y-auto">
-              <h3 className="text-lg sm:text-xl font-bold mb-4">DATA ANAK CABANG</h3>
+              <h3 className="text-lg sm:text-xl font-bold mb-4">DAFTAR ANAK CABANG</h3>
               <PACTable />
           </div>
         </div>

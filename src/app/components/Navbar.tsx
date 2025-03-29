@@ -1,3 +1,4 @@
+// components/Navbar
 'use client'
 import {
   Button,
@@ -11,7 +12,8 @@ import {
   NavbarMenuToggle,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import React from "react";
+import React, { useEffect } from "react";
+import { useTheme } from "next-themes";
 
 
 function AppNavbar() {
@@ -21,7 +23,17 @@ function AppNavbar() {
     { name: "Statistik PAC", href: "#" },
     { name: "Tentang Kami", href: "#" },
   ];
+  const [isMounted, setIsMounted] = React.useState(false);
+  const { theme, setTheme } = useTheme();
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+  if (!isMounted) return null;
   return (
     <Navbar
       isBordered
@@ -63,6 +75,24 @@ function AppNavbar() {
       </NavbarContent>
 
       <NavbarContent justify="end">
+      <NavbarItem>
+            <Button
+              variant="flat"
+              onPress={toggleTheme}
+              isIconOnly
+              className="sm:hidden"
+            >
+              <Icon icon={theme === 'light' ? 'lucide:moon' : 'lucide:sun'} className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="flat"
+              onPress={toggleTheme}
+              startContent={<Icon icon={theme === 'light' ? 'lucide:moon' : 'lucide:sun'} />}
+              className="hidden sm:flex"
+            >
+              {theme === 'light' ? 'Dark' : 'Light'} Mode
+            </Button>
+          </NavbarItem>
         <NavbarItem>
           <Button
             color="primary"

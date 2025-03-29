@@ -1,6 +1,16 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
+import {
+  Chip,
+  Divider,
+  Input,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@heroui/react";
 import StatisticsCard from "./statistik";
 
 interface Database {
@@ -65,34 +75,41 @@ function KecamatanDetail({ id }: { id: string }) {
     fetchData();
   }, [id]);
 
-  if (!data) {
-    return <p>Memuat...</p>;
-  }
+  // if (!data) {
+  //   return <p>Memuat...</p>;
+  // }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <main className="container mx-auto px-4 py-8 flex-grow">
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl font-bold text-center mb-4">
-            STATISTIK KECAMATAN {data.kecamatan}
+          <h2 className="text-4xl font-bold text-center mb-4">
+            STATISTIK KECAMATAN {data?.kecamatan || "Memuat..."}
           </h2>
           <div className="flex justify-center gap-4 mb-6">
             <div>
               <p className="text-sm font-semibold mb-1">Status SP</p>
               <Chip
-                color={data.status_sp === "Aktif" ? "success" : "danger"}
+                color={data?.status_sp === "Aktif" ? "success" : "danger"}
                 variant="flat"
               >
-                {data.status_sp}
+                {data?.status_sp}
               </Chip>
             </div>
             <div>
               <p className="text-sm font-semibold mb-1">Tanggal SP</p>
-              <p className="font-medium">{data.tanggal_berakhir ? new Date(data.tanggal_berakhir).toLocaleDateString("id-ID", {
-                  day: "2-digit",
-                  month: "long",
-                  year: "numeric",
-              }): "-"}</p>
+              <p className="font-medium">
+                {data?.tanggal_berakhir
+                  ? new Date(data.tanggal_berakhir).toLocaleDateString(
+                      "id-ID",
+                      {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      }
+                    )
+                  : "-"}
+              </p>
             </div>
           </div>
           <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -116,117 +133,169 @@ function KecamatanDetail({ id }: { id: string }) {
             />
           </div>
         </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-        <div>
-            <input
+        <Divider className="my-6 sm:my-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          <div>
+            <Input
               type="text"
               placeholder="Cari desa, sekolah, atau anggota..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="input input-bordered w-full"
+              className="mb-4"
             />
           </div>
           <div className="lg:col-span-full overflow-y-auto">
-              <h3 className="text-lg sm:text-xl font-bold mb-4">DATA RANTING</h3>
-              {desaList.length === 0 ? (
-            <p>Belum Ada Desa yang Terdaftar</p>
-          ) : (
-            <Table aria-label="Data Ranting" className="lg:col-span-full overflow-y-auto max-h-[200px] scrollbar-none scroll-smooth">
-              <TableHeader className="overflow-scroll">
-                  <TableColumn className="text-center overflow-scroll">#</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Nama Desa</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Status SP</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Tanggal SP</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {filteredDesa.map((desa, index) => (
-                  <TableRow key={desa._id}>
-                    <TableCell className="text-center">{index + 1}</TableCell>
-                    <TableCell className="text-center">{desa.nama_desa}</TableCell>
-                    <TableCell className="text-center">{desa.status_sp}</TableCell>
-                    <TableCell className="text-center">
-                      {desa.tanggal_sp
-                        ? new Date(desa.tanggal_sp).toLocaleDateString(
-                            "id-ID",
-                            {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                            }
-                          )
-                        : "-"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-        )}
-        </div>
-
-        {/* TABEL SEKOLAH */}
-        <div className="lg:col-span-full overflow-y-auto">
-              <h3 className="text-lg sm:text-xl font-bold mb-4">DAFTAR SEKOLAH</h3>
-              {sekolahList.length === 0 ? (
-            <p>Belum Ada Sekolah yang Terdaftar</p>
-          ) : (
-            <Table aria-label="Data PAC" className="lg:col-span-full overflow-y-auto max-h-[200px] scrollbar-none scroll-smooth">
-              <TableHeader className="overflow-scroll">
-                  <TableColumn className="text-center overflow-scroll">#</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Nama Sekolah</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Status SP</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Tanggal SP</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {filteredSekolah.map((sekolah, index) => (
-                  <TableRow key={sekolah._id}>
-                    <TableCell className="text-center">{index + 1}</TableCell>
-                    <TableCell className="text-center">{sekolah.sekolah_maarif}</TableCell>
-                    <TableCell className="text-center">{sekolah.status_sp}</TableCell>
-                    <TableCell className="text-center">
-                      {sekolah.tanggal_sp
-                        ? new Date(sekolah.tanggal_sp).toLocaleDateString(
-                            "id-ID",
-                            {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                            }
-                          )
-                        : "-"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <h3 className="text-lg sm:text-xl font-bold mb-4">DAFTAR RANTING</h3>
+            {desaList.length === 0 ? (
+              <p>Belum Ada Desa yang Terdaftar</p>
+            ) : (
+              <Table
+                aria-label="Data Ranting"
+                className="lg:col-span-full overflow-y-auto max-h-[200px] scrollbar-none scroll-smooth"
+              >
+                <TableHeader className="overflow-scroll">
+                  <TableColumn className="text-center overflow-scroll">
+                    #
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Nama Desa
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Status SP
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Tanggal SP
+                  </TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {filteredDesa.map((desa, index) => (
+                    <TableRow key={desa._id}>
+                      <TableCell className="text-center">{index + 1}</TableCell>
+                      <TableCell className="text-center">
+                        {desa.nama_desa}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {desa.status_sp}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {desa.tanggal_sp
+                          ? new Date(desa.tanggal_sp).toLocaleDateString(
+                              "id-ID",
+                              {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                              }
+                            )
+                          : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
-        </div>
+          </div>
 
-        {/* TABEL ANGGOTA */}
-        <div className="lg:col-span-full overflow-y-auto">
-              <h3 className="text-lg sm:text-xl font-bold mb-4">DAFTAR ANGGOTA</h3>
-          {anggotaList.length === 0 ? (
-            <p>Belum Ada Anggota yang Terdaftar</p>
-          ) : (
-            <Table aria-label="Data PAC" className="lg:col-span-full overflow-y-auto max-h-[200px] scrollbar-none scroll-smooth">
-              <TableHeader className="overflow-scroll">
-                  <TableColumn className="text-center overflow-scroll">#</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Nama Anggota</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Jabatan</TableColumn>
-                  <TableColumn className="text-center overflow-scroll">Pengkaderan</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {filteredAnggota.map((anggota, index) => (
-                  <TableRow key={anggota._id}>
-                    <TableCell className="text-center">{index + 1}</TableCell>
-                    <TableCell className="text-center">{anggota.nama_anggota}</TableCell>
-                    <TableCell className="text-center">{anggota.jabatan}</TableCell>
-                    <TableCell className="text-center">{anggota.pengkaderan}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </div>
+          {/* TABEL SEKOLAH */}
+          <div className="lg:col-span-full overflow-y-auto">
+            <h3 className="text-lg sm:text-xl font-bold mb-4">
+              DAFTAR SEKOLAH
+            </h3>
+            {sekolahList.length === 0 ? (
+              <p>Belum Ada Sekolah yang Terdaftar</p>
+            ) : (
+              <Table
+                aria-label="Data PAC"
+                className="lg:col-span-full overflow-y-auto max-h-[200px] scrollbar-none scroll-smooth"
+              >
+                <TableHeader className="overflow-scroll">
+                  <TableColumn className="text-center overflow-scroll">
+                    #
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Nama Sekolah
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Status SP
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Tanggal SP
+                  </TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {filteredSekolah.map((sekolah, index) => (
+                    <TableRow key={sekolah._id}>
+                      <TableCell className="text-center">{index + 1}</TableCell>
+                      <TableCell className="text-center">
+                        {sekolah.sekolah_maarif}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {sekolah.status_sp}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {sekolah.tanggal_sp
+                          ? new Date(sekolah.tanggal_sp).toLocaleDateString(
+                              "id-ID",
+                              {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                              }
+                            )
+                          : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+
+          {/* TABEL ANGGOTA */}
+          <div className="lg:col-span-full overflow-y-auto">
+            <h3 className="text-lg sm:text-xl font-bold mb-4">
+              DAFTAR ANGGOTA
+            </h3>
+            {anggotaList.length === 0 ? (
+              <p>Belum Ada Anggota yang Terdaftar</p>
+            ) : (
+              <Table
+                aria-label="Data PAC"
+                className="lg:col-span-full overflow-y-auto max-h-[200px] scrollbar-none scroll-smooth"
+              >
+                <TableHeader className="overflow-scroll">
+                  <TableColumn className="text-center overflow-scroll">
+                    #
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Nama Anggota
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Jabatan
+                  </TableColumn>
+                  <TableColumn className="text-center overflow-scroll">
+                    Pengkaderan
+                  </TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {filteredAnggota.map((anggota, index) => (
+                    <TableRow key={anggota._id}>
+                      <TableCell className="text-center">{index + 1}</TableCell>
+                      <TableCell className="text-center">
+                        {anggota.nama_anggota}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {anggota.jabatan}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {anggota.pengkaderan}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
         </div>
       </main>
     </div>

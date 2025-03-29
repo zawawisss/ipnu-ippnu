@@ -1,11 +1,17 @@
-// app/providers.tsx
 'use client';
-import {HeroUIProvider} from '@heroui/react'
 
-export function Providers({children}: { children: React.ReactNode }) {
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { HeroUIProvider } from '@heroui/react'
+import type { ReactNode } from 'react'
+
+export function Providers({ children }: { children: ReactNode }) {
   return (
-    <HeroUIProvider>
-      {children}
-    </HeroUIProvider>
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem
+    >
+      <HeroUIProvider>{children}</HeroUIProvider>
+    </NextThemesProvider>
   )
 }
