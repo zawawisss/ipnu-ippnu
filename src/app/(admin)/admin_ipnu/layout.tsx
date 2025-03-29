@@ -1,19 +1,9 @@
 //layout admin
 import { ReactNode } from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/nextauth";
-import { redirect } from "next/navigation";
 import { Providers } from "../../providers";
 import Sidebar from "../../components/Sidebar";
 import "../../globals.css";
-
-export async function checkSession() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/login");
-  }
-}
+import { checkSession } from "@/lib/checkSession";
 
 export default async function AdminLayout({
   children,
