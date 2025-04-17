@@ -1,10 +1,15 @@
-// /app/page.tsx
-'use client';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Divider } from "@heroui/react";
-import StatisticsCard from '../components/statistik';
-import PACTable from '../components/pac-table';
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/H9K3sBwKn
+ */
 
+"use client";
+
+import React, { useEffect, useMemo, useState } from "react";
+import { Divider } from "@heroui/react";
+import StatisticsCard from "../components/statistik";
+import PACTable from "../components/pac-table";
+import { Icon } from "@iconify/react";
 
 interface SpData {
   kecamatan: string;
@@ -12,24 +17,18 @@ interface SpData {
 }
 
 function Dashboard() {
-  const [data, setData] = useState<{
-    totalKecamatan: number;
-    totalDesa: number;
-    totalSekolahMaarif: number;
-    totalAnggota: number;
-  }>({
+  const [data, setData] = useState({
     totalKecamatan: 0,
     totalDesa: 0,
     totalSekolahMaarif: 0,
     totalAnggota: 0,
   });
-
   const [expiredSp, setExpiredSp] = useState<string[]>([]);
   const [expiringSp, setExpiringSp] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => { // Tambahkan async
+    const fetchData = async () => {
       try {
         const response = await fetch("/api/total");
         if (!response.ok) {
@@ -39,82 +38,108 @@ function Dashboard() {
         setData(result);
       } catch (error) {
         console.error("Error fetching total data:", error);
-        // Atur state error jika perlu
       }
     };
+
     fetchData();
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => { // Tambahkan async
-        setLoading(true);
-        try {
-          const response = await fetch("/api/sp-status");
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const spData: SpData[] = await response.json();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/sp-status");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const spData = await response.json();
 
-          const today = new Date();
-          const expired: string[] = [];
-          const expiring: string[] = [];
-
-          if (Array.isArray(spData)) {
-            spData.forEach((sp: SpData) => {
-              const endDate = new Date(sp.tanggal_berakhir);
-              const diffInDays = (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-
-              if (diffInDays < 0) {
-                expired.push(sp.kecamatan);
-              } else if (diffInDays <= 14) {
-                expiring.push(sp.kecamatan);
-              }
-            });
-          } else {
-            console.error("Unexpected data structure from /api/sp-status", spData);
-            setExpiredSp([]);
-            setExpiringSp([]);
-          }
-
-          setExpiredSp(expired);
-          setExpiringSp(expiring);
-        } catch (error) {
-          console.error("Error fetching SP status:", error);
+        if (typeof spData === "object" && spData !== null) {
+          setExpiredSp(spData.expired || []);
+          setExpiringSp(spData.expiring || []);
+        } else {
+          console.error(
+            "Unexpected data structure from /api/sp-status",
+            spData
+          );
           setExpiredSp([]);
           setExpiringSp([]);
-        } finally {
-          setLoading(false);
         }
+      } catch (error) {
+        console.error("Error fetching SP status:", error);
+        setExpiredSp([]);
+        setExpiringSp([]);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchData();
   }, []);
 
   const marqueeText = useMemo(() => {
     let text = "";
     if (loading) {
-      return "Loading SP Data...";
+      return (
+        <span className="inline-flex items-center rounded-md bg-gray-500 px-2.5 py-0.5 text-sm font-medium text-white">
+          <Icon
+            icon="svg-spinners:180-degree-spin"
+            className="inline-block mr-1 h-4 w-4 animate-spin"
+          />
+          Loading...
+        </span>
+      );
     } else if (expiredSp.length > 0 || expiringSp.length > 0) {
-      if (expiredSp.length > 0) {
-        text += `Kecamatan Expired: ${expiredSp.join(", ")} | `;
-      }
-      if (expiringSp.length > 0) {
-        text += `Kecamatan Expiring: ${expiringSp.join(", ")}`;
-      }
-      return text;
+      let expiredText =
+        expiredSp.length > 0 ? (
+          <span>
+            <span className="inline-flex items-center rounded-md bg-red-500 px-2.5 py-0.5 text-sm font-medium text-white">
+              <Icon
+                icon="ic:baseline-warning"
+                className="inline-block mr-1 h-4 w-4"
+              />
+              Kecamatan Expired:
+            </span>{" "}
+            <span className="text-white">{expiredSp.join(", ")}</span>
+          </span>
+        ) : null;
+      let expiringText =
+        expiringSp.length > 0 ? (
+          <span>
+            <span className="inline-flex items-center rounded-md bg-red-500 px-2.5 py-0.5 text-sm font-medium text-white">
+              <Icon
+                icon="ic:baseline-warning"
+                className="inline-block mr-1 h-4 w-4"
+              />
+              Kecamatan Expired:
+            </span>{" "}
+            <span className="text-white">{expiringSp.join(", ")}</span>
+          </span>
+        ) : null;
+      let separator = expiredText && expiringText ? " | " : "";
+      return (
+        <>
+          {expiredText}
+          {separator}
+          {expiringText}
+        </>
+      );
     }
     return "No SP data available.";
   }, [expiredSp, expiringSp, loading]);
 
-  const classNames = (...classes: (string | undefined | { [key: string]: boolean })[]): string => {
-    let result = '';
-    classes.forEach(c => {
+  const classNames = (
+    ...classes: (string | undefined | { [key: string]: boolean })[]
+  ): string => {
+    let result = "";
+    classes.forEach((c) => {
       if (c) {
-        if (typeof c === 'string') {
-          result += c + ' ';
-        } else if (typeof c === 'object') {
+        if (typeof c === "string") {
+          result += c + " ";
+        } else if (typeof c === "object") {
           for (const key in c) {
             if (c[key]) {
-              result += key + ' ';
+              result += key + " ";
             }
           }
         }
@@ -127,8 +152,10 @@ function Dashboard() {
     <div className="top-20 min-h-screen bg-background flex flex-col">
       <main className="container mx-auto px-4 py-8 flex-grow">
         {marqueeText && (
-          <div className="w-full overflow-hidden mb-8">
-            <div className="animate-marquee whitespace-nowrap py-2 text-gray-700 dark:text-gray-300">
+          <div className="w-full overflow-hidden mb-8 bg-primary-100 rounded-md">
+            <div className="animate-marquee whitespace-nowrap py-2  px-4 font-medium">
+              {marqueeText}
+              
               {marqueeText}
             </div>
           </div>
@@ -137,14 +164,16 @@ function Dashboard() {
           <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">
             Statistik PC IPNU-IPPNU Ponorogo
           </h2>
-          <div className={classNames(
-            "grid",
-            "grid-cols-2",
-            "sm:grid-cols-3",
-            "lg:grid-cols-4",
-            "gap-3",
-            "sm:gap-4"
-          )}>
+          <div
+            className={classNames(
+              "grid",
+              "grid-cols-2",
+              "sm:grid-cols-3",
+              "lg:grid-cols-4",
+              "gap-3",
+              "sm:gap-4"
+            )}
+          >
             <StatisticsCard
               title={"Anak Cabang"}
               value={data.totalKecamatan}
@@ -191,7 +220,9 @@ function Dashboard() {
           }
         }
         .animate-marquee {
-          animation: marquee 10s linear infinite; /* Durasi dan kecepatan bisa disesuaikan */
+          animation: marquee 10s linear infinite;
+          display: inline-block;
+          will-change: transform;
         }
       `}</style>
     </div>
@@ -199,4 +230,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
