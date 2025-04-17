@@ -1,5 +1,5 @@
 // components/Navbar
-'use client'
+"use client";
 import {
   Button,
   Link,
@@ -15,9 +15,8 @@ import { Icon } from "@iconify/react";
 import React, { useEffect } from "react";
 import { useTheme } from "next-themes";
 
-
 function AppNavbar() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false); //
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const menuItems = [
     { name: "Home", href: "/" },
     { name: "Statistik PAC", href: "#" },
@@ -31,15 +30,16 @@ function AppNavbar() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(theme === "light" ? "dark" : "light");
   };
+
   if (!isMounted) return null;
   return (
     <Navbar
       isBordered
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
-      className="px-4 sm:px-6"
+      className="top-0 left-0 right-0 z-50 px-4 sm:px-6 shadow-md"
     >
       <NavbarContent className="sm:hidden" justify="start">
         <NavbarMenuToggle
@@ -59,7 +59,7 @@ function AppNavbar() {
           <Icon icon="lucide:bar-chart" className="w-6 h-6 text-primary" />
           <p className="font-bold text-inherit ml-2">PC IPNU-IPPNU Ponorogo</p>
         </NavbarBrand>
-        <NavbarContent className="hidden sm:flex gap-4">
+        <NavbarContent className="hidden sm:flex gap-4" >
           {menuItems.map((item, index) => (
             <NavbarItem key={`${item.name}-${index}`}>
               <Link
@@ -75,24 +75,29 @@ function AppNavbar() {
       </NavbarContent>
 
       <NavbarContent justify="end">
-      <NavbarItem>
-            <Button
-              variant="flat"
-              onPress={toggleTheme}
-              isIconOnly
-              className="sm:hidden"
-            >
-              <Icon icon={theme === 'light' ? 'lucide:moon' : 'lucide:sun'} className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="flat"
-              onPress={toggleTheme}
-              startContent={<Icon icon={theme === 'light' ? 'lucide:moon' : 'lucide:sun'} />}
-              className="hidden sm:flex"
-            >
-              {theme === 'light' ? 'Dark' : 'Light'} Mode
-            </Button>
-          </NavbarItem>
+        <NavbarItem>
+          <Button
+            variant="flat"
+            onPress={toggleTheme}
+            isIconOnly
+            className="sm:hidden"
+          >
+            <Icon
+              icon={theme === "light" ? "lucide:moon" : "lucide:sun"}
+              className="w-5 h-5"
+            />
+          </Button>
+          <Button
+            variant="flat"
+            onPress={toggleTheme}
+            startContent={
+              <Icon icon={theme === "light" ? "lucide:moon" : "lucide:sun"} />
+            }
+            className="hidden sm:flex"
+          >
+            {theme === "light" ? "Dark" : "Light"} Mode
+          </Button>
+        </NavbarItem>
         <NavbarItem>
           <Button
             color="primary"
@@ -108,7 +113,7 @@ function AppNavbar() {
             color="primary"
             variant="solid"
             as={Link}
-            href='/login'
+            href="/login"
             startContent={<Icon icon="lucide:user" />}
             className="hidden sm:flex"
           >

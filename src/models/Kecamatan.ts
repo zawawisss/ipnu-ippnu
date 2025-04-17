@@ -1,3 +1,4 @@
+//models/Kecamatan.ts
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IDatabase extends Document {
