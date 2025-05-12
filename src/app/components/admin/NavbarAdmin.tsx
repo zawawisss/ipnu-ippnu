@@ -4,9 +4,15 @@
 import { Button, Navbar } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function NavbarAdmin() {
+  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
@@ -16,15 +22,17 @@ export default function NavbarAdmin() {
         <Icon icon="lucide:bar-chart" className="w-6 h-6 text-primary" />
       </div>
       <div className="flex items-center gap-4">
-        <Button
-          variant="flat"
-          onPress={toggleTheme}
-          startContent={
-            <Icon icon={theme === "light" ? "lucide:moon" : "lucide:sun"} />
-          }
-        >
-          {theme === "light" ? "Dark" : "Light"} Mode
-        </Button>
+        {mounted && (
+          <Button
+            variant="flat"
+            onPress={toggleTheme}
+            startContent={
+              <Icon icon={theme === "light" ? "lucide:moon" : "lucide:sun"} />
+            }
+          >
+            {theme === "light" ? "Dark" : "Light"} Mode
+          </Button>
+        )}
       </div>
     </Navbar>
   );
