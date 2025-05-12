@@ -5,6 +5,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import PACTable from "@/app/components/pac-table";
 import { Divider } from "@heroui/react";
+import StatisticsCard from "@/app/components/statistik"; // Import StatisticsCard
 
 function AdminIPNUPage() {
   return (
@@ -15,18 +16,34 @@ function AdminIPNUPage() {
 
         {/* Statistik Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
-            Total Kecamatan
-          </div>
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
-            Total Desa
-          </div>
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
-            Total Komisariat
-          </div>
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
-            Total Anggota
-          </div>
+          <StatisticsCard
+            title="Total Kecamatan"
+            value={0} // Placeholder value
+            icon="mdi:city" // Placeholder icon
+            color="primary"
+            href="/admin_ipnu/kecamatan" // Link to kecamatan page
+          />
+          <StatisticsCard
+            title="Total Desa"
+            value={0} // Placeholder value
+            icon="mdi:home-city" // Placeholder icon
+            color="success"
+            href="/admin_ipnu/desa" // Link to desa page (needs to be created)
+          />
+          <StatisticsCard
+            title="Total Komisariat"
+            value={0} // Placeholder value
+            icon="mdi:school" // Placeholder icon
+            color="warning"
+            href="/admin_ipnu/sekolah" // Link to sekolah page (needs to be created)
+          />
+          <StatisticsCard
+            title="Total Anggota"
+            value={0} // Placeholder value
+            icon="mdi:account-group" // Placeholder icon
+            color="primary"
+            href="/admin_ipnu/anggota" // Link to anggota page (needs to be created)
+          />
         </div>
         <Divider className="my-6 sm:my-8" />
       </main>

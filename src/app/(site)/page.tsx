@@ -179,24 +179,28 @@ function Dashboard() {
               value={data.totalKecamatan}
               icon={"lucide:building"}
               color={"primary"}
+              href="/kecamatan" // Link to kecamatan data
             />
             <StatisticsCard
               title={"Ranting"}
               value={data.totalDesa}
               icon={"lucide:git-branch"}
               color={"success"}
+              href="/desa" // Link to desa data (needs to be created)
             />
             <StatisticsCard
               title={"Sekolah Ma'arif"}
               value={data.totalSekolahMaarif}
               icon={"lucide:school"}
               color={"warning"}
+              href="/sekolah" // Link to sekolah data (needs to be created)
             />
             <StatisticsCard
               title={"Anggota"}
               value={data.totalAnggota}
               icon={"lucide:user-plus"}
               color={"primary"}
+              href="/anggota" // Link to anggota data (needs to be created)
             />
           </div>
         </div>

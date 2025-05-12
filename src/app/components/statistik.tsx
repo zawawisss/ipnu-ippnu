@@ -2,17 +2,19 @@ import React from 'react';
 import { Card, CardBody } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import CountUp from 'react-countup';
+import Link from 'next/link';
 
 interface StatisticsCardProps {
   title: string;
   value: number;
   icon: string;
   color: 'primary' | 'success' | 'warning';
+  href?: string; // Make href prop optional
 }
 
-const StatisticsCard = ({ title, value, icon, color }: StatisticsCardProps) => {
-  return (
-    <Card className="w-full">
+const StatisticsCard = ({ title, value, icon, color, href }: StatisticsCardProps) => {
+  const cardContent = (
+    <Card className={`w-full ${href ? 'cursor-pointer' : ''}`}> {/* Add cursor-pointer class conditionally */}
       <CardBody className="flex flex-col items-center text-center p-6">
         <div className={`p-4 rounded-lg bg-${color}-100 mb-4`}>
           <Icon icon={icon} className={`w-8 h-8 text-${color}-500`} />
@@ -24,5 +26,15 @@ const StatisticsCard = ({ title, value, icon, color }: StatisticsCardProps) => {
       </CardBody>
     </Card>
   );
+
+  if (href) {
+    return (
+      <Link href={href}>
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 }
 export default StatisticsCard;
