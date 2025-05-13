@@ -1,27 +1,28 @@
 "use client";
 
+"use client";
+
 // components/SuratTugasForm.js
 import { useState } from 'react';
 
-interface FormData {
+interface Assignee {
   nama: string;
   tempatTanggalLahir: string;
   jabatan: string;
   alamat: string;
+}
+
+interface FormData {
+  assignees: Assignee[];
   kegiatan: string;
   penyelenggara: string;
   tempat: string;
   tanggalKegiatan: string;
 }
 
-type FormDataFields = [keyof FormData, string][];
-
 export default function SuratTugasForm() {
   const [formData, setFormData] = useState<FormData>({
-    nama: '',
-    tempatTanggalLahir: '',
-    jabatan: '',
-    alamat: '',
+    assignees: [{ nama: '', tempatTanggalLahir: '', jabatan: '', alamat: '' }],
     kegiatan: '',
     penyelenggara: '',
     tempat: '',
@@ -30,8 +31,26 @@ export default function SuratTugasForm() {
 
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAssigneeChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAssignees = [...formData.assignees];
+    newAssignees[index] = { ...newAssignees[index], [e.target.name]: e.target.value };
+    setFormData((prev) => ({ ...prev, assignees: newAssignees }));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const addAssignee = () => {
+    setFormData((prev) => ({
+      ...prev,
+      assignees: [...prev.assignees, { nama: '', tempatTanggalLahir: '', jabatan: '', alamat: '' }],
+    }));
+  };
+
+  const removeAssignee = (index: number) => {
+    const newAssignees = formData.assignees.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, assignees: newAssignees }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,11 +77,7 @@ export default function SuratTugasForm() {
     setLoading(false);
   };
 
-  const fields: FormDataFields = [
-    ['nama', 'Nama Lengkap'],
-    ['tempatTanggalLahir', 'Tempat / Tanggal Lahir'],
-    ['jabatan', 'Jabatan'],
-    ['alamat', 'Alamat'],
+  const eventFields = [
     ['kegiatan', 'Mengikuti Kegiatan'],
     ['penyelenggara', 'Diselenggarakan oleh'],
     ['tempat', 'Tempat Kegiatan'],
@@ -71,19 +86,89 @@ export default function SuratTugasForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto p-6 bg-white rounded shadow">
-      {fields.map(([name, label]) => (
-        <div key={name}>
-          <label className="block font-medium">{label}</label>
+      {formData.assignees.map((assignee, index) => (
+        <div key={index} className="border p-4 rounded space-y-2">
+          <h3 className="text-lg font-semibold">Penerima Tugas {index + 1}</h3>
+          <div>
+            <label className="block font-medium">Nama Lengkap</label>
+            <input
+              type="text"
+              name="nama"
+              value={assignee.nama}
+              onChange={(e) => handleAssigneeChange(index, e)}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Tempat / Tanggal Lahir</label>
+            <input
+              type="text"
+              name="tempatTanggalLahir"
+              value={assignee.tempatTanggalLahir}
+              onChange={(e) => handleAssigneeChange(index, e)}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Jabatan</label>
+            <input
+              type="text"
+              name="jabatan"
+              value={assignee.jabatan}
+              onChange={(e) => handleAssigneeChange(index, e)}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Alamat</label>
+            <input
+              type="text"
+              name="alamat"
+              value={assignee.alamat}
+              onChange={(e) => handleAssigneeChange(index, e)}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          {formData.assignees.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeAssignee(index)}
+              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm"
+            >
+              Hapus Penerima Tugas
+            </button>
+          )}
+        </div>
+      ))}
+
+      <button
+        type="button"
+        onClick={addAssignee}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        Tambah Penerima Tugas
+      </button>
+
+      <div className="space-y-4 border p-4 rounded">
+        <h3 className="text-lg font-semibold">Detail Kegiatan</h3>
+        {eventFields.map(([name, label]) => (
+          <div key={name}>
+            <label className="block font-medium">{label}</label>
           <input
             type="text"
             name={name}
-            value={formData[name]}
-            onChange={handleChange}
+            value={formData[name as 'kegiatan' | 'penyelenggara' | 'tempat' | 'tanggalKegiatan']}
+            onChange={handleInputChange}
             className="w-full p-2 border rounded"
             required
           />
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
 
       <button
         type="submit"
