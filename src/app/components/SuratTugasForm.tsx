@@ -4,6 +4,7 @@
 
 // components/SuratTugasForm.js
 import { useState } from 'react';
+import { PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/24/solid';
 
 interface Assignee {
   nama: string;
@@ -85,85 +86,89 @@ export default function SuratTugasForm() {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto p-6 bg-white rounded shadow">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto p-6 bg-white rounded shadow dark:bg-gray-900 dark:text-gray-200 dark:shadow-lg">
       {formData.assignees.map((assignee, index) => (
-        <div key={index} className="border p-4 rounded space-y-2">
-          <h3 className="text-lg font-semibold">Penerima Tugas {index + 1}</h3>
+        <div key={index} className="border p-4 rounded space-y-2 dark:border-gray-700">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold dark:text-gray-200">Penerima Tugas {index + 1}</h3>
+            {formData.assignees.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeAssignee(index)}
+                className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500"
+                aria-label="Hapus Penerima Tugas"
+              >
+                <MinusCircleIcon className="h-6 w-6" />
+              </button>
+            )}
+          </div>
           <div>
-            <label className="block font-medium">Nama Lengkap</label>
+            <label className="block font-medium dark:text-gray-300">Nama Lengkap</label>
             <input
               type="text"
               name="nama"
               value={assignee.nama}
               onChange={(e) => handleAssigneeChange(index, e)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
               required
             />
           </div>
           <div>
-            <label className="block font-medium">Tempat / Tanggal Lahir</label>
+            <label className="block font-medium dark:text-gray-300">Tempat / Tanggal Lahir</label>
             <input
               type="text"
               name="tempatTanggalLahir"
               value={assignee.tempatTanggalLahir}
               onChange={(e) => handleAssigneeChange(index, e)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
               required
             />
           </div>
           <div>
-            <label className="block font-medium">Jabatan</label>
+            <label className="block font-medium dark:text-gray-300">Jabatan</label>
             <input
               type="text"
               name="jabatan"
               value={assignee.jabatan}
               onChange={(e) => handleAssigneeChange(index, e)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
               required
             />
           </div>
           <div>
-            <label className="block font-medium">Alamat</label>
+            <label className="block font-medium dark:text-gray-300">Alamat</label>
             <input
               type="text"
               name="alamat"
               value={assignee.alamat}
               onChange={(e) => handleAssigneeChange(index, e)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
               required
             />
           </div>
-          {formData.assignees.length > 1 && (
-            <button
-              type="button"
-              onClick={() => removeAssignee(index)}
-              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm"
-            >
-              Hapus Penerima Tugas
-            </button>
-          )}
         </div>
       ))}
 
       <button
         type="button"
         onClick={addAssignee}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        className="flex items-center space-x-2 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
       >
-        Tambah Penerima Tugas
+        <PlusCircleIcon className="h-6 w-6" />
+        <span>Tambah Penerima Tugas</span>
       </button>
 
-      <div className="space-y-4 border p-4 rounded">
-        <h3 className="text-lg font-semibold">Detail Kegiatan</h3>
+      <div className="space-y-4 border p-4 rounded dark:border-gray-700">
+        <h3 className="text-lg font-semibold dark:text-gray-200">Detail Kegiatan</h3>
         {eventFields.map(([name, label]) => (
           <div key={name}>
-            <label className="block font-medium">{label}</label>
+            <label className="block font-medium dark:text-gray-300">{label}</label>
           <input
             type="text"
             name={name}
             value={formData[name as 'kegiatan' | 'penyelenggara' | 'tempat' | 'tanggalKegiatan']}
             onChange={handleInputChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
             required
           />
           </div>
@@ -173,7 +178,7 @@ export default function SuratTugasForm() {
       <button
         type="submit"
         disabled={loading}
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 dark:bg-green-700 dark:hover:bg-green-800"
       >
         {loading ? 'Membuat Surat...' : 'Generate Surat'}
       </button>

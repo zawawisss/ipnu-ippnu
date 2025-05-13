@@ -14,7 +14,7 @@ export default async function AdminLayout({
   await checkSession();
   return (
     <html lang="id" suppressHydrationWarning>
-      <body>
+      <body className="dark:bg-gray-900">
         <Providers>
           {/* Navbar fixed di atas */}
           <Navbar />
