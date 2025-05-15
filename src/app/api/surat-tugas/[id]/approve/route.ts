@@ -9,18 +9,22 @@ interface Params {
   id: string;
 }
 
-export async function POST(request: NextRequest, context: { params: { id: string } }) {
+export async function POST(request: NextRequest) {
   await connectDB();
 
   const session = await getServerSession(authOptions);
-
-  const { params } = context;
 
   if (!session || !session.user || !session.user.role || !session.user.id) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
-  const letterId = params.id;
+  const url = new URL(request.url);
+  const letterId = url.pathname.split('/').pop();
+
+  if (!letterId) {
+    return NextResponse.json({ message: 'Invalid letter ID' }, { status: 400 });
+  }
+
   const userRole = session.user.role;
   const userId = new mongoose.Types.ObjectId(session.user.id);
 
