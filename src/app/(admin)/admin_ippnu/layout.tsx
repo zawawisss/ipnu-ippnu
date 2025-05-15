@@ -1,17 +1,16 @@
-// app/(admin)/layout.tsx
 import { ReactNode } from "react";
 import { Providers } from "../../providers";
-import Sidebar from "../../components/admin/Sidebar";
+import SidebarIPPNU from "../../components/admin/SidebarIPPNU";
 import "../../globals.css";
-import { checkSession } from "@/lib/checkSession";
 import Navbar from "@/app/components/admin/NavbarAdmin";
+import { checkAdminSession } from "@/lib/checkAdminSession";
 
 export default async function AdminLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  await checkSession();
+  await checkAdminSession(["admin", "ketua", "sekretaris"], "ippnu_");
 
   return (
     <html lang="id" suppressHydrationWarning>
@@ -19,7 +18,7 @@ export default async function AdminLayout({
         <Providers>
           <div className="flex h-screen">
             {/* Sidebar */}
-            <Sidebar />
+            <SidebarIPPNU />
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col overflow-hidden">

@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
     await db();
 
     const kecamatanData: KecamatanData[] = await Kecamatan.find();
-    console.log("Data dari database:", kecamatanData); // Tambahkan ini
 
     const today = new Date();
     const expired: string[] = [];
@@ -30,7 +29,6 @@ export async function GET(req: NextRequest) {
     });
 
     const responseData = { expired, expiring };
-    console.log("Response from /api/sp-status:", responseData); // Tambahkan ini
     return new NextResponse(JSON.stringify(responseData), {
       status: 200,
       headers: {

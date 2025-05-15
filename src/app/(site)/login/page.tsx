@@ -1,13 +1,14 @@
 "use client";
 
 import { Alert } from "@heroui/alert";
-import { Button, Input } from "@heroui/react";
+import { Button, Input, Listbox } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 function LoginPage() {
-  const [role, setRole] = useState<"ipnu" | "ippnu">("ipnu");
+  const [org, setOrg] = useState<"ipnu" | "ippnu">("ipnu");
+  const [role, setRole] = useState<"admin" | "ketua" | "sekretaris">("admin");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const router = useRouter();
@@ -16,14 +17,16 @@ function LoginPage() {
     e.preventDefault();
     setError(false);
 
+    const username = `${org}_${role}`;
+
     const res = await signIn("credentials", {
-      username: role,
+      username,
       password,
       redirect: false,
     });
 
     if (res?.ok) {
-      router.push(role === "ipnu" ? "/admin_ipnu/dashboard" : "/admin_ippnu");
+      router.push(org === "ipnu" ? "/admin_ipnu/dashboard" : "/admin_ippnu");
     } else {
       setError(true);
     }
@@ -45,22 +48,40 @@ function LoginPage() {
           <div className="flex justify-center gap-4 mb-2">
             <Button
               type="button"
-              variant={role === "ipnu" ? "solid" : "bordered"}
+              variant={org === "ipnu" ? "solid" : "bordered"}
               color="success"
               className="flex-1"
-              onClick={() => setRole("ipnu")}
+              onClick={() => setOrg("ipnu")}
             >
               IPNU
             </Button>
             <Button
               type="button"
-              variant={role === "ippnu" ? "solid" : "bordered"}
+              variant={org === "ippnu" ? "solid" : "bordered"}
               color="success"
               className="flex-1"
-              onClick={() => setRole("ippnu")}
+              onClick={() => setOrg("ippnu")}
             >
               IPPNU
             </Button>
+          </div>
+
+          {/* Dropdown for Role Selection */}
+          <div className="mb-4">
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+              Pilih Role
+            </label>
+            <select
+              id="role"
+              name="role"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              value={role}
+              onChange={(e) => setRole(e.target.value as "admin" | "ketua" | "sekretaris")}
+            >
+              <option value="admin">Admin</option>
+              <option value="ketua">Ketua</option>
+              <option value="sekretaris">Sekretaris</option>
+            </select>
           </div>
 
           <Input
@@ -80,5 +101,3 @@ function LoginPage() {
 }
 
 export default LoginPage;
-
-

@@ -9,6 +9,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { gregorianToHijri } from "@tabby_ai/hijri-converter";
 import LetterSequence from "@/models/LetterSequence";
+import SuratTugas, { ISuratTugas } from "@/models/SuratTugas"; // Import SuratTugas model
+import mongoose from "mongoose"; // Import mongoose
 
 type DateType = {
   year: number;
@@ -24,13 +26,8 @@ interface Assignee {
 }
 
 interface RequestBody {
-  assignees: Assignee[];
-  kegiatan: string;
-  penyelenggara: string;
-  tempat: string;
-  tanggalKegiatan: string;
+  suratTugasId: string;
 }
-
 
 function toRoman(num: number) {
   const roman = [
@@ -74,15 +71,21 @@ function generateNomorSurat({
 export async function POST(request: Request) {
   await dbConnect();
   try {
-    const data: RequestBody = await request.json();
-    console.error("Received data:", data);
+    const { suratTugasId }: RequestBody = await request.json();
+    console.error("Received suratTugasId:", suratTugasId);
 
-    if (!data || !data.assignees || data.assignees.length === 0) {
-      console.error("Received data is empty or null, or assignees array is empty.");
-      return NextResponse.json(
-        { error: "Received data is empty or null, or assignees array is empty." },
-        { status: 400 }
-      );
+    if (!suratTugasId || !mongoose.Types.ObjectId.isValid(suratTugasId)) {
+      return NextResponse.json({ message: 'Invalid Surat Tugas ID' }, { status: 400 });
+    }
+
+    const suratTugas = await SuratTugas.findById(suratTugasId);
+
+    if (!suratTugas) {
+      return NextResponse.json({ message: 'Surat Tugas not found' }, { status: 404 });
+    }
+
+    if (suratTugas.status !== 'approved_all') {
+      return NextResponse.json({ message: 'Surat Tugas has not been fully approved yet' }, { status: 403 });
     }
 
     const content = fs.readFileSync(
@@ -141,17 +144,20 @@ export async function POST(request: Request) {
       tanggal: tanggalSekarang,
     });
 
-    const assigneesWithIndex = data.assignees.map((assignee, index) => ({
-      ...assignee,
+    const assigneesWithIndex = suratTugas.assignees.map((assignee: any, index: number) => ({
       assigneeIndex: index + 1, // Add 1-based index to each assignee object
+      nama: assignee.nama,
+      tempatTanggalLahir: assignee.tempatTanggalLahir,
+      jabatan: assignee.jabatan,
+      alamat: assignee.alamat,
     }));
 
     doc.setData({
       assignees: assigneesWithIndex,
-      mengikuti_kegiatan: data.kegiatan,
-      diselenggarakan_oleh: data.penyelenggara,
-      tempat_kegiatan: data.tempat,
-      tanggal_kegiatan: data.tanggalKegiatan,
+      mengikuti_kegiatan: suratTugas.kegiatan,
+      diselenggarakan_oleh: suratTugas.penyelenggara,
+      tempat_kegiatan: suratTugas.tempat,
+      tanggal_kegiatan: suratTugas.tanggalKegiatan,
       tanggal_masehi: format(tanggalSekarang, "d MMMM yyyy", { locale: id }),
       tanggal_hijriah: hijriDate,
       nomor_surat: nomorSurat,
