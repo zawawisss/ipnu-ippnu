@@ -9,10 +9,12 @@ interface Params {
   id: string;
 }
 
-export async function POST(request: NextRequest, { params }: { params: Params }) {
+export async function POST(request: NextRequest, context: { params: { id: string } }) {
   await connectDB();
 
   const session = await getServerSession(authOptions);
+
+  const { params } = context;
 
   if (!session || !session.user || !session.user.role || !session.user.id) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
