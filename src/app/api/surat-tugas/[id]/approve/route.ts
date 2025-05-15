@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import connectDB from '@/lib/db';
 import SuratTugas from '@/models/SuratTugas';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/nextauth';
 import mongoose from 'mongoose';
 
-export async function POST(request: NextResponse, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   await connectDB();
 
   const session = await getServerSession(authOptions);
