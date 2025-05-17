@@ -20,6 +20,7 @@ export default function AdminContent() {
         <Button
           className="w-full sm:w-auto"
           startContent={<PlusCircleIcon className="w-5 h-5" />}
+onPress={() => alert("Tambah Kecamatan")}
         >
           Tambah Kecamatan
         </Button>

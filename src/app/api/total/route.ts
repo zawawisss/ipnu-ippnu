@@ -5,13 +5,15 @@ import Kecamatan from "@/models/Kecamatan";
 import Sekolah from "@/models/Sekolah";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req:NextRequest) {
+export async function GET(req: NextRequest) {
     await db();
     try {
-        const totalKecamatan = await Kecamatan.countDocuments();
-        const totalDesa = await Desa.countDocuments();
-        const totalSekolahMaarif = await Sekolah.countDocuments();
-        const totalAnggota = await Anggota.countDocuments();
+        const [totalKecamatan, totalDesa, totalSekolahMaarif, totalAnggota] = await Promise.all([
+            Kecamatan.countDocuments(),
+            Desa.countDocuments(),
+            Sekolah.countDocuments(),
+            Anggota.countDocuments(),
+        ]);
 
         return NextResponse.json({
             totalKecamatan,
@@ -19,7 +21,8 @@ export async function GET(req:NextRequest) {
             totalSekolahMaarif,
             totalAnggota,
         });
-    }catch (error){
-        return NextResponse.json({error}, {status: 500});
+    } catch (error) {
+        console.error('Failed to fetch total counts:', error);
+        return NextResponse.json({ error }, { status: 500 });
     }
 }

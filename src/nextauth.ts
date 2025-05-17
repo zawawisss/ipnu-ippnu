@@ -29,11 +29,15 @@ export const authOptions = {
         if (passwordMatch) {
           console.log("Password matches. Authorization successful.");
           // Construct the name in the format expected by the layout checks
-          const [org, role] = admin.username.split('_');
+          const usernameParts = admin.username.split('_');
+          const org = usernameParts[0];
+          const role = usernameParts.length > 1 ? usernameParts[1] : ''; // Handle usernames without underscore
+
           const authorizedUser = {
             id: admin._id,
             name: `${org}_${role}`,
             role: admin.role,
+            org: org, // Add org to authorizedUser
           };
           console.log("Authorized user object:", authorizedUser);
           return authorizedUser;
@@ -57,6 +61,7 @@ export const authOptions = {
         token.id = user.id; // Add user ID to token
         token.role = user.role;
         token.name = user.name; // Add name to token
+        token.org = user.org; // Add org to token
       }
       return token;
     },
@@ -65,6 +70,7 @@ export const authOptions = {
         session.user.id = token.sub; // Add user ID from token to session
         session.user.role = token.role;
         session.user.name = token.name; // Add name to session
+        session.user.org = token.org; // Add org to session
       }
       return session;
     },

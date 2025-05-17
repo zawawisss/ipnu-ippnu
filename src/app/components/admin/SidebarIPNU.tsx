@@ -11,6 +11,8 @@ import {
   ArrowLeftOnRectangleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  ArchiveBoxIcon,
+  DocumentIcon, // Added DocumentIcon for the Surat menu
 } from "@heroicons/react/24/outline";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
@@ -46,14 +48,20 @@ export default function Sidebar() {
     { name: "Komisariat", href: "/admin/komisariat", icon: AcademicCapIcon },
     { name: "Anggota", href: "/admin/anggota", icon: UserGroupIcon },
     {
-      name: "Surat",
-      icon: ChartBarSquareIcon,
+      name: "Arsip Surat", // Separate Arsip Surat menu
+      icon: ArchiveBoxIcon,
       children: [
-        { name: "Surat Masuk", href: "/admin_ipnu/surat/masuk", icon: ArrowLeftOnRectangleIcon },
-        { name: "Surat Keluar", href: "/admin_ipnu/surat/keluar", icon: ArrowLeftOnRectangleIcon },
+        { name: "Surat Masuk", href: "/admin_ipnu/surat/arsip/masuk", icon: ArrowLeftOnRectangleIcon },
+        { name: "Surat Keluar", href: "/admin_ipnu/surat/arsip/keluar", icon: ArrowLeftOnRectangleIcon },
+      ],
+    },
+    {
+      name: "Surat", // Separate Surat menu
+      icon: DocumentIcon, // Using DocumentIcon for the Surat menu
+      children: [
         { name: "Buat Surat", href: "/admin_ipnu/surat/buat", icon: ChartBarSquareIcon },
-        { name: "Surat Menunggu Persetujuan", href: "/admin_ipnu/surat/tugas/approval", icon: ChartBarSquareIcon },
-        { name: "Surat Disetujui", href: "/admin_ipnu/surat/tugas/approved", icon: ChartBarSquareIcon },
+        { name: "Surat Menunggu Persetujuan", href: "/admin_ipnu/surat/persetujuan/approval", icon: ChartBarSquareIcon },
+        { name: "Surat Disetujui", href: "/admin_ipnu/surat/persetujuan/approved", icon: ChartBarSquareIcon },
       ],
     },
   ];
@@ -148,24 +156,7 @@ export default function Sidebar() {
         {/* AKHIR BAGIAN YANG DIGANTI */}
       </div>
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-        {/* ... (sisa kode footer sama) ... */}
-        <div className="hidden sm:block mb-2 text-sm text-gray-500 dark:text-gray-400">
-          <p>Login sebagai:</p>
-          <p className="font-medium text-gray-700 dark:text-gray-300 truncate">
-            {displayUser}
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onPress={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center justify-center sm:justify-start gap-2"
-        >
-          <ArrowLeftOnRectangleIcon className="w-5 h-5" />
-          <span className="hidden sm:inline">Logout</span>
-        </Button>
-      </div>
+
     </aside>
   );
 }

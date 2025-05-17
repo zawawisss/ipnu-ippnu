@@ -18,12 +18,14 @@ export async function GET(
     }
   
     try {
-      const desa = await Desa.find({ kecamatan_id: id });
-      const totalDesa = await Desa.countDocuments({ kecamatan_id: id });
-      const sekolah = await Sekolah.find({ kecamatan_id: id });
-      const totalSekolah = await Sekolah.countDocuments({ kecamatan_id: id });
-      const anggota = await Anggota.find({ kecamatan_id: id });
-      const totalAnggota = await Anggota.countDocuments({ kecamatan_id: id });
+      const [desa, totalDesa, sekolah, totalSekolah, anggota, totalAnggota] = await Promise.all([
+        Desa.find({ kecamatan_id: id }),
+        Desa.countDocuments({ kecamatan_id: id }),
+        Sekolah.find({ kecamatan_id: id }),
+        Sekolah.countDocuments({ kecamatan_id: id }),
+        Anggota.find({ kecamatan_id: id }),
+        Anggota.countDocuments({ kecamatan_id: id }),
+      ]);
   
       return Response.json({
         desa,
@@ -34,6 +36,7 @@ export async function GET(
         totalAnggota,
       });
     } catch (error) {
+      console.error('Error fetching kecamatan detail:', error);
       return new Response("Terjadi kesalahan server", { status: 500 });
     }
   }
