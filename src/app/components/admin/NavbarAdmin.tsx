@@ -13,7 +13,6 @@ import { Alert } from "@heroui/alert";
 import { Session } from "next-auth";
 import Image from "next/image";
 
-
 declare module "next-auth" {
   interface Session {
     user: {
@@ -48,6 +47,10 @@ export default function NavbarAdmin() {
 
   const handleSwitchAccount = async () => {
     setError(false);
+    // Remove all cookies before logging in
+    Object.keys(Cookies.get()).forEach(function (cookieName) {
+      Cookies.remove(cookieName);
+    });
     const username = `${org}_${role}`;
 
     const res = await signIn("credentials", {
@@ -111,9 +114,16 @@ export default function NavbarAdmin() {
         )}
 
         {session?.user ? (
-          <Menu as="div" className="relative inline-block text-left" ref={menuRef}>
+          <Menu
+            as="div"
+            className="relative inline-block text-left"
+            ref={menuRef}
+          >
             <div>
-              <MenuButton className="inline-flex w-full justify-center items-center rounded-md bg-primary dark:bg-gray-700 px-4 py-2 text-sm font-medium text-white dark:text-gray-300 hover:bg-opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75" onClick={() => setOpen(!open)}>
+              <MenuButton
+                className="inline-flex w-full justify-center items-center rounded-md bg-primary dark:bg-gray-700 px-4 py-2 text-sm font-medium text-white dark:text-gray-300 hover:bg-opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+                onClick={() => setOpen(!open)}
+              >
                 {getDisplayName()}
                 <ChevronDownIcon
                   className="ml-2 -mr-1 h-5 w-5 text-white dark:text-gray-300"
@@ -131,7 +141,7 @@ export default function NavbarAdmin() {
                     width={96}
                   />
                 </div>
-                  <div className="my-4 h-1 bg-gray-300 rounded-full"></div>
+                <div className="my-4 h-1 bg-gray-300 rounded-full"></div>
                 <div className="flex justify-center gap-4 mb-2">
                   <Button
                     type="button"
@@ -153,7 +163,7 @@ export default function NavbarAdmin() {
                   </Button>
                 </div>
               </div>
-              
+
               <div className="mb-4 px-4">
                 <select
                   className="block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary focus:ring-primary sm:text-sm dark:bg-gray-700 dark:text-white"
@@ -207,7 +217,6 @@ export default function NavbarAdmin() {
                       color="danger"
                       onPress={() => {
                         signOut({ callbackUrl: "/login" });
-
                       }}
                       className="rounded-md w-20"
                       size="sm"

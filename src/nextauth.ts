@@ -71,11 +71,25 @@ export const authOptions = {
         session.user.role = token.role;
         session.user.name = token.name; // Add name to session
         session.user.org = token.org; // Add org to session
+        session.user.email = undefined;
+        session.user.image = undefined;
       }
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: process.env.NODE_ENV === "production" ? ".example.com" : undefined, // Replace .example.com with your actual domain
+      },
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

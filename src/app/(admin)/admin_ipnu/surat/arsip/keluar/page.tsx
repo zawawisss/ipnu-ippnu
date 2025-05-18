@@ -34,11 +34,6 @@ const ArsipSuratKeluarPage = () => {
   useEffect(() => {
     if (status === 'loading') return;
 
-    if (!session) {
-      router.push('/login');
-      return;
-    }
-
     const delayDebounceFn = setTimeout(() => {
       const fetchArsipKeluar = async () => {
         setLoading(true);
@@ -66,7 +61,7 @@ const ArsipSuratKeluarPage = () => {
 
     return () => clearTimeout(delayDebounceFn);
 
-  }, [session, status, router, searchQuery]);
+  }, [status, router, searchQuery]);
 
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
