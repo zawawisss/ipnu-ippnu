@@ -47,24 +47,34 @@ export default function NavbarAdmin() {
 
   const handleSwitchAccount = async () => {
     setError(false);
+  
+    if (!password) {
+      setError(true);
+      return;
+    }
+  
     // Remove all cookies before logging in
     Object.keys(Cookies.get()).forEach(function (cookieName) {
       Cookies.remove(cookieName);
     });
+  
     const username = `${org}_${role}`;
-
+  
     const res = await signIn("credentials", {
       username,
       password,
       redirect: false,
     });
-
+  
     if (res?.error) {
       setError(true);
     } else if (res?.ok) {
-      router.push(org === "ipnu" ? "/admin_ipnu/dashboard" : "/admin_ippnu");
+      const targetPath = org === "ipnu" ? "/admin_ipnu/dashboard" : "/admin_ippnu";
+      router.push(targetPath);
+      window.location.reload(); // Force reload to update session role
     }
   };
+  
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
