@@ -18,11 +18,15 @@ export default async function AdminLayout({
       <body className="dark:bg-gray-900">
         <Providers>
           {/* Navbar fixed di atas */}
-          <Navbar />
+          <div className="fixed top-0 left-0 right-0 z-50">
+            <Navbar />
+          </div>
           {/* Sidebar fixed di sisi kiri */}
-          <SidebarIPNU />
+          <div className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-16 sm:w-64 z-40">
+            <SidebarIPNU />
+          </div>
           {/* Konten utama dengan offset */}
-          <main className="fixed top-16 left-16 sm:left-64 right-0 bottom-0 p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
+          <main className="pt-16 sm:pl-64 h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto px-4 sm:px-6 max-w-full sm:max-w-2xl mx-auto">
             {children}
           </main>
         </Providers>

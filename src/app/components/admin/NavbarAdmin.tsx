@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Navbar,
-  Input,
-  Select,
-  SelectItem,
-} from "@heroui/react";
+import { Button, Navbar, Input, Select, SelectItem } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "next-themes";
 import { signOut, useSession, signIn } from "next-auth/react";
@@ -20,15 +14,11 @@ import {
 } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Cookies from "js-cookie";
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  Fragment,
-} from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import { Alert } from "@heroui/alert";
 import { Session } from "next-auth";
 import Image from "next/image";
+import dayjs from "dayjs";
 
 declare module "next-auth" {
   interface Session {
@@ -51,6 +41,14 @@ export default function NavbarAdmin() {
   const [showAlert, setShowAlert] = useState(false);
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(dayjs().format("HH:mm:ss"));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(dayjs().format("HH:mm:ss"));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -116,14 +114,44 @@ export default function NavbarAdmin() {
 
   return (
     <Navbar className="top-0 left-0 right-0 h-16 bg-white dark:bg-gray-800 shadow-md z-40 flex items-center px-4">
-      <div className="flex-1 flex items-center">
+      <div className="flex-1 flex items-center gap-4">
         <Icon icon="lucide:bar-chart" className="w-6 h-6 text-primary" />
+        {/* Greeting hanya tampil di desktop */}
+        {session?.user?.role && (
+          <span className="hidden sm:inline text-gray-700 dark:text-gray-200 font-semibold animate-fade-in">
+            Selamat datang, {getDisplayName()}!
+          </span>
+        )}
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
+        {/* Jam hanya di desktop */}
+        <span className="hidden sm:inline text-xs text-gray-500 dark:text-gray-300 font-mono">
+          {mounted ? currentTime : ""}
+        </span>
+        {/* Status online tetap */}
+        {session?.user && (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium border border-green-300">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            Online
+          </span>
+        )}
+        {/* Alert tetap */}
         {showAlert && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 p-4">
             <Alert color="danger" title="Kata sandi salah" />
           </div>
+        )}
+        {/* Tombol theme switch: icon saja di mobile, icon+teks di desktop */}
+        {mounted && (
+          <Button
+            variant="flat"
+            onPress={toggleTheme}
+            startContent={
+              <Icon icon={theme === "light" ? "lucide:moon" : "lucide:sun"} />
+            }
+            className="flex sm:hidden"
+            aria-label="Switch Theme"
+          />
         )}
         {mounted && (
           <Button
@@ -132,26 +160,31 @@ export default function NavbarAdmin() {
             startContent={
               <Icon icon={theme === "light" ? "lucide:moon" : "lucide:sun"} />
             }
+            className="hidden sm:flex"
           >
             {theme === "light" ? "Dark" : "Light"} Mode
           </Button>
         )}
-
+        {/* Switch account: icon saja di mobile, menu user tetap di desktop */}
         {session?.user && (
           <Menu as="div" className="relative inline-block text-left">
             <div>
               <MenuButton
-                className="inline-flex w-full justify-center items-center gap-2 rounded-md bg-primary dark:bg-gray-700 px-4 py-2 text-sm font-medium text-white dark:text-gray-300 hover:bg-opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+                className="inline-flex w-full justify-center items-center gap-2 rounded-md bg-primary dark:bg-gray-700 px-2 sm:px-4 py-2 text-sm font-medium text-white dark:text-gray-300 hover:bg-opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
                 onClick={() => setOpen(!open)}
+                aria-label="Switch Account"
               >
-                {getDisplayName()}
+                <Icon
+                  icon="heroicons-outline:user-circle"
+                  className="sm:hidden w-6 h-6"
+                />
+                <span className="hidden sm:inline">{getDisplayName()}</span>
                 <ChevronDownIcon
                   className="h-5 w-5 text-white dark:text-gray-300"
                   aria-hidden="true"
                 />
               </MenuButton>
             </div>
-
             <Transition
               show={open}
               as={Fragment}
