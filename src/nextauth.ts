@@ -13,44 +13,37 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Attempting to authorize with credentials:", credentials);
-        console.log("Username provided in credentials:", credentials?.username);
+        if (!credentials?.username || !credentials?.password) return null;
+
         await connectDB();
-        console.log("Database connected.");
 
-        const admin = await Admin.findOne({ username: credentials?.username });
-        console.log("Admin found:", admin);
-        console.log("Provided password:", credentials?.password);
-        console.log("Admin password from DB:", admin?.password);
+        const admin = await Admin.findOne({ username: credentials.username });
+        if (!admin) return null;
 
-        const passwordMatch = admin && (await bcrypt.compare(credentials?.password || "", admin.password));
-        console.log("Password match result:", passwordMatch);
+        const passwordMatch = await bcrypt.compare(
+          credentials.password,
+          admin.password
+        );
 
         if (passwordMatch) {
-          console.log("Password matches. Authorization successful.");
-          // Construct the name in the format expected by the layout checks
-          const usernameParts = admin.username.split('_');
+          const usernameParts = admin.username.split("_");
           const org = usernameParts[0];
-          const role = usernameParts.length > 1 ? usernameParts[1] : ''; // Handle usernames without underscore
+          const role = usernameParts.length > 1 ? usernameParts[1] : "";
 
-          const authorizedUser = {
+          return {
             id: admin._id,
             name: `${org}_${role}`,
             role: admin.role,
-            org: org, // Add org to authorizedUser
+            org: org,
           };
-          console.log("Authorized user object:", authorizedUser);
-          return authorizedUser;
         }
-
-        console.log("Authorization failed.");
 
         return null;
       },
     }),
   ],
   pages: {
-    signIn: "/login", // redirect custom page login
+    signIn: "/login",
   },
   session: {
     strategy: "jwt" as const,
@@ -58,19 +51,19 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
-        token.id = user.id; // Add user ID to token
+        token.id = user.id;
         token.role = user.role;
-        token.name = user.name; // Add name to token
-        token.org = user.org; // Add org to token
+        token.name = user.name;
+        token.org = user.org;
       }
       return token;
     },
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
-        session.user.id = token.sub; // Add user ID from token to session
+        session.user.id = token.sub;
         session.user.role = token.role;
-        session.user.name = token.name; // Add name to session
-        session.user.org = token.org; // Add org to session
+        session.user.name = token.name;
+        session.user.org = token.org;
         session.user.email = undefined;
         session.user.image = undefined;
       }
@@ -85,8 +78,8 @@ export const authOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: process.env.NODE_ENV === "production" ? ".example.com" : undefined, // Replace .example.com with your actual domain
+        secure: false, // Tidak perlu secure di localhost
+        // domain dihapus karena di localhost tidak diperlukan
       },
     },
   },
