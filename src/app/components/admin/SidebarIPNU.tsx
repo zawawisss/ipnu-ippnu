@@ -73,7 +73,7 @@ export default function Sidebar() {
     children: [
       {
         name: "Buat Surat",
-        href: "/admin_ipnu/surat/buat",
+        href: "/admin_ipnu/surat/tambah",
         icon: ChartBarSquareIcon,
       },
       {

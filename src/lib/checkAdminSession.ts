@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth/next";
 
 export async function checkAdminSession() {
   const session = await getServerSession(authOptions); // Hapus req, res
-  console.log("Session di checkAdminSession:", session);
   return session;
 }
 
@@ -13,7 +12,6 @@ export async function checkAdminSessionServer(
 ) {
   const session = await getServerSession(authOptions);
 
-  console.log("Session di checkAdminSessionServer:", session);
 
   if (
     !session ||

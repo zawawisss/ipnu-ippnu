@@ -22,3 +22,5 @@ const DesaSchema: Schema = new Schema({
 
 export default mongoose.models.Desa || mongoose.model<IDesa>('Desa', DesaSchema, 'database_ranting');
 
+
+

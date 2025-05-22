@@ -26,7 +26,7 @@ export default async function AdminLayout({
             <SidebarIPNU />
           </div>
           {/* Konten utama dengan offset */}
-          <main className="pt-16 sm:pl-64 h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto px-4 sm:px-6 max-w-full sm:max-w-2xl mx-auto">
+          <main className="pt-16 sm:pl-64 h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto scrollbar-none px-4 sm:px-6 max-w-5xl mx-auto">
             {children}
           </main>
         </Providers>
