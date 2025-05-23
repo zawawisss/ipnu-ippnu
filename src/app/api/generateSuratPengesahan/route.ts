@@ -363,10 +363,6 @@ export async function POST(req: NextRequest) {
     };
 
     doc.render(renderData);
-    console.log(
-      "Data being sent to docxtemplater (renderData):",
-      JSON.stringify(renderData, null, 2)
-    );
     const buf = doc.getZip().generate({
       type: "nodebuffer",
       compression: "DEFLATE",
