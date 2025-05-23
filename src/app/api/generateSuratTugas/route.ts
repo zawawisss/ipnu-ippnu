@@ -5,7 +5,7 @@ import PizZip from "pizzip";
 import { toHijri } from "hijri-converter";
 import { format } from "date-fns";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   try {
     const {
       assignees,
