@@ -1,7 +1,8 @@
+//models/Desa.ts
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IDesa extends Document {
-    _id: string;
+    _id: mongoose.Types.ObjectId; // Mengubah tipe _id menjadi ObjectId
     nama_desa: string;
     status_sp: string;
     tanggal_sp: string;
@@ -11,7 +12,7 @@ export interface IDesa extends Document {
 }
 
 const DesaSchema: Schema = new Schema({
-    _id: {type: String, required: true},
+    _id: {type: Schema.Types.ObjectId, required: true}, // Mengubah tipe _id di skema
     nama_desa: {type: String, required: true},
     status_sp: {type: String, required: true},
     tanggal_sp: {type: Date, required: true},
@@ -21,6 +22,3 @@ const DesaSchema: Schema = new Schema({
 });
 
 export default mongoose.models.Desa || mongoose.model<IDesa>('Desa', DesaSchema, 'database_ranting');
-
-
-

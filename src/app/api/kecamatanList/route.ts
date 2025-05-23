@@ -1,8 +1,15 @@
+//app/api/kecamatanList/route.ts
 import db from "@/lib/db";
 import Kecamatan from "@/models/Kecamatan";
 import { NextRequest, NextResponse } from "next/server";
+// import { checkAdminSessionServer } from "@/lib/checkAdminSession"; // Import checkAdminSessionServer
 
 export async function GET(req: NextRequest) {
+    // const session = await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ipnu_"); // Tambahkan pengecekan sesi
+    // if (!session) {
+    //     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    // }
+
     await db();
     try {
         const { searchParams } = new URL(req.url);

@@ -47,8 +47,8 @@ export default function Sidebar() {
     icon: MapPinIcon,
     children: [
       { name: "Kecamatan", href: "/admin_ipnu/kecamatan", icon: MapPinIcon },
-      { name: "Desa", href: "/admin/desa", icon: MapPinIcon },
-      { name: "Komisariat", href: "/admin/komisariat", icon: AcademicCapIcon },
+      { name: "Desa", href: "/admin_ipnu/desa", icon: MapPinIcon },
+      { name: "Komisariat", href: "/admin_ipnu/komisariat", icon: AcademicCapIcon },
       { name: "Anggota", href: "/admin/anggota", icon: UserGroupIcon },
     ],
   };

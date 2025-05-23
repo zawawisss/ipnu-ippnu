@@ -1,8 +1,14 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from '@/lib/db';
 import Desa from '@/models/Desa';
+// import { checkAdminSessionServer } from "@/lib/checkAdminSession";
 
 export async function GET(request: NextRequest) {
+  // const session = await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ipnu_");
+  // if (!session) {
+  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  // }
+
   await dbConnect();
   try {
     const { searchParams } = new URL(request.url);

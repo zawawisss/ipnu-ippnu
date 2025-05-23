@@ -27,6 +27,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       role?: "admin" | "ketua" | "sekretaris";
+      org?: "ipnu" | "ippnu";
     };
   }
 }
@@ -104,11 +105,13 @@ export default function NavbarAdmin() {
     if (!session?.user) return "";
 
     if (session.user.role === "admin") {
-      return org === "ipnu" ? "Admin IPNU" : "Admin IPPNU";
+      return session.user.org === "ipnu" ? "Admin IPNU" : "Admin IPPNU";
     } else if (session.user.role === "ketua") {
-      return org === "ipnu" ? "Ketua IPNU" : "Ketua IPPNU";
+      return session.user.org === "ipnu" ? "Ketua IPNU" : "Ketua IPPNU";
     } else {
-      return org === "ipnu" ? "Sekretaris IPNU" : "Sekretaris IPPNU";
+      return session.user.org === "ipnu"
+        ? "Sekretaris IPNU"
+        : "Sekretaris IPPNU";
     }
   };
 

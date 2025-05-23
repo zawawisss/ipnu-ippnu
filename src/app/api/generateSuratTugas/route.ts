@@ -4,8 +4,15 @@ import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import { toHijri } from "hijri-converter";
 import { format } from "date-fns";
+import { NextRequest, NextResponse } from "next/server"; // Import NextRequest and NextResponse
+import { checkAdminSessionServer } from "@/lib/checkAdminSession"; // Import checkAdminSessionServer
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) { // Gunakan NextRequest
+  const session = await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ipnu_"); // Tambahkan pengecekan sesi
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const {
       assignees,
@@ -157,18 +164,14 @@ export async function POST(req: Request) {
     );
     fs.writeFileSync(outputPath, buffer);
 
-    return new Response(
-      JSON.stringify({
-        message: "Surat berhasil dibuat",
-        downloadUrl: `/SuratTugas-${sanitizedNomorSurat}.docx`,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return NextResponse.json({ // Gunakan NextResponse
+      message: "Surat berhasil dibuat",
+      downloadUrl: `/SuratTugas-${sanitizedNomorSurat}.docx`,
+    });
   } catch (error) {
     console.error("Error generating surat:", error);
-    return new Response(JSON.stringify({ message: "Internal server error" }), {
+    return NextResponse.json({ message: "Internal server error" }, { // Gunakan NextResponse
       status: 500,
-      headers: { "Content-Type": "application/json" },
     });
   }
 }

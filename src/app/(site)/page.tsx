@@ -43,7 +43,6 @@ function Dashboard() {
 
     fetchData();
   }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);

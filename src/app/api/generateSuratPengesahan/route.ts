@@ -6,6 +6,7 @@ import Docxtemplater from "docxtemplater";
 import { toHijri } from "hijri-converter";
 import db from "@/lib/db";
 import KecamatanModel from "@/models/Kecamatan";
+import { checkAdminSessionServer } from "@/lib/checkAdminSession"; // Import checkAdminSessionServer
 
 // Define interfaces matching the data structure from the form
 interface SimpleListItem {
@@ -63,6 +64,11 @@ interface SuratPengesahanPayload {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ipnu_"); // Tambahkan pengecekan sesi
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const data: SuratPengesahanPayload = await req.json();
 
@@ -336,7 +342,7 @@ export async function POST(req: NextRequest) {
                   (div: any) =>
                     div &&
                     ((div.divisi && div.divisi.trim() !== "") ||
-                      (div.kepala && div.kepala.trim() !== "") ||
+                       (div.kepala && div.kepala.trim() !== "") ||
                       (Array.isArray(div.anggota_divisi) &&
                         div.anggota_divisi.some(
                           (a: any) => a.nama && a.nama.trim() !== ""

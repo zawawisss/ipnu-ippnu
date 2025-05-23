@@ -1,3 +1,4 @@
+//app/components/admin/pacDataAdmin.tsx
 "use client";
 
 import {
@@ -15,7 +16,7 @@ import {
   Select, // Import Select
   SelectItem, // Import SelectItem
 } from "@heroui/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react"; // Import useCallback
 import { StarIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline"; // Import ArrowDownTrayIcon
 import { useRouter } from 'next/navigation';
 import { Trash2, Edit } from "lucide-react";
@@ -62,7 +63,8 @@ function PACTableAdmin() {
     setSearchTerm(event.target.value);
   };
 
-  const getStatus = (kec: any) => {
+  // FIX: Wrap getStatus in useCallback
+  const getStatus = useCallback((kec: any) => {
     if (!kec.tanggal_berakhir) return "";
     const endDate = dayjs(kec.tanggal_berakhir);
     const twoWeeksBefore = endDate.subtract(14, 'day');
@@ -75,7 +77,7 @@ function PACTableAdmin() {
     } else {
       return "Tidak Aktif";
     }
-  };
+  }, []); // getStatus does not depend on any props or state from outside its scope, so an empty dependency array is appropriate.
 
   const sortedData = useMemo(() => {
     const dataToFilter = Array.isArray(kecamatanData.data) ? kecamatanData.data : [];
@@ -230,7 +232,7 @@ function PACTableAdmin() {
     saveAs(data, `Data Kecamatan - ${dayjs().format('YYYY-MM-DD')}.xlsx`);
   };
 
-  const colSpanCount = 9;
+  const colSpanCount = 9; // Sesuaikan dengan jumlah kolom di tabel Anda
 
   return (
     <div className="space-y-4">
@@ -239,8 +241,8 @@ function PACTableAdmin() {
           <Alert color={alertColor} title={alertMessage} onClose={() => setShowAlert(false)} />
         </div>
       )}
-
-      <div className="flex flex-col sm:flex-row justify-between gap-4 items-center"> {/* items-center untuk alignment */}
+      <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
+        {/* items-center untuk alignment */}
         <Input
           type="text"
           placeholder="Cari Kecamatan..."
@@ -275,87 +277,43 @@ function PACTableAdmin() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-x-auto">
-        <Table aria-label="Data PAC" className="min-w-full" isStriped>
+      <div className="overflow-x-auto">
+        <Table aria-label="Tabel Data Kecamatan">
           <TableHeader>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              #
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Kecamatan
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Status SP
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Masa Khidmat
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Nomor SP
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Jumlah Desa
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Ranting
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Komisariat
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Aksi
-            </TableColumn>
+            <TableColumn className="w-16 text-center">No.</TableColumn>
+            <TableColumn className="w-64">Kecamatan</TableColumn>
+            <TableColumn className="w-32 text-center">Status SP</TableColumn>
+            <TableColumn className="w-32 text-center">Masa Khidmat</TableColumn>
+            <TableColumn className="w-32">Nomor SP</TableColumn>
+            <TableColumn className="w-24 text-center">Jumlah Desa</TableColumn>
+            <TableColumn className="w-24 text-center">Jumlah Ranting</TableColumn>
+            <TableColumn className="w-24 text-center">Jumlah Komisariat</TableColumn>
+            <TableColumn className="w-48 text-center">Aksi</TableColumn>
           </TableHeader>
-          <TableBody>
+          <TableBody emptyContent={isLoading ? "Memuat data..." : "Tidak ada data."}>
             {isLoading ? (
-              <TableRow>
+              <TableRow key="loading">
                 <TableCell colSpan={colSpanCount} className="text-center py-8">
                   <Spinner size="lg" />
                 </TableCell>
               </TableRow>
-            ) : displayData.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={colSpanCount}
-                  className="text-center py-8 text-gray-500"
-                >
-                  {searchTerm || statusFilter !== "all" ? "Data tidak ditemukan dengan kriteria tersebut" : "Tidak ada data"}
-                </TableCell>
-              </TableRow>
             ) : (
-              displayData.map((kec: any, i: number) => (
-                <TableRow
-                  key={kec._id}
-                  className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+              displayData.map((kec: any, index: number) => (
+                <TableRow key={kec._id} onClick={() => handleRowClick(kec._id)} className="cursor-pointer">
+                  <TableCell className="text-center py-2">{index + 1}.</TableCell>
+                  <TableCell className="py-2">{kec.kecamatan}</TableCell>
                   <TableCell className="text-center py-2">
-                    {i + 1}
-                  </TableCell>
-                  <TableCell className="text-center font-medium py-2">
-                    {editingRowId === kec._id ? (
-                      <Input
-                        type="text"
-                        value={editedData?.kecamatan || ''}
-                        onChange={(e) => setEditedData({ ...editedData, kecamatan: e.target.value })}
-                        size="sm"
-                        className="text-sm"
-                      />
-                    ) : (
-                      kec.kecamatan
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center py-2">
-                    {(() => {
-                      const status = getStatus(kec);
-                      let color: "success" | "warning" | "danger" = "success";
-                      if (status === "Hampir Berakhir") color = "warning";
-                      if (status === "Tidak Aktif") color = "danger";
-                      return status ? (
-                        <Chip color={color} variant="dot" size="sm">
-                          {status}
-                        </Chip>
-                      ) : "-";
-                    })()}
+                    <Chip
+                      color={
+                        getStatus(kec) === 'Aktif'
+                          ? 'success'
+                          : getStatus(kec) === 'Hampir Berakhir'
+                            ? 'warning'
+                            : 'danger'
+                      }
+                    >
+                      {getStatus(kec) || 'Tidak Tersedia'}
+                    </Chip>
                   </TableCell>
                   <TableCell className="text-center py-2">
                     {editingRowId === kec._id ? (
@@ -363,77 +321,28 @@ function PACTableAdmin() {
                         type="text"
                         value={editedData?.tanggal_berakhir || ''}
                         onChange={(e) => setEditedData({ ...editedData, tanggal_berakhir: e.target.value })}
-                        onBlur={(e) => {
-                          const val = e.target.value;
-                          if (val && !dayjs(val, 'DD-MM-YYYY', true).isValid()) {
-                            setAlertMessage("Format tanggal tidak valid. Gunakan DD-MM-YYYY.");
-                            setAlertColor("danger");
-                          } else if (alertMessage === "Format tanggal tidak valid. Gunakan DD-MM-YYYY.") {
-                            setAlertMessage("");
-                          }
-                        }}
                         placeholder="DD-MM-YYYY"
-                        size="sm"
-                        className="text-sm"
+                        className="w-full"
                       />
                     ) : (
-                      kec.tanggal_berakhir
-                        ? dayjs(kec.tanggal_berakhir).format("DD MMMM YYYY")
-                        : "-"
+                      kec.tanggal_berakhir ? dayjs(kec.tanggal_berakhir).format('DD MMMM YYYY') : '-'
                     )}
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className="py-2">
                     {editingRowId === kec._id ? (
                       <Input
                         type="text"
                         value={editedData?.nomor_sp || ''}
                         onChange={(e) => setEditedData({ ...editedData, nomor_sp: e.target.value })}
-                        size="sm"
-                        className="text-sm"
+                        className="w-full"
                       />
                     ) : (
-                      kec.nomor_sp || "-"
+                      kec.nomor_sp || '-'
                     )}
                   </TableCell>
-                  <TableCell className="text-center py-2">
-                    {editingRowId === kec._id ? (
-                      <Input
-                        type="number"
-                        value={editedData?.jumlah_desa !== undefined && editedData.jumlah_desa !== null ? editedData.jumlah_desa.toString() : ''}
-                        onChange={(e) => setEditedData({ ...editedData, jumlah_desa: parseInt(e.target.value) || 0 })}
-                        size="sm"
-                        className="text-sm"
-                      />
-                    ) : (
-                      kec.jumlah_desa || "-"
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center py-2">
-                    {editingRowId === kec._id ? (
-                      <Input
-                        type="number"
-                        value={editedData?.jumlah_ranting !== undefined && editedData.jumlah_ranting !== null ? editedData.jumlah_ranting.toString() : ''}
-                        onChange={(e) => setEditedData({ ...editedData, jumlah_ranting: parseInt(e.target.value) || 0 })}
-                        size="sm"
-                        className="text-sm"
-                      />
-                    ) : (
-                      kec.jumlah_ranting || "-"
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center py-2">
-                    {editingRowId === kec._id ? (
-                      <Input
-                        type="number"
-                        value={editedData?.jumlah_komisariat !== undefined && editedData.jumlah_komisariat !== null ? editedData.jumlah_komisariat.toString() : ''}
-                        onChange={(e) => setEditedData({ ...editedData, jumlah_komisariat: parseInt(e.target.value) || 0 })}
-                        size="sm"
-                        className="text-sm"
-                      />
-                    ) : (
-                      kec.jumlah_komisariat || "-"
-                    )}
-                  </TableCell>
+                  <TableCell className="text-center py-2">{kec.jumlah_desa || 0}</TableCell>
+                  <TableCell className="text-center py-2">{kec.jumlah_ranting || 0}</TableCell>
+                  <TableCell className="text-center py-2">{kec.jumlah_komisariat || 0}</TableCell>
                   <TableCell className="text-center py-2">
                     <div className="flex gap-2 justify-center">
                       {editingRowId === kec._id ? (

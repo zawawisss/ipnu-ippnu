@@ -1,19 +1,20 @@
-import mongoose, { Document, Schema, SchemaType } from "mongoose";
+//models/Sekolah.ts
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface ISekolah extends Document {
-    _id: string;
+    _id: mongoose.Types.ObjectId; // Dikembalikan ke mongoose.Types.ObjectId
     kecamatan_id: mongoose.Types.ObjectId;
     sekolah_maarif: string;
-    status_sp: string;
     tanggal_sp: string;
+    nomor_sp: string;
 }
 
 const SekolahSchema: Schema = new Schema ({
-    _id: {type: String, required: true},
+    _id: {type: Schema.Types.ObjectId, required: true}, // Dikembalikan ke Schema.Types.ObjectId
     kecamatan_id: {type: Schema.Types.ObjectId, ref: "Kecamatan", required: true},
     sekolah_maarif: {type: String, required: true},
-    status_sp: {type: String, required: true},
     tanggal_sp: {type: String, required: true},
+    nomor_sp: {type: String, required: false},
 });
 
 export default mongoose.models.Sekolah || mongoose.model<ISekolah>('Sekolah', SekolahSchema, 'database_komisariat');

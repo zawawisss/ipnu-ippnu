@@ -3,7 +3,7 @@ import { authOptions } from "@/nextauth";
 import { getServerSession } from "next-auth/next";
 
 export async function checkAdminSession() {
-  const session = await getServerSession(authOptions); // Hapus req, res
+  const session = await getServerSession(authOptions);
   return session;
 }
 
@@ -13,7 +13,6 @@ export async function checkAdminSessionServer(
 ) {
   const session = await getServerSession(authOptions);
 
-
   if (
     !session ||
     !session.user ||
@@ -21,7 +20,7 @@ export async function checkAdminSessionServer(
     !session.user.name ||
     !allowedRoles.includes(session.user.role)
   ) {
-    return null; // Return null instead of redirecting
+    return null;
   }
 
   // Extract org from session.user.name

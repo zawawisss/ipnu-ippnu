@@ -1,4 +1,4 @@
-    //models/Kecamatan.ts
+    //app/models/Kecamatan.ts
     import mongoose, { Document, Schema } from "mongoose";
 
     export interface IKecamatan extends Document {

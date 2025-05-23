@@ -15,25 +15,30 @@ interface ArsipMasuk {
 
 const EditArsipSuratMasukPage = () => {
   const router = useRouter();
-  const { id } = useParams();
+  const params = useParams(); // Get the entire params object
+  const id = params?.id; // Safely access id, which can be string or string[]
+
   const [suratMasuk, setSuratMasuk] = useState<ArsipMasuk | null>(null);
 
   useEffect(() => {
     const fetchSuratMasuk = async () => {
-      try {
-        const res = await fetch(`/api/arsipmasuk/${id}`);
-        if (!res.ok) {
-          throw new Error(`Error fetching data: ${res.statusText}`);
+      // Ensure id is a string before fetching
+      if (typeof id === 'string') {
+        try {
+          const res = await fetch(`/api/arsipmasuk/${id}`);
+          if (!res.ok) {
+            throw new Error(`Error fetching data: ${res.statusText}`);
+          }
+          const data: ArsipMasuk = await res.json();
+          setSuratMasuk(data);
+        } catch (err: any) {
+          console.error('Failed to fetch arsip masuk:', err);
         }
-        const data: ArsipMasuk = await res.json();
-        setSuratMasuk(data);
-      } catch (err: any) {
-        console.error('Failed to fetch arsip masuk:', err);
       }
     };
 
     fetchSuratMasuk();
-  }, [id]);
+  }, [id]); // Depend on id
 
   if (!suratMasuk) {
     return <div>Loading...</div>;
@@ -48,6 +53,12 @@ const EditArsipSuratMasukPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Ensure id is a string before submitting
+    if (typeof id !== 'string') {
+      console.error('ID is not a valid string for update.');
+      return;
+    }
 
     try {
       const res = await fetch(`/api/arsipmasuk/${id}`, {
