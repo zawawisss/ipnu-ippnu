@@ -20,6 +20,33 @@ interface Database {
   tanggal_berakhir: string;
 }
 
+// Tambahkan fungsi utilitas untuk status SP
+function getStatusSP(tanggal_berakhir: string | undefined) {
+  if (!tanggal_berakhir) return "-";
+  const endDate = new Date(tanggal_berakhir);
+  const twoWeeksBefore = new Date(endDate.getTime() - 14 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  if (now < twoWeeksBefore) {
+    return (
+      <Chip color="success" variant="dot" size="sm">
+        Aktif
+      </Chip>
+    );
+  } else if (now < endDate) {
+    return (
+      <Chip color="warning" variant="dot" size="sm">
+        Hampir Berakhir
+      </Chip>
+    );
+  } else {
+    return (
+      <Chip color="danger" variant="dot" size="sm">
+        Tidak Aktif
+      </Chip>
+    );
+  }
+}
+
 function KecamatanDetail({ id }: { id: string }) {
   const [data, setData] = useState<Database | null>(null);
   const [total, setTotal] = useState<{
@@ -89,12 +116,7 @@ function KecamatanDetail({ id }: { id: string }) {
           <div className="flex justify-center gap-4 mb-6">
             <div>
               <p className="text-sm font-semibold mb-1">Status SP</p>
-              <Chip
-                color={data?.status_sp === "Aktif" ? "success" : "danger"}
-                variant="flat"
-              >
-                {data?.status_sp}
-              </Chip>
+              {getStatusSP(data?.tanggal_berakhir)}
             </div>
             <div>
               <p className="text-sm font-semibold mb-1">Tanggal SP</p>
@@ -145,7 +167,9 @@ function KecamatanDetail({ id }: { id: string }) {
             />
           </div>
           <div className="lg:col-span-full overflow-y-auto">
-            <h3 className="text-lg sm:text-xl font-bold mb-4">DAFTAR RANTING</h3>
+            <h3 className="text-lg sm:text-xl font-bold mb-4">
+              DAFTAR RANTING
+            </h3>
             {desaList.length === 0 ? (
               <p>Belum Ada Desa yang Terdaftar</p>
             ) : (
@@ -175,7 +199,7 @@ function KecamatanDetail({ id }: { id: string }) {
                         {desa.nama_desa}
                       </TableCell>
                       <TableCell className="text-center">
-                        {desa.status_sp}
+                        {getStatusSP(desa.tanggal_sp)}
                       </TableCell>
                       <TableCell className="text-center">
                         {desa.tanggal_sp
@@ -230,7 +254,7 @@ function KecamatanDetail({ id }: { id: string }) {
                         {sekolah.sekolah_maarif}
                       </TableCell>
                       <TableCell className="text-center">
-                        {sekolah.status_sp}
+                        {getStatusSP(sekolah.tanggal_sp)}
                       </TableCell>
                       <TableCell className="text-center">
                         {sekolah.tanggal_sp

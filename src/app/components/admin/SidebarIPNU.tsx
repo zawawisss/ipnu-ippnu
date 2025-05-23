@@ -13,6 +13,7 @@ import {
   ChevronUpIcon,
   ArchiveBoxIcon,
   DocumentIcon, // Added DocumentIcon for the Surat menu
+  BanknotesIcon, // Tambahkan icon BanknotesIcon untuk laporan keuangan
 } from "@heroicons/react/24/outline";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
@@ -88,6 +89,13 @@ export default function Sidebar() {
       },
     ],
   };
+
+  const laporanKeuanganItem = {
+    name: "Laporan Keuangan",
+    href: "/admin_ipnu/laporan-keuangan",
+    icon: BanknotesIcon,
+  };
+
   const navItems = [
     {
       name: "Dashboard",
@@ -97,6 +105,7 @@ export default function Sidebar() {
     wilayahDropdown,
     arsipDropdown,
     suratDropdown,
+    laporanKeuanganItem, // Tambahkan menu laporan keuangan di akhir navItems
   ];
 
   return (

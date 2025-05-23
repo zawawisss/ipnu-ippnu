@@ -4,6 +4,8 @@ import path from "path";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { toHijri } from "hijri-converter";
+import db from "@/lib/db";
+import KecamatanModel from "@/models/Kecamatan";
 
 // Define interfaces matching the data structure from the form
 interface SimpleListItem {
@@ -376,6 +378,24 @@ export async function POST(req: NextRequest) {
       `SuratPengesahan-${sanitizedNomorSurat}.docx`
     );
     await fs.writeFile(outputPath, buf);
+
+    // Update tanggal_berakhir dan nomor_sp di MongoDB
+    try {
+      await db();
+      const updated = await KecamatanModel.findOneAndUpdate(
+        { kecamatan: new RegExp(`^${data.kecamatan}$`, "i") }, // case-insensitive
+        {
+          tanggal_berakhir: data.tanggal_berakhir,
+          nomor_sp: nomorSuratOtomatis,
+        },
+        { new: true, upsert: false }
+      );
+      if (!updated) {
+        console.error("Kecamatan not found or not updated:", data.kecamatan);
+      }
+    } catch (updateErr) {
+      console.error("Error updating MongoDB:", updateErr);
+    }
 
     // Kembalikan link download
     return NextResponse.json({

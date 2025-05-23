@@ -1,8 +1,8 @@
 "use client";
 
-import PACTable from "@/app/components/pac-table";
 import { Button } from "@heroui/react";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import PACTableAdmin from "@/app/components/admin/pacDataAdmin";
 
 export default function AdminContent() {
   return (
@@ -45,7 +45,7 @@ onPress={() => alert("Tambah Kecamatan")}
 
           {/* Table Container */}
           <div className="border rounded-lg overflow-hidden">
-            <PACTable />
+            <PACTableAdmin />
           </div>
         </div>
       </div>
