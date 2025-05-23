@@ -3,7 +3,6 @@
 
     export interface IKecamatan extends Document {
         kecamatan: string;
-        status_sp: string;
         tanggal_berakhir: string;
         nomor_sp: string;
         // --- Ubah 'jumlah_anggota' menjadi 'jumlah_desa' ---
@@ -18,9 +17,8 @@
 
     const KecamatanSchema: Schema = new Schema({
         kecamatan: {type: String, required: true},
-        status_sp: {type: String, required: true},
         tanggal_berakhir: {type: String, required: true},
-        nomor_sp: {type: String, required: true},
+        nomor_sp: {type: String, required: false},
         // --- Ubah definisi schema untuk bidang ini ---
         jumlah_desa: {type: Number, default: 0}, // Contoh: default 0 jika tidak diberikan
         jumlah_ranting: {type: Number, default: 0},

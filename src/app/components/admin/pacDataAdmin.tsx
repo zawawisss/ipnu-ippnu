@@ -1,4 +1,3 @@
-// PACTableAdmin.tsx
 "use client";
 
 import {
@@ -12,41 +11,66 @@ import {
   TableHeader,
   TableRow,
   Spinner,
-} from "@heroui/react"; // Pagination dihapus dari import
+  Alert,
+  Select, // Import Select
+  SelectItem, // Import SelectItem
+} from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
-import { StarIcon } from "@heroicons/react/24/outline";
+import { StarIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline"; // Import ArrowDownTrayIcon
 import { useRouter } from 'next/navigation';
+import { Trash2, Edit } from "lucide-react";
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import * as XLSX from 'xlsx'; // Import xlsx
+import { saveAs } from 'file-saver'; // Import saveAs
 
-// Komponen PACTableAdmin khusus untuk halaman admin
+// Extend Day.js with the plugins
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(customParseFormat);
+
 function PACTableAdmin() {
-  // Data kecamatan akan berisi semua data, tidak lagi paginated dari API
   const [kecamatanData, setKecamatanData] = useState<any>({ data: [], total: 0 });
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  // currentPage dan rowsPerPage dihapus karena tidak ada pagination
   const router = useRouter();
 
-  // State untuk melacak baris mana yang sedang diedit
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
-  // State untuk menyimpan data yang sedang diedit sementara
   const [editedData, setEditedData] = useState<any | null>(null);
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertColor, setAlertColor] = useState<"success" | "danger">("success");
+
+  // --- PERUBAHAN BARU: State untuk filter status ---
+  const [statusFilter, setStatusFilter] = useState<string>("all"); // 'all', 'Aktif', 'Hampir Berakhir', 'Tidak Aktif'
+
+  useEffect(() => {
+    if (alertMessage) {
+      setShowAlert(true);
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    // Tidak perlu reset currentPage karena tidak ada pagination
   };
 
   const getStatus = (kec: any) => {
     if (!kec.tanggal_berakhir) return "";
-    const endDate = new Date(kec.tanggal_berakhir);
-    const twoWeeksBefore = new Date(
-      endDate.getTime() - 14 * 24 * 60 * 60 * 1000
-    );
-    const now = new Date();
+    const endDate = dayjs(kec.tanggal_berakhir);
+    const twoWeeksBefore = endDate.subtract(14, 'day');
+    const now = dayjs();
 
-    if (now < twoWeeksBefore) {
+    if (now.isBefore(twoWeeksBefore)) {
       return "Aktif";
-    } else if (now < endDate) {
+    } else if (now.isBefore(endDate)) {
       return "Hampir Berakhir";
     } else {
       return "Tidak Aktif";
@@ -54,15 +78,20 @@ function PACTableAdmin() {
   };
 
   const sortedData = useMemo(() => {
-    // --- PERBAIKAN DI SINI: Pastikan kecamatanData.data adalah array sebelum memanggil filter ---
     const dataToFilter = Array.isArray(kecamatanData.data) ? kecamatanData.data : [];
 
-    const filtered = dataToFilter.filter((kec: any) =>
+    let filtered = dataToFilter.filter((kec: any) =>
       kec.kecamatan.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // --- PERUBAHAN BARU: Filter berdasarkan status ---
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((kec: any) => getStatus(kec) === statusFilter);
+    }
+
     const order: { [key: string]: number } = {
-      "Aktif": 0,
-      "Hampir Berakhir": 1,
+      "Hampir Berakhir": 0,
+      "Aktif": 1,
       "Tidak Aktif": 2,
     };
     return filtered.sort((a: any, b: any) => {
@@ -72,35 +101,32 @@ function PACTableAdmin() {
       const rankB = order[statusB] !== undefined ? order[statusB] : 3;
       return rankA - rankB;
     });
-  }, [searchTerm, kecamatanData]);
+  }, [searchTerm, kecamatanData, getStatus, statusFilter]); // Tambahkan statusFilter ke dependency array
 
-  // paginatedData sekarang hanya sortedData karena tidak ada paginasi
   const displayData = useMemo(() => {
     return sortedData;
   }, [sortedData]);
 
-  // Fungsi untuk memuat ulang data dari API (semua data)
   const refetchData = () => {
     setIsLoading(true);
-    // Mengambil semua data tanpa parameter paginasi
-    fetch(`/api/kecamatanList`) // Asumsi API ini mengembalikan semua data jika tanpa page/limit
+    fetch(`/api/kecamatanList`)
       .then((res) => res.json())
       .then((data) => {
-        // --- PERBAIKAN DI SINI: Asumsikan API mengembalikan objek { data: array, total: number } ---
-        // Set state langsung dengan objek yang diterima dari API
         setKecamatanData(data);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error refetching data:", error);
-        setKecamatanData({ data: [], total: 0 }); // Pastikan state direset jika ada error
+        setKecamatanData({ data: [], total: 0 });
         setIsLoading(false);
+        setAlertMessage("Gagal memuat data kecamatan.");
+        setAlertColor("danger");
       });
   };
 
   useEffect(() => {
-    refetchData(); // Panggil refetchData saat komponen dimuat
-  }, []); // Dependency array kosong agar hanya fetch sekali saat mount
+    refetchData();
+  }, []);
 
   const handleRowClick = (kecId: string) => {
     if (editingRowId !== kecId) {
@@ -108,21 +134,34 @@ function PACTableAdmin() {
     }
   };
 
-  // handleRowsPerPageChange dihapus karena tidak ada pagination
-
-  // Fungsi untuk memulai mode edit pada baris tertentu
   const handleEdit = (kec: any) => {
     setEditingRowId(kec._id);
-    setEditedData({ ...kec });
+    setEditedData({
+      ...kec,
+      tanggal_berakhir: kec.tanggal_berakhir ? dayjs(kec.tanggal_berakhir).format('DD-MM-YYYY') : '',
+    });
   };
 
-  // Fungsi untuk menyimpan perubahan data ke API
   const handleSave = async (kecId: string) => {
     try {
+      const dataToSave = { ...editedData };
+      if (dataToSave.tanggal_berakhir) {
+        const parsedDate = dayjs(dataToSave.tanggal_berakhir, 'DD-MM-YYYY');
+        if (parsedDate.isValid()) {
+          dataToSave.tanggal_berakhir = parsedDate.format('YYYY-MM-DD');
+        } else {
+          setAlertMessage("Format tanggal Masa Khidmat tidak valid. Gunakan DD-MM-YYYY.");
+          setAlertColor("danger");
+          return;
+        }
+      } else {
+        dataToSave.tanggal_berakhir = "";
+      }
+
       const response = await fetch(`/api/kecamatan/${kecId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editedData),
+        body: JSON.stringify(dataToSave),
       });
 
       if (!response.ok) {
@@ -130,25 +169,25 @@ function PACTableAdmin() {
         throw new Error(errorData.message || 'Gagal menyimpan data.');
       }
 
-      alert('Data berhasil disimpan!');
+      setAlertMessage('Data berhasil disimpan!');
+      setAlertColor('success');
       setEditingRowId(null);
       setEditedData(null);
-      refetchData(); // Muat ulang data tabel setelah berhasil disimpan
+      refetchData();
     } catch (error: any) {
       console.error("Error saving data:", error);
-      alert(`Gagal menyimpan data: ${error.message}`);
+      setAlertMessage(`Gagal menyimpan data: ${error.message}`);
+      setAlertColor('danger');
     }
   };
 
-  // Fungsi untuk membatalkan pengeditan
   const handleCancel = () => {
     setEditingRowId(null);
     setEditedData(null);
   };
 
-  // Fungsi untuk menghapus data dari API
   const handleDelete = async (kecId: string) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus Kecamatan ini?`)) {
+    if (window.confirm("Apakah Anda yakin ingin menghapus Kecamatan ini?")) {
       try {
         const response = await fetch(`/api/kecamatan/${kecId}`, {
           method: 'DELETE',
@@ -159,21 +198,49 @@ function PACTableAdmin() {
           throw new Error(errorData.message || 'Gagal menghapus data.');
         }
 
-        alert('Data berhasil dihapus!');
-        refetchData(); // Muat ulang data tabel setelah berhasil dihapus
+        setAlertMessage('Data berhasil dihapus!');
+        setAlertColor('success');
+        refetchData();
       } catch (error: any) {
         console.error("Error deleting data:", error);
-        alert(`Gagal menghapus data: ${error.message}`);
+        setAlertMessage(`Gagal menghapus data: ${error.message}`);
+        setAlertColor('danger');
       }
     }
   };
 
-  const colSpanCount = 9; // Tetap 9 karena kolom Aksi selalu ada di admin
+  // --- PERUBAHAN BARU: Fungsi untuk ekspor ke Excel ---
+  const handleExportToExcel = () => {
+    const dataToExport = displayData.map((kec: any, index: number) => ({
+      'No.': index + 1,
+      'Kecamatan': kec.kecamatan || '-',
+      'Status SP': getStatus(kec) || '-',
+      'Masa Khidmat': kec.tanggal_berakhir ? dayjs(kec.tanggal_berakhir).format("DD MMMM YYYY") : '-',
+      'Nomor SP': kec.nomor_sp || '-',
+      'Jumlah Desa': kec.jumlah_desa || '-',
+      'Jumlah Ranting': kec.jumlah_ranting || '-',
+      'Jumlah Komisariat': kec.jumlah_komisariat || '-',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Kecamatan");
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    saveAs(data, `Data Kecamatan - ${dayjs().format('YYYY-MM-DD')}.xlsx`);
+  };
+
+  const colSpanCount = 9;
 
   return (
     <div className="space-y-4">
-      {/* Bagian kontrol pencarian */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
+      {showAlert && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down">
+          <Alert color={alertColor} title={alertMessage} onClose={() => setShowAlert(false)} />
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row justify-between gap-4 items-center"> {/* items-center untuk alignment */}
         <Input
           type="text"
           placeholder="Cari Kecamatan..."
@@ -182,15 +249,32 @@ function PACTableAdmin() {
           startContent={<StarIcon className="w-5 h-5 text-gray-400" />}
           className="w-full sm:w-64"
         />
-        <div className="flex items-center gap-4">
-          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-            {displayData.length} data ditemukan {/* Menggunakan displayData.length */}
-          </div>
-          {/* Dropdown "Per Halaman" dihapus karena tidak ada pagination */}
+        {/* --- PERUBAHAN BARU: Filter Status & Tombol Ekspor --- */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <Select
+            label="Filter Status"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full sm:w-48"
+            size="sm"
+            labelPlacement="outside"
+          >
+            <SelectItem key="all">Semua Status</SelectItem>
+            <SelectItem key="Aktif">Aktif</SelectItem>
+            <SelectItem key="Hampir Berakhir">Hampir Berakhir</SelectItem>
+            <SelectItem key="Tidak Aktif">Tidak Aktif</SelectItem>
+          </Select>
+          <Button
+            color="secondary" // Warna tombol
+            onClick={handleExportToExcel}
+            startContent={<ArrowDownTrayIcon className="w-5 h-5" />} // Ikon Unduh
+            className="w-full sm:w-auto"
+          >
+            Ekspor Excel
+          </Button>
         </div>
       </div>
 
-      {/* Kontainer tabel */}
       <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-x-auto">
         <Table aria-label="Data PAC" className="min-w-full" isStriped>
           <TableHeader>
@@ -235,130 +319,122 @@ function PACTableAdmin() {
                   colSpan={colSpanCount}
                   className="text-center py-8 text-gray-500"
                 >
-                  {searchTerm ? "Data tidak ditemukan" : "Tidak ada data"}
+                  {searchTerm || statusFilter !== "all" ? "Data tidak ditemukan dengan kriteria tersebut" : "Tidak ada data"}
                 </TableCell>
               </TableRow>
             ) : (
               displayData.map((kec: any, i: number) => (
                 <TableRow
                   key={kec._id}
-                  className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                  onClick={() => handleRowClick(kec._id)}
+                  className="hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  <TableCell className="text-center">
-                    {i + 1} {/* Nomor urut sederhana karena tidak ada paginasi */}
+                  <TableCell className="text-center py-2">
+                    {i + 1}
                   </TableCell>
-                  <TableCell className="text-center font-medium">
+                  <TableCell className="text-center font-medium py-2">
                     {editingRowId === kec._id ? (
                       <Input
                         type="text"
                         value={editedData?.kecamatan || ''}
                         onChange={(e) => setEditedData({ ...editedData, kecamatan: e.target.value })}
                         size="sm"
+                        className="text-sm"
                       />
                     ) : (
                       kec.kecamatan
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center py-2">
                     {(() => {
-                      if (!kec.tanggal_berakhir) return "-";
-                      const endDate = new Date(kec.tanggal_berakhir);
-                      const twoWeeksBefore = new Date(
-                        endDate.getTime() - 14 * 24 * 60 * 60 * 1000
-                      );
-                      const now = new Date();
-                      if (now < twoWeeksBefore) {
-                        return (
-                          <Chip color="success" variant="dot" size="sm">
-                            Aktif
-                          </Chip>
-                        );
-                      } else if (now < endDate) {
-                        return (
-                          <Chip color="warning" variant="dot" size="sm">
-                            Hampir Berakhir
-                          </Chip>
-                        );
-                      } else {
-                        return (
-                          <Chip color="danger" variant="dot" size="sm">
-                            Tidak Aktif
-                          </Chip>
-                        );
-                      }
-                    })() || "-"}
+                      const status = getStatus(kec);
+                      let color: "success" | "warning" | "danger" = "success";
+                      if (status === "Hampir Berakhir") color = "warning";
+                      if (status === "Tidak Aktif") color = "danger";
+                      return status ? (
+                        <Chip color={color} variant="dot" size="sm">
+                          {status}
+                        </Chip>
+                      ) : "-";
+                    })()}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center py-2">
                     {editingRowId === kec._id ? (
                       <Input
-                        type="date"
-                        value={editedData?.tanggal_berakhir ? new Date(editedData.tanggal_berakhir).toISOString().split('T')[0] : ''}
+                        type="text"
+                        value={editedData?.tanggal_berakhir || ''}
                         onChange={(e) => setEditedData({ ...editedData, tanggal_berakhir: e.target.value })}
+                        onBlur={(e) => {
+                          const val = e.target.value;
+                          if (val && !dayjs(val, 'DD-MM-YYYY', true).isValid()) {
+                            setAlertMessage("Format tanggal tidak valid. Gunakan DD-MM-YYYY.");
+                            setAlertColor("danger");
+                          } else if (alertMessage === "Format tanggal tidak valid. Gunakan DD-MM-YYYY.") {
+                            setAlertMessage("");
+                          }
+                        }}
+                        placeholder="DD-MM-YYYY"
                         size="sm"
+                        className="text-sm"
                       />
                     ) : (
                       kec.tanggal_berakhir
-                        ? new Date(kec.tanggal_berakhir).toLocaleDateString(
-                            "id-ID",
-                            {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                            }
-                          )
+                        ? dayjs(kec.tanggal_berakhir).format("DD MMMM YYYY")
                         : "-"
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center py-2">
                     {editingRowId === kec._id ? (
                       <Input
                         type="text"
                         value={editedData?.nomor_sp || ''}
                         onChange={(e) => setEditedData({ ...editedData, nomor_sp: e.target.value })}
                         size="sm"
+                        className="text-sm"
                       />
                     ) : (
                       kec.nomor_sp || "-"
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center py-2">
                     {editingRowId === kec._id ? (
                       <Input
                         type="number"
-                        value={editedData?.jumlah_desa || ''}
+                        value={editedData?.jumlah_desa !== undefined && editedData.jumlah_desa !== null ? editedData.jumlah_desa.toString() : ''}
                         onChange={(e) => setEditedData({ ...editedData, jumlah_desa: parseInt(e.target.value) || 0 })}
                         size="sm"
+                        className="text-sm"
                       />
                     ) : (
                       kec.jumlah_desa || "-"
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center py-2">
                     {editingRowId === kec._id ? (
                       <Input
                         type="number"
-                        value={editedData?.jumlah_ranting || ''}
+                        value={editedData?.jumlah_ranting !== undefined && editedData.jumlah_ranting !== null ? editedData.jumlah_ranting.toString() : ''}
                         onChange={(e) => setEditedData({ ...editedData, jumlah_ranting: parseInt(e.target.value) || 0 })}
                         size="sm"
+                        className="text-sm"
                       />
                     ) : (
                       kec.jumlah_ranting || "-"
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center py-2">
                     {editingRowId === kec._id ? (
                       <Input
                         type="number"
-                        value={editedData?.jumlah_komisariat || ''}
+                        value={editedData?.jumlah_komisariat !== undefined && editedData.jumlah_komisariat !== null ? editedData.jumlah_komisariat.toString() : ''}
                         onChange={(e) => setEditedData({ ...editedData, jumlah_komisariat: parseInt(e.target.value) || 0 })}
                         size="sm"
+                        className="text-sm"
                       />
                     ) : (
                       kec.jumlah_komisariat || "-"
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center py-2">
                     <div className="flex gap-2 justify-center">
                       {editingRowId === kec._id ? (
                         <>
@@ -383,6 +459,7 @@ function PACTableAdmin() {
                             size="sm"
                             color="primary"
                             onClick={(e) => { e.stopPropagation(); handleEdit(kec); }}
+                            startContent={<Edit size={16} />}
                           >
                             Edit
                           </Button>
@@ -390,6 +467,7 @@ function PACTableAdmin() {
                             size="sm"
                             color="danger"
                             onClick={(e) => { e.stopPropagation(); handleDelete(kec._id); }}
+                            startContent={<Trash2 size={16} />}
                           >
                             Hapus
                           </Button>
@@ -403,19 +481,6 @@ function PACTableAdmin() {
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination dihapus karena tidak ada pagination */}
-      {/* {!isLoading && kecamatanData.total > 0 && (
-        <div className="flex justify-center">
-          <Pagination
-            total={Math.ceil(kecamatanData.total / rowsPerPage)}
-            initialPage={currentPage}
-            onChange={setCurrentPage}
-            showControls
-            showShadow
-          />
-        </div>
-      )} */}
     </div>
   );
 }

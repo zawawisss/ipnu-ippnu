@@ -41,7 +41,7 @@ export async function PUT(
     const updatedKecamatan = await Kecamatan.findByIdAndUpdate(
       id, // Cari dokumen berdasarkan ID
       body, // Data baru yang akan diperbarui
-      { new: true, runValidators: true } // Opsi: 'new: true' mengembalikan dokumen yang sudah diperbarui; 'runValidators: true' menjalankan validasi schema
+      { new: true, runValidators: false } // Opsi: 'new: true' mengembalikan dokumen yang sudah diperbarui; 'runValidators: true' menjalankan validasi schema
     );
 
     if (!updatedKecamatan) {

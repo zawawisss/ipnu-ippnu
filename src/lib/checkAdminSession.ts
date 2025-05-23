@@ -1,3 +1,4 @@
+//lib/checkAdminSession.ts
 import { authOptions } from "@/nextauth";
 import { getServerSession } from "next-auth/next";
 
