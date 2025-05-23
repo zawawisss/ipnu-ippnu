@@ -372,14 +372,6 @@ function PACTableAdmin() {
                           >
                             Edit
                           </Button>
-                          <Button
-                            size="sm"
-                            color="danger"
-                            onClick={(e) => { e.stopPropagation(); handleDelete(kec._id); }}
-                            startContent={<Trash2 size={16} />}
-                          >
-                            Hapus
-                          </Button>
                         </>
                       )}
                     </div>
