@@ -11,11 +11,6 @@ import StatisticsCard from "../components/statistik";
 import PACTable from "../components/pac-table";
 import { Icon } from "@iconify/react";
 
-interface SpData {
-  kecamatan: string;
-  tanggal_berakhir: string;
-}
-
 function Dashboard() {
   const [data, setData] = useState({
     totalKecamatan: 0,
@@ -154,7 +149,7 @@ function Dashboard() {
           <div className="w-full overflow-hidden mb-8 bg-primary-100 rounded-md">
             <div className="animate-marquee whitespace-nowrap py-2  px-4 font-medium">
               {marqueeText}
-              
+
               {marqueeText}
             </div>
           </div>

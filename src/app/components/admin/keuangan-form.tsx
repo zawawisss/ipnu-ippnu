@@ -143,13 +143,13 @@ export default function KeuanganForm({
     try {
       let res;
       if (isEditing) {
-        res = await fetch("/api/keuangan", {
+        res = await fetch("/api/admin/keuangan", {
           method: "PUT", // PUT request for updating
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ _id: form._id, ...dataToSend }),
         });
       } else {
-        res = await fetch("/api/keuangan", {
+        res = await fetch("/api/admin/keuangan", {
           method: "POST", // POST request for new entry
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dataToSend),
@@ -199,7 +199,7 @@ export default function KeuanganForm({
       setLoading(true);
       setAlertMessage(""); // Clear previous alert
       try {
-        const res = await fetch(`/api/keuangan?id=${id}`, {
+        const res = await fetch(`/api/admin/keuangan?id=${id}`, {
           method: "DELETE", // DELETE request
         });
         if (!res.ok) throw new Error("Gagal menghapus data");

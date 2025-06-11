@@ -25,7 +25,7 @@ const EditArsipSuratMasukPage = () => {
       // Ensure id is a string before fetching
       if (typeof id === 'string') {
         try {
-          const res = await fetch(`/api/arsipmasuk/${id}`);
+          const res = await fetch(`/api/admin/arsipmasuk/${id}`);
           if (!res.ok) {
             throw new Error(`Error fetching data: ${res.statusText}`);
           }
@@ -61,7 +61,7 @@ const EditArsipSuratMasukPage = () => {
     }
 
     try {
-      const res = await fetch(`/api/arsipmasuk/${id}`, {
+      const res = await fetch(`/api/admin/arsipmasuk/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

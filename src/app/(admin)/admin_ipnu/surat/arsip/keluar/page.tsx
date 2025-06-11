@@ -39,7 +39,7 @@ const ArsipSuratKeluarPage = () => {
         setLoading(true);
         setError(null);
         try {
-          const res = await fetch(`/api/arsipkeluar?search=${encodeURIComponent(searchQuery)}`);
+          const res = await fetch(`/api/admin/arsipkeluar?search=${encodeURIComponent(searchQuery)}`);
           if (!res.ok) {
             if (res.status === 401) {
               router.push('/login');
@@ -69,7 +69,7 @@ const ArsipSuratKeluarPage = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/arsipkeluar?id=${id}`, {
+      const res = await fetch(`/api/admin/arsipkeluar?id=${id}`, {
         method: 'DELETE',
       });
 
@@ -102,7 +102,7 @@ const ArsipSuratKeluarPage = () => {
 
   const handleSave = async (surat: ArsipKeluar) => {
     try {
-      const res = await fetch(`/api/arsipkeluar/${surat._id}`, {
+      const res = await fetch(`/api/admin/arsipkeluar/${surat._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ const ArsipSuratKeluarPage = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch('/api/arsipkeluar', {
+      const res = await fetch('/api/admin/arsipkeluar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

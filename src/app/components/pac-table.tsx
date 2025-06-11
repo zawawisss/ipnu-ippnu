@@ -47,44 +47,21 @@ function PACTable() {
     }
   };
 
-  const sortedData = useMemo(() => {
-    const filtered = kecamatanData.data.filter((kec: any) => // Access data property
-      kec.kecamatan.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    const order: { [key: string]: number } = {
-      "Hampir Berakhir": 0,
-      Aktif: 1,
-      "Tidak Aktif": 2,
-    };
-    return filtered.sort((a: any, b: any) => {
-      const statusA = getStatus(a) || "";
-      const statusB = getStatus(b) || "";
-      const rankA = order[statusA] !== undefined ? order[statusA] : 3;
-      const rankB = order[statusB] !== undefined ? order[statusB] : 3;
-      return rankA - rankB;
-    });
-  }, [searchTerm, kecamatanData]); // Depend on kecamatanData
-
-  // No need for a separate useEffect for totalItems, use kecamatanData.total directly
-
   const paginatedData = useMemo(() => {
-    // Pagination is now handled by the API, this memo might not be strictly necessary for display
-    // but keeping it for consistency with local filtering if needed later.
-    // The API response already provides the paginated data.
-    return sortedData; // Use sortedData which is filtered from the paginated API response
-  }, [sortedData]); // Depend on sortedData
+    return kecamatanData.data; // Use data directly from API response which is already sorted
+  }, [kecamatanData.data]); // Depend on kecamatanData.data
 
   useEffect(() => {
     setIsLoading(true);
     // Fetch data with pagination parameters
-    fetch(`/api/kecamatanList?page=${currentPage}&limit=${rowsPerPage}`)
+    fetch(`/api/kecamatanList?page=${currentPage}&limit=${rowsPerPage}&searchTerm=${searchTerm}`)
       .then((res) => res.json())
       .then((data) => {
         setKecamatanData(data); // Set the entire response object
         setIsLoading(false);
       })
       .catch(() => setIsLoading(false));
-  }, [currentPage, rowsPerPage]); // Depend on currentPage and rowsPerPage
+  }, [currentPage, rowsPerPage, searchTerm]); // Depend on currentPage, rowsPerPage and searchTerm
 
   const handleRowClick = (kecId: string) => {
     router.push(`/kecamatan/${kecId}`); // Navigasi ke halaman detail
@@ -150,13 +127,13 @@ function PACTable() {
               Nomor SP
             </TableColumn>
             <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
-              Anggota
-            </TableColumn>
-            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
               Ranting
             </TableColumn>
             <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
               Komisariat
+            </TableColumn>
+            <TableColumn className="text-center bg-gray-50 dark:bg-gray-800">
+              Anggota
             </TableColumn>
             {/* Hapus TableColumn Aksi */}
           </TableHeader>
@@ -234,13 +211,13 @@ function PACTable() {
                     {kec.nomor_sp || "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {kec.jumlah_anggota || "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
                     {kec.jumlah_ranting || "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     {kec.jumlah_komisariat || "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {kec.jumlah_anggota || "-"}
                   </TableCell>
                   {/* Hapus TableCell Aksi */}
                 </TableRow>
@@ -254,10 +231,16 @@ function PACTable() {
         <div className="flex justify-center">
           <Pagination
             total={Math.ceil(kecamatanData.total / rowsPerPage)}
-            initialPage={currentPage}
+            page={currentPage}
             onChange={setCurrentPage}
             showControls
             showShadow
+            color="primary"
+            variant="flat"
+            size="md"
+            radius="lg"
+            siblings={1}
+            boundaries={1}
           />
         </div>
       )}

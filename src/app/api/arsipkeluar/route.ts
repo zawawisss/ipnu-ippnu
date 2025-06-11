@@ -1,38 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
 import ArsipKeluar from "@/models/ArsipKeluar";
-import { checkAdminSession } from "@/lib/checkAdminSession";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const session = await checkAdminSession();
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    await dbConnect();
     const { searchParams } = new URL(request.url);
     const searchQuery = searchParams.get("search") || "";
-    const getNextSequence = searchParams.get("getNextSequence"); // New parameter to get the next global sequence
+    const getNextSequence = searchParams.get("getNextSequence");
 
     if (getNextSequence) {
-      // Logic to find the next global sequence number
       const latestArsip = await ArsipKeluar.find({})
         .sort({ nomor_surat: -1 })
-        .limit(1); // Get the latest entry by sorting nomor_surat
+        .limit(1);
 
       let nextNumber = 1;
       if (latestArsip.length > 0) {
         const latestNomorSurat = latestArsip[0].nomor_surat;
-        // Attempt to extract number from latestNomorSurat
-        const numberMatch = latestNomorSurat.match(/^\d+/); // Match number at the beginning of the string
+        const numberMatch = latestNomorSurat.match(/^\d+/);
         if (numberMatch && numberMatch[0]) {
           nextNumber = parseInt(numberMatch[0], 10) + 1;
         }
       }
       return NextResponse.json({ nextNumber });
     } else {
-      // Existing logic for fetching all/filtered arsip keluar
       let query: any = {};
       if (searchQuery) {
         const regex = new RegExp(searchQuery, "i");
@@ -58,14 +47,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const session = await checkAdminSession();
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    await dbConnect();
     const body = await request.json();
     const { no, indeks, nomor_surat, tujuan, perihal } = body;
 
@@ -85,14 +68,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
-    const session = await checkAdminSession();
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    await dbConnect();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 

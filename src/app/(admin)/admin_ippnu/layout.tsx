@@ -3,14 +3,14 @@ import { Providers } from "../../providers";
 import SidebarIPPNU from "../../components/admin/SidebarIPPNU";
 import "../../globals.css";
 import Navbar from "@/app/components/admin/NavbarAdmin";
-import { checkAdminSessionServer } from "@/lib/checkAdminSession";
+
 
 export default async function AdminLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ippnu_");
+
 
   return (
     <html lang="id" suppressHydrationWarning>

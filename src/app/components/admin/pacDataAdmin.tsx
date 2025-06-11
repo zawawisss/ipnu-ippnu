@@ -82,14 +82,9 @@ function PACTableAdmin() {
   const sortedData = useMemo(() => {
     const dataToFilter = Array.isArray(kecamatanData.data) ? kecamatanData.data : [];
 
-    let filtered = dataToFilter.filter((kec: any) =>
-      kec.kecamatan.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    let filtered = dataToFilter;
 
     // --- PERUBAHAN BARU: Filter berdasarkan status ---
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((kec: any) => getStatus(kec) === statusFilter);
-    }
 
     const order: { [key: string]: number } = {
       "Hampir Berakhir": 0,
@@ -106,8 +101,8 @@ function PACTableAdmin() {
   }, [searchTerm, kecamatanData, getStatus, statusFilter]); // Tambahkan statusFilter ke dependency array
 
   const displayData = useMemo(() => {
-    return sortedData;
-  }, [sortedData]);
+    return kecamatanData.data;
+  }, [kecamatanData.data]);
 
   const refetchData = () => {
     setIsLoading(true);
@@ -232,7 +227,7 @@ function PACTableAdmin() {
     saveAs(data, `Data Kecamatan - ${dayjs().format('YYYY-MM-DD')}.xlsx`);
   };
 
-  const colSpanCount = 9; // Sesuaikan dengan jumlah kolom di tabel Anda
+  const colSpanCount = 8; // Sesuaikan dengan jumlah kolom di tabel Anda
 
   return (
     <div className="space-y-4">
@@ -286,7 +281,6 @@ function PACTableAdmin() {
             <TableColumn className="w-32 text-center">Masa Khidmat</TableColumn>
             <TableColumn className="w-32">Nomor SP</TableColumn>
             <TableColumn className="w-24 text-center">Jumlah Desa</TableColumn>
-            <TableColumn className="w-24 text-center">Jumlah Ranting</TableColumn>
             <TableColumn className="w-24 text-center">Jumlah Komisariat</TableColumn>
             <TableColumn className="w-48 text-center">Aksi</TableColumn>
           </TableHeader>
@@ -341,7 +335,6 @@ function PACTableAdmin() {
                     )}
                   </TableCell>
                   <TableCell className="text-center py-2">{kec.jumlah_desa || 0}</TableCell>
-                  <TableCell className="text-center py-2">{kec.jumlah_ranting || 0}</TableCell>
                   <TableCell className="text-center py-2">{kec.jumlah_komisariat || 0}</TableCell>
                   <TableCell className="text-center py-2">
                     <div className="flex gap-2 justify-center">

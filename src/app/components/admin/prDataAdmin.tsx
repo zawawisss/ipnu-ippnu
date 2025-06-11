@@ -191,7 +191,7 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
   // FIX: Wrap refetchData in useCallback
   const refetchData = useCallback(() => {
     setIsLoading(true);
-    let apiUrl = `/api/desaAdmin`;
+    let apiUrl = `/api/admin/desa`;
     const params = new URLSearchParams();
 
     // Prioritaskan pilihan eksplisit, jika tidak gunakan term pencarian debounced
@@ -239,7 +239,7 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
 
   const handleSave = async (prId: string) => {
     try {
-      const response = await fetch(`/api/desaAdmin/${prId}`, {
+      const response = await fetch(`/api/admin/desa/${prId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -278,7 +278,7 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus data Desa ini?");
     if (isConfirmed) {
       try {
-        const response = await fetch(`/api/desaAdmin/${prId}`, {
+        const response = await fetch(`/api/desa/${prId}`, {
           method: 'DELETE',
         });
 

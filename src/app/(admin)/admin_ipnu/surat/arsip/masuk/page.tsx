@@ -44,7 +44,7 @@ const ArsipSuratMasukPage = () => {
         setLoading(true);
         setError(null);
         try {
-          const res = await fetch(`/api/arsipmasuk?search=${encodeURIComponent(searchQuery)}`);
+          const res = await fetch(`/api/admin/arsipmasuk?search=${encodeURIComponent(searchQuery)}`);
           if (!res.ok) {
             if (res.status === 401) {
               router.push('/login');
@@ -74,7 +74,7 @@ const ArsipSuratMasukPage = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/arsipmasuk?id=${id}`, {
+      const res = await fetch(`/api/admin/arsipmasuk?id=${id}`, {
         method: 'DELETE',
       });
 
@@ -107,7 +107,7 @@ const ArsipSuratMasukPage = () => {
 
   const handleSave = async (surat: ArsipMasuk) => {
     try {
-      const res = await fetch(`/api/arsipmasuk/${surat._id}`, {
+      const res = await fetch(`/api/admin/arsipmasuk/${surat._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ const ArsipSuratMasukPage = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch('/api/arsipmasuk', {
+      const res = await fetch('/api/admin/arsipmasuk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

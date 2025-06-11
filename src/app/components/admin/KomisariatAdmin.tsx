@@ -186,7 +186,7 @@ function SekolahDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchPar
   // FIX: Wrap refetchData in useCallback
   const refetchData = useCallback(() => {
     setIsLoading(true);
-    let apiUrl = `/api/sekolahAdmin`; // Endpoint API untuk sekolah
+    let apiUrl = `/api/admin/sekolah`; // Endpoint API untuk sekolah
     const params = new URLSearchParams();
 
     if (selectedKecamatanId) {
@@ -229,7 +229,7 @@ function SekolahDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchPar
 
   const handleSave = async (sekolahId: string) => {
     try {
-      const response = await fetch(`/api/sekolahAdmin/${sekolahId}`, { // Endpoint API untuk sekolah
+      const response = await fetch(`/api/sekolah/${sekolahId}`, { // Endpoint API untuk sekolah
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -265,7 +265,7 @@ function SekolahDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchPar
     const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus data Komisariat/Sekolah ini?");
     if (isConfirmed) {
       try {
-        const response = await fetch(`/api/sekolahAdmin/${sekolahId}`, { // Endpoint API untuk sekolah
+        const response = await fetch(`/api/admin/sekolah/${sekolahId}`, { // Endpoint API untuk sekolah
           method: 'DELETE',
         });
 
