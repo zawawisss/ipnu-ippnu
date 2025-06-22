@@ -17,15 +17,17 @@ import {
   SelectItem, // Import SelectItem component
 } from "@heroui/react";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react"; // Import useCallback
-import { StarIcon, ArrowDownTrayIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useRouter } from 'next/navigation';
+import {
+  StarIcon,
+  ArrowDownTrayIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 import { Edit } from "lucide-react";
 import dayjs from "dayjs";
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import { ReadonlyURLSearchParams } from "next/navigation";
-
-function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }) {
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+function PRDataAdmin() {
   const [prData, setPRData] = useState<any>({ data: [], total: 0 });
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -40,45 +42,30 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
 
   const [kecamatanList, setKecamatanList] = useState<any[]>([]);
   const [kecamatanSearchTerm, setKecamatanSearchTerm] = useState<string>(""); // Nilai input live
-  const [debouncedKecamatanSearchTerm, setDebouncedKecamatanSearchTerm] = useState<string>(""); // Nilai debounced untuk filter data utama
-  const [selectedKecamatanId, setSelectedKecamatanId] = useState<string | undefined>(undefined); // ID dari item yang dipilih secara eksplisit
-  const [showKecamatanSuggestions, setShowKecamatanSuggestions] = useState(false);
+  const [debouncedKecamatanSearchTerm, setDebouncedKecamatanSearchTerm] =
+    useState<string>(""); // Nilai debounced untuk filter data utama
+  const [selectedKecamatanId, setSelectedKecamatanId] = useState<
+    string | undefined
+  >(undefined); // ID dari item yang dipilih secara eksplisit
+  const [showKecamatanSuggestions, setShowKecamatanSuggestions] =
+    useState(false);
   const kecamatanSearchRef = useRef<HTMLDivElement>(null);
-
-  // Load awal dari URL search params
-  useEffect(() => {
-    const initialKecId = searchParams.get('kecamatan_id');
-    if (initialKecId && !initialKecId.includes('[object Set]')) {
-      setSelectedKecamatanId(initialKecId);
-      // Akan mengatur `kecamatanSearchTerm` setelah `kecamatanList` dimuat
-    } else if (initialKecId && initialKecId.includes('[object Set]')) {
-      // Bersihkan parameter URL yang salah
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.delete('kecamatan_id');
-      router.replace(`${window.location.pathname}?${newSearchParams.toString()}`);
-    }
-  }, [searchParams, router]);
 
   // Ambil daftar kecamatan saat komponen dimuat
   useEffect(() => {
     const fetchKecamatan = async () => {
       try {
-        const response = await fetch('/api/kecamatanList');
+        const response = await fetch("/api/kecamatanList");
         if (!response.ok) {
-          throw new Error('Failed to fetch kecamatan list');
+          throw new Error("Failed to fetch kecamatan list");
         }
         const data = await response.json();
-        const mappedKecamatan = data.data.map((item: any) => ({ ...item, nama_kecamatan: item.kecamatan })) || [];
+        const mappedKecamatan =
+          data.data.map((item: any) => ({
+            ...item,
+            nama_kecamatan: item.kecamatan,
+          })) || [];
         setKecamatanList(mappedKecamatan);
-
-        // Setelah mengambil kecamatanList, jika ada selectedKecamatanId awal, atur nilai input
-        if (selectedKecamatanId) {
-          const foundKecamatan = mappedKecamatan.find((k: any) => k._id === selectedKecamatanId);
-          if (foundKecamatan) {
-            setKecamatanSearchTerm(foundKecamatan.kecamatan);
-            setDebouncedKecamatanSearchTerm(foundKecamatan.kecamatan); // Juga atur term debounced
-          }
-        }
       } catch (error) {
         console.error("Error fetching kecamatan list:", error);
         setAlertMessage("Gagal memuat daftar kecamatan.");
@@ -86,7 +73,7 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
       }
     };
     fetchKecamatan();
-  }, [selectedKecamatanId]); // Bergantung pada selectedKecamatanId untuk mengatur nilai input dengan benar pada pemuatan awal
+  }, []);
 
   // Efek Debounce untuk term pencarian kecamatan
   useEffect(() => {
@@ -102,7 +89,10 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
   // Tangani klik di luar input pencarian untuk menyembunyikan saran
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (kecamatanSearchRef.current && !kecamatanSearchRef.current.contains(event.target as Node)) {
+      if (
+        kecamatanSearchRef.current &&
+        !kecamatanSearchRef.current.contains(event.target as Node)
+      ) {
         setShowKecamatanSuggestions(false);
       }
     };
@@ -127,7 +117,9 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     setSearchTerm(event.target.value);
   };
 
-  const handleKecamatanInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleKecamatanInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = event.target.value;
     setKecamatanSearchTerm(value);
     setShowKecamatanSuggestions(true);
@@ -136,11 +128,11 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
   };
 
   const getStatusSP = (tanggal_sp: string) => {
-      if (!tanggal_sp) return 'Tidak Aktif';
-      const today = dayjs();
-      const expiryDate = dayjs(tanggal_sp);
-      return expiryDate.isAfter(today) ? 'Aktif' : 'Tidak Aktif';
-    };
+    if (!tanggal_sp) return "Tidak Aktif";
+    const today = dayjs();
+    const expiryDate = dayjs(tanggal_sp);
+    return expiryDate.isAfter(today) ? "Aktif" : "Tidak Aktif";
+  };
 
   const handleKecamatanSelect = (item: any) => {
     setSelectedKecamatanId(item._id);
@@ -148,11 +140,9 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     setDebouncedKecamatanSearchTerm(item.kecamatan); // Segera perbarui term debounced saat dipilih
     setShowKecamatanSuggestions(false);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams();
     if (item._id) {
-      newSearchParams.set('kecamatan_id', item._id);
-    } else {
-      newSearchParams.delete('kecamatan_id');
+      newSearchParams.set("kecamatan_id", item._id);
     }
     router.push(`${window.location.pathname}?${newSearchParams.toString()}`);
   };
@@ -161,8 +151,10 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     if (!kecamatanSearchTerm) {
       return kecamatanList;
     }
-    return kecamatanList.filter(kecamatan =>
-      kecamatan.kecamatan.toLowerCase().includes(kecamatanSearchTerm.toLowerCase())
+    return kecamatanList.filter((kecamatan) =>
+      kecamatan.kecamatan
+        .toLowerCase()
+        .includes(kecamatanSearchTerm.toLowerCase())
     );
   }, [kecamatanSearchTerm, kecamatanList]);
 
@@ -171,16 +163,18 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     setKecamatanSearchTerm("");
     setDebouncedKecamatanSearchTerm(""); // Bersihkan juga term debounced
     setShowKecamatanSuggestions(false);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.delete('kecamatan_id');
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.delete("kecamatan_id");
     router.push(`${window.location.pathname}?${newSearchParams.toString()}`);
   };
 
   const sortedData = useMemo(() => {
     const dataToFilter = Array.isArray(prData.data) ? prData.data : [];
 
-    return dataToFilter.filter((pr: any) =>
-      pr.nama_desa && pr.nama_desa.toLowerCase().includes(searchTerm.toLowerCase())
+    return dataToFilter.filter(
+      (pr: any) =>
+        pr.nama_desa &&
+        pr.nama_desa.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm, prData]);
 
@@ -191,15 +185,15 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
   // FIX: Wrap refetchData in useCallback
   const refetchData = useCallback(() => {
     setIsLoading(true);
-    let apiUrl = `/api/admin/desa`;
+    let apiUrl = `/api/desa?all=true`; // Request all data for admin page
     const params = new URLSearchParams();
 
     // Prioritaskan pilihan eksplisit, jika tidak gunakan term pencarian debounced
     if (selectedKecamatanId) {
-      params.set('kecamatan_id', selectedKecamatanId);
+      params.set("kecamatan_id", selectedKecamatanId);
     } else if (debouncedKecamatanSearchTerm) {
       // Jika tidak ada ID eksplisit yang dipilih, tetapi pengguna mengetik term pencarian, gunakan untuk filtering
-      params.set('search_kecamatan', debouncedKecamatanSearchTerm);
+      params.set("search_kecamatan", debouncedKecamatanSearchTerm);
     }
 
     if (params.toString()) {
@@ -209,7 +203,7 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     fetch(apiUrl)
       .then((res) => res.json())
       .then((data) => {
-        setPRData(data);
+        setPRData({ data: data.data, total: data.data.length });
         setIsLoading(false);
       })
       .catch((error) => {
@@ -231,41 +225,52 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     setEditedData({
       ...pr,
       // Pastikan tanggal_sp diformat untuk input type="date"
-      tanggal_sp: pr.tanggal_sp ? dayjs(pr.tanggal_sp).format('YYYY-MM-DD') : '',
+      tanggal_sp: pr.tanggal_sp
+        ? dayjs(pr.tanggal_sp).format("YYYY-MM-DD")
+        : "",
       // Pastikan jumlah_anggota adalah angka atau string kosong jika null/undefined
-      jumlah_anggota: pr.jumlah_anggota !== undefined && pr.jumlah_anggota !== null ? pr.jumlah_anggota : '',
+      jumlah_anggota:
+        pr.jumlah_anggota !== undefined && pr.jumlah_anggota !== null
+          ? pr.jumlah_anggota
+          : "",
     });
   };
 
   const handleSave = async (prId: string) => {
     try {
-      const response = await fetch(`/api/admin/desa/${prId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`/api/desa/${prId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           // Hanya kirim field yang dapat diedit
           status_sp: editedData?.status_sp,
           tanggal_sp: editedData?.tanggal_sp,
           nomor_sp: editedData?.nomor_sp,
           // Pastikan jumlah_anggota adalah angka, default ke 0 jika tidak valid
-          jumlah_anggota: typeof editedData?.jumlah_anggota === 'number' && !isNaN(editedData.jumlah_anggota) ? editedData.jumlah_anggota : (editedData?.jumlah_anggota === '' ? 0 : Number(editedData?.jumlah_anggota) || 0), // Handle empty string from input
+          jumlah_anggota:
+            typeof editedData?.jumlah_anggota === "number" &&
+            !isNaN(editedData.jumlah_anggota)
+              ? editedData.jumlah_anggota
+              : editedData?.jumlah_anggota === ""
+              ? 0
+              : Number(editedData?.jumlah_anggota) || 0, // Handle empty string from input
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Gagal menyimpan data.');
+        throw new Error(errorData.message || "Gagal menyimpan data.");
       }
 
-      setAlertMessage('Data berhasil disimpan!');
-      setAlertColor('success');
+      setAlertMessage("Data berhasil disimpan!");
+      setAlertColor("success");
       setEditingRowId(null);
       setEditedData(null);
       refetchData();
     } catch (error: any) {
       console.error("Error saving data:", error);
       setAlertMessage(`Gagal menyimpan data: ${error.message}`);
-      setAlertColor('danger');
+      setAlertColor("danger");
     }
   };
 
@@ -275,46 +280,53 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
   };
 
   const handleDelete = async (prId: string) => {
-    const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus data Desa ini?");
+    const isConfirmed = window.confirm(
+      "Apakah Anda yakin ingin menghapus data Desa ini?"
+    );
     if (isConfirmed) {
       try {
         const response = await fetch(`/api/desa/${prId}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Gagal menghapus data.');
+          throw new Error(errorData.message || "Gagal menghapus data.");
         }
 
-        setAlertMessage('Data berhasil dihapus!');
-        setAlertColor('success');
+        setAlertMessage("Data berhasil dihapus!");
+        setAlertColor("success");
         refetchData();
       } catch (error: any) {
         console.error("Error deleting data:", error);
         setAlertMessage(`Gagal menghapus data: ${error.message}`);
-        setAlertColor('danger');
+        setAlertColor("danger");
       }
     }
   };
 
   const handleExportToExcel = () => {
     const dataToExport = displayData.map((pr: any, index: number) => ({
-      'No.': index + 1,
-      'Nama Desa': pr.nama_desa || '-',
-      'Kecamatan': pr.kecamatan_id?.kecamatan || '-',
-      'Status SP': getStatusSP(pr.tanggal_sp),
-      'Tanggal SP': pr.tanggal_sp || '-',
-      'Nomor SP': pr.nomor_sp || '-',
-      'Jumlah Anggota': pr.jumlah_anggota || '-',
+      "No.": index + 1,
+      "Nama Desa": pr.nama_desa || "-",
+      Kecamatan: pr.kecamatan_id?.kecamatan || "-",
+      "Status SP": getStatusSP(pr.tanggal_sp),
+      "Tanggal SP": pr.tanggal_sp || "-",
+      "Nomor SP": pr.nomor_sp || "-",
+      "Jumlah Anggota": pr.jumlah_anggota || "-",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data Desa");
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-    saveAs(data, `Data Desa - ${dayjs().format('YYYY-MM-DD')}.xlsx`);
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+    saveAs(data, `Data Desa - ${dayjs().format("YYYY-MM-DD")}.xlsx`);
   };
 
   const colSpanCount = 8; // Sesuaikan dengan jumlah kolom di tabel Anda
@@ -323,7 +335,11 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
     <div className="space-y-4">
       {showAlert && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down">
-          <Alert color={alertColor} title={alertMessage} onClose={() => setShowAlert(false)} />
+          <Alert
+            color={alertColor}
+            title={alertMessage}
+            onClose={() => setShowAlert(false)}
+          />
         </div>
       )}
       <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
@@ -355,19 +371,20 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
                 <XMarkIcon className="w-5 h-5" />
               </Button>
             )}
-            {showKecamatanSuggestions && filteredKecamatanSuggestions.length > 0 && (
-              <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
-                {filteredKecamatanSuggestions.map((item) => (
-                  <li
-                    key={item._id}
-                    className="p-2 cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleKecamatanSelect(item)}
-                  >
-                    {item.kecamatan}
-                  </li>
-                ))}
-              </ul>
-            )}
+            {showKecamatanSuggestions &&
+              filteredKecamatanSuggestions.length > 0 && (
+                <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
+                  {filteredKecamatanSuggestions.map((item) => (
+                    <li
+                      key={item._id}
+                      className="p-2 cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleKecamatanSelect(item)}
+                    >
+                      {item.kecamatan}
+                    </li>
+                  ))}
+                </ul>
+              )}
           </div>
           <Button
             color="secondary"
@@ -389,10 +406,14 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
             <TableColumn className="w-32 text-center">Status SP</TableColumn>
             <TableColumn className="w-32 text-center">Tanggal SP</TableColumn>
             <TableColumn className="w-32">Nomor SP</TableColumn>
-            <TableColumn className="w-32 text-center">Jumlah Anggota</TableColumn>
+            <TableColumn className="w-32 text-center">
+              Jumlah Anggota
+            </TableColumn>
             <TableColumn className="w-48 text-center">Aksi</TableColumn>
           </TableHeader>
-          <TableBody emptyContent={isLoading ? "Memuat data..." : "Tidak ada data."}>
+          <TableBody
+            emptyContent={isLoading ? "Memuat data..." : "Tidak ada data."}
+          >
             {isLoading ? (
               <TableRow key="loading">
                 <TableCell colSpan={colSpanCount} className="text-center py-8">
@@ -402,11 +423,21 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
             ) : (
               displayData.map((pr: any, index: number) => (
                 <TableRow key={pr._id}>
-                  <TableCell className="text-center py-2">{index + 1}.</TableCell>
-                  <TableCell className="py-2">{pr.nama_desa}</TableCell>
-                  <TableCell className="py-2">{pr.kecamatan_id?.kecamatan || '-'}</TableCell>
                   <TableCell className="text-center py-2">
-                    <Chip color={getStatusSP(pr.tanggal_sp) === 'Aktif' ? 'success' : 'danger'}>
+                    {index + 1}.
+                  </TableCell>
+                  <TableCell className="py-2">{pr.nama_desa}</TableCell>
+                  <TableCell className="py-2">
+                    {pr.kecamatan_id?.kecamatan || "-"}
+                  </TableCell>
+                  <TableCell className="text-center py-2">
+                    <Chip
+                      color={
+                        getStatusSP(pr.tanggal_sp) === "Aktif"
+                          ? "success"
+                          : "danger"
+                      }
+                    >
                       {getStatusSP(pr.tanggal_sp)}
                     </Chip>
                   </TableCell>
@@ -414,32 +445,49 @@ function PRDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }
                     {editingRowId === pr._id ? (
                       <Input
                         type="date"
-                        value={editedData?.tanggal_sp || ''}
-                        onChange={(e) => setEditedData({ ...editedData, tanggal_sp: e.target.value })}
+                        value={editedData?.tanggal_sp || ""}
+                        onChange={(e) =>
+                          setEditedData({
+                            ...editedData,
+                            tanggal_sp: e.target.value,
+                          })
+                        }
                         className="w-full"
                       />
+                    ) : pr.tanggal_sp ? (
+                      dayjs(pr.tanggal_sp).format("DD MMMMYYYY")
                     ) : (
-                      pr.tanggal_sp ? dayjs(pr.tanggal_sp).format('DD MMMMYYYY') : '-'
+                      "-"
                     )}
                   </TableCell>
                   <TableCell className="py-2">
                     {editingRowId === pr._id ? (
                       <Input
                         type="text"
-                        value={editedData?.nomor_sp || ''}
-                        onChange={(e) => setEditedData({ ...editedData, nomor_sp: e.target.value })}
+                        value={editedData?.nomor_sp || ""}
+                        onChange={(e) =>
+                          setEditedData({
+                            ...editedData,
+                            nomor_sp: e.target.value,
+                          })
+                        }
                         className="w-full"
                       />
                     ) : (
-                      pr.nomor_sp || '-'
+                      pr.nomor_sp || "-"
                     )}
                   </TableCell>
                   <TableCell className="text-center py-2">
                     {editingRowId === pr._id ? (
                       <Input
                         type="number"
-                        value={editedData?.jumlah_anggota || ''}
-                        onChange={(e) => setEditedData({ ...editedData, jumlah_anggota: Number(e.target.value) })}
+                        value={editedData?.jumlah_anggota || ""}
+                        onChange={(e) =>
+                          setEditedData({
+                            ...editedData,
+                            jumlah_anggota: Number(e.target.value),
+                          })
+                        }
                         className="w-full"
                       />
                     ) : (

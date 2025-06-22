@@ -75,7 +75,7 @@ function Dashboard() {
     let text = "";
     if (loading) {
       return (
-        <span className="inline-flex items-center rounded-md bg-gray-500 px-2.5 py-0.5 text-sm font-medium text-white">
+        <span className="inline-flex items-center rounded-md bg-gray-500 px-2.5 py-0.5 text-sm font-medium">
           <Icon
             icon="svg-spinners:180-degree-spin"
             className="inline-block mr-1 h-4 w-4 animate-spin"

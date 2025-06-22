@@ -1,7 +1,6 @@
 "use client";
 
 import PRDataAdmin from "@/app/components/admin/prDataAdmin";
-import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 export default function AdminDesaContent() {
   return (
     <section className="p-6 sm:p-4 space-y-6">
@@ -17,7 +16,7 @@ export default function AdminDesaContent() {
       </div>
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm dark:border-gray-700">
         <div className="rounded-lg overflow-hidden">
-        <PRDataAdmin searchParams={useSearchParams() as ReadonlyURLSearchParams} />
+        <PRDataAdmin />
         </div>
       </div>
     </section>
