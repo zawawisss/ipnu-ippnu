@@ -11,7 +11,7 @@ import Desa from '@/models/Desa';
  */
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } } // Mengubah tipe parameter 'context'
+  context: { params: Promise<{ id: string }> } // Mengembalikan tipe ke Promise
 ) {
   // Pengecekan sesi admin jika diperlukan.
   // const session = await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ipnu_");
@@ -21,8 +21,7 @@ export async function GET(
 
   await dbConnect(); // Menghubungkan ke database.
   try {
-    // Akses id langsung dari context.params karena Next.js menangani promise secara internal untuk params.
-    const { id } = context.params; 
+    const { id } = await context.params; // Menggunakan await untuk mendapatkan ID dari Promise.
     const desa = await Desa.findById(id); // Mencari desa berdasarkan ID.
 
     // Jika desa tidak ditemukan, kembalikan response 404.
@@ -46,7 +45,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } } // Mengubah tipe parameter 'context'
+  context: { params: Promise<{ id: string }> } // Mengembalikan tipe ke Promise
 ) {
   // Pengecekan sesi admin jika diperlukan.
   // const session = await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ipnu_");
@@ -56,8 +55,7 @@ export async function PUT(
 
   await dbConnect(); // Menghubungkan ke database.
   try {
-    // Akses id langsung dari context.params.
-    const { id } = context.params; 
+    const { id } = await context.params; // Menggunakan await untuk mendapatkan ID dari Promise.
     const body = await request.json(); // Mengambil body request.
     const updatedDesa = await Desa.findByIdAndUpdate(id, body, { new: true }); // Mencari dan memperbarui desa.
 
@@ -82,7 +80,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } } // Mengubah tipe parameter 'context'
+  context: { params: Promise<{ id: string }> } // Mengembalikan tipe ke Promise
 ) {
   // Pengecekan sesi admin jika diperlukan.
   // const session = await checkAdminSessionServer(["admin", "ketua", "sekretaris"], "ipnu_");
@@ -92,8 +90,7 @@ export async function DELETE(
 
   await dbConnect(); // Menghubungkan ke database.
   try {
-    // Akses id langsung dari context.params.
-    const { id } = context.params; 
+    const { id } = await context.params; // Menggunakan await untuk mendapatkan ID dari Promise.
     const deletedDesa = await Desa.findByIdAndDelete(id); // Menghapus desa berdasarkan ID.
 
     // Jika desa tidak ditemukan, kembalikan response 404.
