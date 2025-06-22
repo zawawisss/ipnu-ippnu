@@ -1,4 +1,4 @@
-// app/components/admin/SekolahDataAdmin.tsx
+// app/components/admin/KomisariatAdmin.tsx
 "use client";
 
 import {
@@ -14,20 +14,22 @@ import {
   Alert,
   Chip,
 } from "@heroui/react";
-import { useEffect, useMemo, useState, useRef, useCallback } from "react"; // Import useCallback
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { StarIcon, ArrowDownTrayIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation'; // Import useSearchParams
 import { Trash2, Edit } from "lucide-react";
 import dayjs from "dayjs";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { ReadonlyURLSearchParams } from "next/navigation";
+// Removed ReadonlyURLSearchParams from here as it's not needed directly as a prop type
 
-function SekolahDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchParams }) {
+// Removed the searchParams prop from the function signature
+function SekolahDataAdmin() {
   const [sekolahData, setSekolahData] = useState<any>({ data: [], total: 0 });
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams(); // Call useSearchParams directly here
 
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editedData, setEditedData] = useState<any | null>(null);
@@ -186,7 +188,7 @@ function SekolahDataAdmin({ searchParams }: { searchParams: ReadonlyURLSearchPar
   // FIX: Wrap refetchData in useCallback
   const refetchData = useCallback(() => {
     setIsLoading(true);
-    let apiUrl = `/api/admin/sekolah`; // Endpoint API untuk sekolah
+    let apiUrl = `/api/sekolah`; // Endpoint API untuk sekolah
     const params = new URLSearchParams();
 
     if (selectedKecamatanId) {
