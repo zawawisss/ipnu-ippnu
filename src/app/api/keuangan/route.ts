@@ -3,12 +3,51 @@ import Keuangan from "@/models/Keuangan";
 import db from "@/lib/db";
 
 
-// GET: Ambil semua data keuangan
+// GET: Ambil semua data keuangan dengan filter dan pencarian
 export function GET(req: NextRequest): Promise<NextResponse> {
   return new Promise(async (resolve, reject) => {
     await db();
     try {
-      const data = await Keuangan.find().sort({ tanggal: -1 });
+      const { searchParams } = new URL(req.url);
+      const searchTerm = searchParams.get('search') || '';
+      const tanggalMulai = searchParams.get('tanggalMulai');
+      const tanggalAkhir = searchParams.get('tanggalAkhir');
+      const jenisTransaksi = searchParams.get('jenisTransaksi') || 'all'; // 'debet', 'kredit', 'all'
+
+      let query: any = {};
+
+      // Filter berdasarkan rentang tanggal
+      if (tanggalMulai || tanggalAkhir) {
+        query.tanggal = {};
+        if (tanggalMulai) {
+          query.tanggal.$gte = new Date(tanggalMulai);
+        }
+        if (tanggalAkhir) {
+          // Tambahkan 23:59:59.999 ke tanggal akhir untuk mencakup seluruh hari
+          const endDate = new Date(tanggalAkhir);
+          endDate.setHours(23, 59, 59, 999);
+          query.tanggal.$lte = endDate;
+        }
+      }
+
+      // Filter berdasarkan jenis transaksi
+      if (jenisTransaksi === 'debet') {
+        query.debet = { $gt: 0 };
+      } else if (jenisTransaksi === 'kredit') {
+        query.kredit = { $gt: 0 };
+      }
+
+      // Filter berdasarkan search term (sumber, penggunaan, ket)
+      if (searchTerm) {
+        const regex = new RegExp(searchTerm, 'i'); // Case-insensitive regex
+        query.$or = [
+          { sumber: { $regex: regex } },
+          { penggunaan: { $regex: regex } },
+          { ket: { $regex: regex } },
+        ];
+      }
+      
+      const data = await Keuangan.find(query).sort({ tanggal: -1 });
       resolve(NextResponse.json(data));
     } catch (error) {
       console.error("Error fetching keuangan data:", error);
