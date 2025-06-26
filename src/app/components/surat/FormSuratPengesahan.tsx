@@ -47,7 +47,7 @@ export interface SuratPengesahanData {
   masa_khidmat: string; // Diperoleh dari tanggal_konferancab
   tanggal_konferancab: string;
   nomor_mwc: string;
-  tanggal_berakhir: string; // Diperoleh dari tanggal_konferancab
+  tanggal_berakhir: string; // Diperoleh dari tanggal_konferancab (akan disimpan sebagai tanggal_sp di DB)
   tanggal_hijriah: string; // Dihasilkan oleh API
   tanggal_masehi: string; // Dihasilkan oleh API
   ketua: string; // Nama ketua dasar
@@ -741,7 +741,7 @@ export default function App() {
   // Fungsi untuk merender ikon tempat sampah
   const TrashIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.924a2.25 2.25 0 01-2.244-2.077L4.74 5.69c-.32-.052-.65-.107-.98-.166M5.25 9V7.5A2.25 2.25 0 017.5 5.25h9A2.25 2.25 0 0119.5 7.5V9m-9-2.25h.008v.008H10.5V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.924a2.25 0 01-2.244-2.077L4.74 5.69c-.32-.052-.65-.107-.98-.166M5.25 9V7.5A2.25 2.25 0 017.5 5.25h9A2.25 2.25 0 0119.5 7.5V9m-9-2.25h.008v.008H10.5V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
     </svg>
   );
 
@@ -1540,7 +1540,7 @@ export default function App() {
               name="komandan"
               value={formData.cbp.komandan}
               onChange={handleCbpChange}
-              className="text-base md:text-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700"
+              className="text-base md:text-lg w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700"
               isDisabled={loading}
             />
           </div>
@@ -1681,8 +1681,7 @@ export default function App() {
                         handleCbpDivisiAnggotaChange(divIndex, anggotaIndex, e)
                       }
                       ref={(el) => {
-                        if (!anggotaCbpDivisiRefs.current[divIndex])
-                          anggotaCbpDivisiRefs.current[divIndex] = [];
+                        anggotaCbpDivisiRefs.current[divIndex] = anggotaCbpDivisiRefs.current[divIndex] || [];
                         anggotaCbpDivisiRefs.current[divIndex][anggotaIndex] = el;
                       }}
                       onKeyDown={(e) => {
@@ -1765,3 +1764,4 @@ export default function App() {
     </form>
   );
 }
+

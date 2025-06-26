@@ -26,25 +26,25 @@ export async function GET(req: NextRequest) {
         const kecamatanList = await Kecamatan.aggregate([
             { $match: filter },
             { $addFields: {
-                // Use $let to define a variable for the converted end date
+                // Menggunakan $let untuk mendefinisikan variabel untuk tanggal akhir yang dikonversi
                 status: {
                     $cond: [
-                        { $not: ["$tanggal_berakhir"] },
-                        "3", // No date - sort last
+                        { $not: ["$tanggal_sp"] }, // Diubah dari tanggal_berakhir menjadi tanggal_sp
+                        "3", // Tanpa tanggal - urutkan terakhir
                         {
                             $let: {
                                 vars: { 
-                                    // Convert tanggal_berakhir to a Date object
-                                    endDate: { $toDate: "$tanggal_berakhir" } 
+                                    // Mengonversi tanggal_sp menjadi objek Date
+                                    endDate: { $toDate: "$tanggal_sp" } 
                                 },
                                 in: {
                                     $cond: [
-                                        // Compare current date with endDate minus 14 days (in milliseconds)
+                                        // Membandingkan tanggal saat ini dengan endDate dikurangi 14 hari (dalam milidetik)
                                         { $lt: [new Date(), { $subtract: ["$$endDate", 14 * 24 * 60 * 60 * 1000] }] },
                                         "0", // Aktif
                                         {
                                             $cond: [
-                                                // Compare current date with endDate
+                                                // Membandingkan tanggal saat ini dengan endDate
                                                 { $lt: [new Date(), "$$endDate"] },
                                                 "1", // Hampir Berakhir
                                                 "2"  // Tidak Aktif
@@ -72,7 +72,8 @@ export async function GET(req: NextRequest) {
     } catch (error: any) {
         console.error('Failed to fetch kecamatan list:', error);
         console.error('Error stack:', error.stack); // Log the stack trace
-        // Return a more generic error message to the client for security
+        // Mengembalikan pesan error yang lebih umum ke klien untuk keamanan
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
+

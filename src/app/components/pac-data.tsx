@@ -12,27 +12,28 @@ import {
   TableRow,
 } from "@heroui/react";
 import StatisticsCard from "./statistik";
+import dayjs from "dayjs"; // Import dayjs
 
 interface Database {
   _id: string;
   kecamatan: string;
   status_sp: string;
-  tanggal_berakhir: string;
+  tanggal_sp: string; // Changed from tanggal_berakhir to tanggal_sp
 }
 
 // Tambahkan fungsi utilitas untuk status SP
-function getStatusSP(tanggal_berakhir: string | undefined) {
-  if (!tanggal_berakhir) return "-";
-  const endDate = new Date(tanggal_berakhir);
-  const twoWeeksBefore = new Date(endDate.getTime() - 14 * 24 * 60 * 60 * 1000);
-  const now = new Date();
-  if (now < twoWeeksBefore) {
+function getStatusSP(tanggal_sp: string | undefined) { // Changed parameter name
+  if (!tanggal_sp) return "-";
+  const endDate = dayjs(tanggal_sp); // Use dayjs for parsing
+  const twoWeeksBefore = endDate.subtract(14, 'day'); // Use dayjs for date manipulation
+  const now = dayjs(); // Use dayjs for current date
+  if (now.isBefore(twoWeeksBefore)) {
     return (
       <Chip color="success" variant="dot" size="sm">
         Aktif
       </Chip>
     );
-  } else if (now < endDate) {
+  } else if (now.isBefore(endDate)) {
     return (
       <Chip color="warning" variant="dot" size="sm">
         Hampir Berakhir
@@ -102,10 +103,6 @@ function KecamatanDetail({ id }: { id: string }) {
     fetchData();
   }, [id]);
 
-  // if (!data) {
-  //   return <p>Memuat...</p>;
-  // }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <main className="container mx-auto px-4 py-8 flex-grow">
@@ -116,20 +113,13 @@ function KecamatanDetail({ id }: { id: string }) {
           <div className="flex justify-center gap-4 mb-6">
             <div>
               <p className="text-sm font-semibold mb-1">Status SP</p>
-              {getStatusSP(data?.tanggal_berakhir)}
+              {getStatusSP(data?.tanggal_sp)} {/* Changed to tanggal_sp */}
             </div>
             <div>
               <p className="text-sm font-semibold mb-1">Tanggal SP</p>
               <p className="font-medium">
-                {data?.tanggal_berakhir
-                  ? new Date(data.tanggal_berakhir).toLocaleDateString(
-                      "id-ID",
-                      {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      }
-                    )
+                {data?.tanggal_sp // Changed to tanggal_sp
+                  ? dayjs(data.tanggal_sp).format("DD MMMM YYYY") // Use dayjs for formatting
                   : "-"}
               </p>
             </div>
@@ -203,14 +193,7 @@ function KecamatanDetail({ id }: { id: string }) {
                       </TableCell>
                       <TableCell className="text-center">
                         {desa.tanggal_sp
-                          ? new Date(desa.tanggal_sp).toLocaleDateString(
-                              "id-ID",
-                              {
-                                day: "2-digit",
-                                month: "long",
-                                year: "numeric",
-                              }
-                            )
+                          ? dayjs(desa.tanggal_sp).format("DD MMMM YYYY") // Use dayjs for formatting
                           : "-"}
                       </TableCell>
                     </TableRow>
@@ -258,14 +241,7 @@ function KecamatanDetail({ id }: { id: string }) {
                       </TableCell>
                       <TableCell className="text-center">
                         {sekolah.tanggal_sp
-                          ? new Date(sekolah.tanggal_sp).toLocaleDateString(
-                              "id-ID",
-                              {
-                                day: "2-digit",
-                                month: "long",
-                                year: "numeric",
-                              }
-                            )
+                          ? dayjs(sekolah.tanggal_sp).format("DD MMMM YYYY") // Use dayjs for formatting
                           : "-"}
                       </TableCell>
                     </TableRow>
@@ -327,3 +303,4 @@ function KecamatanDetail({ id }: { id: string }) {
 }
 
 export default KecamatanDetail;
+

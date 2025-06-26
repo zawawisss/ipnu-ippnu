@@ -94,7 +94,7 @@ function Dashboard() {
               />
               Kecamatan Expired:
             </span>{" "}
-            <span className="text-white">{expiredSp.join(", ")}</span>
+            <span className="text-black dark:text-white">{expiredSp.join(", ")}</span>
           </span>
         ) : null;
       let expiringText =
@@ -107,7 +107,7 @@ function Dashboard() {
               />
               Kecamatan Expired:
             </span>{" "}
-            <span className="text-white">{expiringSp.join(", ")}</span>
+            <span className="text-black dark:text-white">{expiringSp.join(", ")}</span>
           </span>
         ) : null;
       let separator = expiredText && expiringText ? " | " : "";

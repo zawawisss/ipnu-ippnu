@@ -38,6 +38,11 @@ export async function PUT(
   await db();
 
   try {
+    // Memastikan tanggal_sp dikonversi menjadi objek Date jika ada
+    if (body.tanggal_sp && typeof body.tanggal_sp === 'string') {
+      body.tanggal_sp = new Date(body.tanggal_sp);
+    }
+
     const updatedKecamatan = await Kecamatan.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: false,

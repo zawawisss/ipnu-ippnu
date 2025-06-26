@@ -41,7 +41,7 @@ interface SuratPengesahanPayload {
   masa_khidmat: string;
   tanggal_konferancab: string;
   nomor_mwc: string;
-  tanggal_berakhir: string;
+  tanggal_berakhir: string; // Ini akan menjadi tanggal_sp di DB
   ketua: string;
   sekretaris: string;
   bendahara: string;
@@ -215,14 +215,14 @@ export function POST(req: NextRequest): Promise<NextResponse> {
         hijri.hy
       }`;
 
-      // Helper to format date string to "DD Month BBBB"
+      // Helper untuk memformat string tanggal ke "DD Bulan BBBB"
       function formatTanggalIndonesia(dateStr: string): string {
         if (!dateStr) return "";
         const date = new Date(dateStr);
-        // Check if date is valid
+        // Memeriksa apakah tanggal valid
         if (isNaN(date.getTime())) {
           console.warn("Invalid date string provided:", dateStr);
-          return dateStr; // Return original string or a placeholder if invalid
+          return dateStr; // Mengembalikan string asli atau placeholder jika tidak valid
         }
         const tgl = date.getDate().toString().padStart(2, "0");
         const bln = bulan[date.getMonth()];
@@ -234,8 +234,8 @@ export function POST(req: NextRequest): Promise<NextResponse> {
       );
       const tanggal_berakhir_fmt = formatTanggalIndonesia(data.tanggal_berakhir);
 
-      // Prepare data for rendering
-      // Format list items with index and name for the template
+      // Siapkan data untuk rendering
+      // Format item daftar dengan indeks dan nama untuk template
       const renderData = {
         nomor_surat: nomorSuratOtomatis,
         kecamatan: data.kecamatan,
@@ -256,7 +256,7 @@ export function POST(req: NextRequest): Promise<NextResponse> {
         ketua_capitalize: data.ketua_capitalize,
         sekretaris_capitalize: data.sekretaris_capitalize,
 
-        // List yang menggunakan formatted_item
+        // Daftar yang menggunakan formatted_item
         pelindung: data.pelindung
           .filter((item) => item.nama.trim() !== "")
           .map((item, index) => ({
@@ -351,7 +351,7 @@ export function POST(req: NextRequest): Promise<NextResponse> {
                   .map((div: any) => ({
                     divisi: div.divisi || "",
                     kepala: div.kepala || "",
-                    anggota_divisi: Array.isArray(div.anggisi_divisi)
+                    anggota_divisi: Array.isArray(div.anggota_divisi) // Perbaikan di sini
                       ? div.anggota_divisi
                           .filter((a: any) => a.nama && a.nama.trim() !== "")
                           .map((a: any) => ({
@@ -385,13 +385,13 @@ export function POST(req: NextRequest): Promise<NextResponse> {
       );
       await fs.writeFile(outputPath, buf);
 
-      // Update tanggal_berakhir dan nomor_sp di MongoDB
+      // Update tanggal_sp dan nomor_sp di MongoDB
       try {
         await db();
         const updated = await KecamatanModel.findOneAndUpdate(
           { kecamatan: new RegExp(`^${data.kecamatan}$`, "i") }, // case-insensitive
           {
-            tanggal_berakhir: data.tanggal_berakhir,
+            tanggal_sp: new Date(data.tanggal_berakhir), // Diubah ke tanggal_sp dan dikonversi ke Date
             nomor_sp: nomorSuratOtomatis,
           },
           { new: true, upsert: false }
@@ -423,3 +423,4 @@ export function POST(req: NextRequest): Promise<NextResponse> {
     }
   });
 }
+

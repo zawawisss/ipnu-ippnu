@@ -4,7 +4,7 @@ import Kecamatan from '@/models/Kecamatan';
 
 interface KecamatanData {
   kecamatan: string;
-  tanggal_berakhir: string;
+  tanggal_sp: Date; // Diubah ke tanggal_sp dan tipe Date
 }
 
 export async function GET(req: NextRequest) {
@@ -18,7 +18,8 @@ export async function GET(req: NextRequest) {
     const expiring: string[] = [];
 
     kecamatanData.forEach((kec) => {
-      const endDate = new Date(kec.tanggal_berakhir);
+      // Menggunakan tanggal_sp untuk perhitungan
+      const endDate = new Date(kec.tanggal_sp);
       const diffInDays = (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
 
       if (diffInDays < 0) {
@@ -41,3 +42,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch SP status' }, { status: 500 });
   }
 }
+

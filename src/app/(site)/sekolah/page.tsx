@@ -1,14 +1,14 @@
 "use client";
-"use client";
 import React, { useEffect, useState, useMemo } from 'react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spinner, Input } from '@heroui/react'; // Import Pagination, Spinner, Input
+import dayjs from "dayjs"; // Import dayjs
 
 interface Sekolah {
   _id: string;
-  kecamatan_id: string; // Assuming ObjectId can be treated as string for display
+  kecamatan_id: string; // Asumsi ObjectId dapat diperlakukan sebagai string untuk tampilan
   sekolah_maarif: string;
   status_sp: string;
-  tanggal_sp: string;
+  tanggal_sp: Date; // Diubah dari string menjadi Date
 }
 
 interface PaginatedResponse<T> {
@@ -19,20 +19,20 @@ interface PaginatedResponse<T> {
 }
 
 function SekolahPage() {
-  const [sekolahData, setSekolahData] = useState<PaginatedResponse<Sekolah>>({ data: [], total: 0, page: 1, limit: 10 }); // Update state type and initial value
+  const [sekolahData, setSekolahData] = useState<PaginatedResponse<Sekolah>>({ data: [], total: 0, page: 1, limit: 10 }); // Memperbarui tipe status dan nilai awal
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Default rows per page
-  const [searchTerm, setSearchTerm] = useState(''); // Add search term state
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Baris default per halaman
+  const [searchTerm, setSearchTerm] = useState(''); // Menambahkan status istilah pencarian
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch data with pagination parameters
-        const response = await fetch(`/api/sekolah?page=${currentPage}&limit=${rowsPerPage}&search=${searchTerm}`); // Add search parameter
+        // Mengambil data dengan parameter paginasi
+        const response = await fetch(`/api/sekolah?page=${currentPage}&limit=${rowsPerPage}&search=${searchTerm}`); // Menambahkan parameter pencarian
         if (!response.ok) {
           throw new Error(`Failed to fetch sekolah data: ${response.status}`);
         }
@@ -46,22 +46,22 @@ function SekolahPage() {
     };
 
     fetchData();
-  }, [currentPage, rowsPerPage, searchTerm]); // Add dependencies
+  }, [currentPage, rowsPerPage, searchTerm]); // Menambahkan dependensi
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Reset to page 1 on search
+    setCurrentPage(1); // Mengatur ulang ke halaman 1 saat pencarian
   };
 
   const columns = [
     { key: 'sekolah_maarif', label: 'Sekolah Ma\'arif' },
     { key: 'status_sp', label: 'Status SP' },
     { key: 'tanggal_sp', label: 'Tanggal SP' },
-    // Add kecamatan_id column if needed
+    // Menambahkan kolom kecamatan_id jika diperlukan
     // { key: 'kecamatan_id', label: 'Kecamatan ID' },
   ];
 
-  // Calculate total pages for pagination
+  // Menghitung total halaman untuk paginasi
   const totalPages = useMemo(() => {
     return Math.ceil(sekolahData.total / rowsPerPage);
   }, [sekolahData.total, rowsPerPage]);
@@ -70,7 +70,7 @@ function SekolahPage() {
     <div className="flex min-h-screen flex-col items-center p-8">
       <h1 className="text-4xl font-bold mb-8">Data Sekolah</h1>
 
-      <div className="w-full max-w-4xl mb-4"> {/* Add search input */}
+      <div className="w-full max-w-4xl mb-4"> {/* Menambahkan input pencarian */}
         <Input
           type="text"
           placeholder="Cari Sekolah..."
@@ -88,7 +88,7 @@ function SekolahPage() {
         <div className="flex items-center justify-center p-24">
           <p className="text-red-500">Error: {error}</p>
         </div>
-      ) : sekolahData.data.length === 0 ? ( // Access data property
+      ) : sekolahData.data.length === 0 ? ( // Mengakses properti data
         <p>No Sekolah data available.</p>
       ) : (
         <div className="w-full max-w-4xl">
@@ -106,13 +106,17 @@ function SekolahPage() {
                 <TableRow key={item._id}>
                   <TableCell>{item.sekolah_maarif}</TableCell>
                   <TableCell>{item.status_sp}</TableCell>
-                  <TableCell>{item.tanggal_sp}</TableCell>
+                  <TableCell>
+                    {item.tanggal_sp
+                      ? dayjs(item.tanggal_sp).format("DD MMMM YYYY") // Menggunakan dayjs untuk format tanggal
+                      : "-"}
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
 
-          {/* Add Pagination */}
+          {/* Menambahkan Paginasi */}
           {sekolahData.total > 0 && (
             <div className="flex justify-center mt-4">
               <Pagination
@@ -131,3 +135,4 @@ function SekolahPage() {
 }
 
 export default SekolahPage;
+

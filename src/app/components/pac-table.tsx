@@ -32,8 +32,8 @@ function PACTable() {
   };
 
   const getStatus = (kec: any) => {
-    if (!kec.tanggal_berakhir) return "";
-    const endDate = new Date(kec.tanggal_berakhir);
+    if (!kec.tanggal_sp) return "";
+    const endDate = new Date(kec.tanggal_sp);
     const twoWeeksBefore = new Date(
       endDate.getTime() - 14 * 24 * 60 * 60 * 1000
     );
@@ -168,8 +168,8 @@ function PACTable() {
                   </TableCell>
                   <TableCell className="text-center">
                     {(() => {
-                      if (!kec.tanggal_berakhir) return "-";
-                      const endDate = new Date(kec.tanggal_berakhir);
+                      if (!kec.tanggal_sp) return "-";
+                      const endDate = new Date(kec.tanggal_sp);
                       const twoWeeksBefore = new Date(
                         endDate.getTime() - 14 * 24 * 60 * 60 * 1000
                       );
@@ -196,8 +196,8 @@ function PACTable() {
                     })() || "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {kec.tanggal_berakhir
-                      ? new Date(kec.tanggal_berakhir).toLocaleDateString(
+                    {kec.tanggal_sp
+                      ? new Date(kec.tanggal_sp).toLocaleDateString(
                           "id-ID",
                           {
                             day: "2-digit",
