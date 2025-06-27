@@ -222,7 +222,7 @@ function PACTableAdmin() {
       Kecamatan: kec.kecamatan || "-",
       "Status SP": getStatus(kec) || "-",
       "Masa Khidmat": kec.tanggal_sp
-        ? dayjs(kec.tanggal_sp).format("DD MMMM YYYY")
+        ? dayjs(kec.tanggal_sp).format("DD MMMMYYYY")
         : "-",
       "Nomor SP": kec.nomor_sp || "-",
       "Jumlah Desa": kec.jumlah_desa || "-",
@@ -352,9 +352,14 @@ function PACTableAdmin() {
                         }
                         placeholder="DD-MM-YYYY"
                         className="w-full"
+                        onKeyDown={(e) => {
+                          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     ) : kec.tanggal_sp ? (
-                      dayjs(kec.tanggal_sp).format("DD MMMM YYYY")
+                      dayjs(kec.tanggal_sp).format("DD MMMMYYYY")
                     ) : (
                       "-"
                     )}
@@ -371,6 +376,23 @@ function PACTableAdmin() {
                           })
                         }
                         className="w-full"
+                        onKeyDown={(e) => {
+                          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                            e.preventDefault();
+                            // Allow normal cursor movement within the input
+                            const input = e.target as HTMLInputElement;
+                            if (input.selectionStart !== null) {
+                              input.focus();
+                              input.setSelectionRange(
+                                Math.max(0, input.selectionStart - 1),
+                                input.selectionEnd,
+                              );
+                            } else {
+                              // If selectionStart is null, just focus the input
+                              input.focus();
+                            }
+                          }
+                        }}
                       />
                     ) : (
                       kec.nomor_sp || "-"

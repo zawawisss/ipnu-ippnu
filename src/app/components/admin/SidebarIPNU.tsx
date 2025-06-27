@@ -19,6 +19,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { BellIcon, CalendarDaysIcon } from "lucide-react";
 
 export default function Sidebar() {
   const { data: session } = useSession();
@@ -50,6 +51,8 @@ export default function Sidebar() {
       { name: "Desa", href: "/admin_ipnu/desa", icon: MapPinIcon },
       { name: "Komisariat", href: "/admin_ipnu/komisariat", icon: AcademicCapIcon },
       { name: "Anggota", href: "/admin/anggota", icon: UserGroupIcon },
+      { name: 'Kalender', href: '/admin_ipnu/kalender', icon: CalendarDaysIcon },
+      { name: 'Notifikasi', href: '/admin_ipnu/notifikasi', icon: BellIcon },
     ],
   };
   const arsipDropdown = {
