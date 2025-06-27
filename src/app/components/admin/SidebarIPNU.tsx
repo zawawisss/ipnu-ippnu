@@ -52,7 +52,6 @@ export default function Sidebar() {
       { name: "Komisariat", href: "/admin_ipnu/komisariat", icon: AcademicCapIcon },
       { name: "Anggota", href: "/admin/anggota", icon: UserGroupIcon },
       { name: 'Kalender', href: '/admin_ipnu/kalender', icon: CalendarDaysIcon },
-      { name: 'Notifikasi', href: '/admin_ipnu/notifikasi', icon: BellIcon },
     ],
   };
   const arsipDropdown = {
