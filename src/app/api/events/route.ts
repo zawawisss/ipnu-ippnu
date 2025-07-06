@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Event from '@/models/Event'; // Import model Event yang baru dibuat
 
+
 // Koneksikan ke database
 dbConnect();
 
@@ -21,11 +22,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, date, time, location, ipnuAttendees, ippnuAttendees } = body;
+    const { name, date, time, location, delegation, ipnuAttendees, ippnuAttendees } = body;
 
     // Validasi input dasar
-    if (!name || !date || !time || !location) {
-      return NextResponse.json({ message: 'Nama, tanggal, waktu, dan lokasi event harus diisi.' }, { status: 400 });
+    if (!name || !date || !time || !location || !delegation) {
+      return NextResponse.json({ message: 'Semua field harus diisi, termasuk pendelegasian.' }, { status: 400 });
     }
 
     // Buat event baru
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
       date,
       time,
       location,
+      delegation,
       ipnuAttendees: ipnuAttendees || [], // Pastikan array jika tidak disediakan
       ippnuAttendees: ippnuAttendees || [],
     });
@@ -46,4 +48,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Gagal membuat event baru', error }, { status: 500 });
   }
 }
-

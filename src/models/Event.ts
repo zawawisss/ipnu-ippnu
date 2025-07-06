@@ -6,6 +6,7 @@ export interface IEvent extends Document {
   date: Date;
   time: string;
   location: string;
+  delegation?: string; // Optional delegation field
   ipnuAttendees: string[];
   ippnuAttendees: string[];
   createdAt: Date;
@@ -19,6 +20,7 @@ const EventSchema: Schema = new Schema(
     date: { type: Date, required: true },   // Tanggal acara
     time: { type: String, required: true }, // Waktu acara (contoh: "13.30 - selesai")
     location: { type: String, required: true }, // Lokasi acara
+    delegation: { type: String, required: true }, // Delegasi dari departemen/lembaga/badan
     ipnuAttendees: { type: [String], default: [] }, // Daftar peserta IPNU
     ippnuAttendees: { type: [String], default: [] }, // Daftar peserta IPPNU
   },
@@ -31,4 +33,3 @@ const EventSchema: Schema = new Schema(
 const Event = mongoose.models.Event || mongoose.model<IEvent>('Event', EventSchema);
 
 export default Event;
-

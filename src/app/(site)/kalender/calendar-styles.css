@@ -1,0 +1,105 @@
+/*
+ * Custom styles for react-big-calendar to mimic HeroUI's aesthetic.
+ */
+
+.rbc-calendar {
+  border-radius: 0.75rem; /* 12px */
+  border: none;
+  font-family: inherit;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dark .rbc-calendar {
+    background-color: #18181b; /* zinc-900 */
+}
+
+/* Toolbar styles */
+.rbc-toolbar {
+  padding: 1rem;
+  border-bottom: 1px solid #e4e4e7; /* zinc-200 */
+  margin-bottom: 0;
+}
+
+.dark .rbc-toolbar {
+  border-bottom-color: #27272a; /* zinc-800 */
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600;
+  color: #18181b; /* zinc-900 */
+}
+
+.dark .rbc-toolbar .rbc-toolbar-label {
+    color: #f4f4f5; /* zinc-100 */
+}
+
+/* Header row (Sun, Mon, etc.) */
+.rbc-header {
+  padding: 0.75rem 0;
+  text-align: center;
+  font-weight: 500;
+  color: #71717a; /* zinc-500 */
+  border-bottom: none;
+}
+
+/* Date cell styles */
+.rbc-month-view, .rbc-month-row {
+    border: none;
+}
+
+.rbc-day-bg {
+  border-left: 1px solid #f4f4f5; /* zinc-100 */
+}
+.rbc-day-bg:first-child {
+    border-left: none;
+}
+
+.dark .rbc-day-bg {
+    border-left-color: #27272a; /* zinc-800 */
+}
+
+.rbc-date-cell {
+  padding: 4px;
+  text-align: right;
+  color: #3f3f46; /* zinc-700 */
+}
+
+.dark .rbc-date-cell {
+    color: #d4d4d8; /* zinc-300 */
+}
+
+.rbc-off-range-bg {
+  background-color: #fafafa; /* zinc-50 */
+}
+
+.dark .rbc-off-range-bg {
+    background-color: #27272a; /* zinc-800 */
+}
+
+.rbc-today {
+  background-color: #dbeafe; /* blue-100 */
+}
+
+.dark .rbc-today {
+    background-color: #1e3a8a; /* blue-900 */
+}
+
+/* Event styles */
+.rbc-event {
+  background-color: #3b82f6; /* blue-500 */
+  color: white;
+  border-radius: 0.375rem; /* rounded-md */
+  padding: 2px 5px;
+  border: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: normal !important; /* Force text wrapping */
+  line-height: 1.2;
+  height: auto !important; /* Allow height to grow */
+  min-height: 24px; /* Ensure a minimum height */
+}
+
+.dark .rbc-event {
+    background-color: #2563eb; /* blue-600 */
+}

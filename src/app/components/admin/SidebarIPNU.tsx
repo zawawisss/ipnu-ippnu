@@ -51,7 +51,7 @@ export default function Sidebar() {
       { name: "Desa", href: "/admin_ipnu/desa", icon: MapPinIcon },
       { name: "Komisariat", href: "/admin_ipnu/komisariat", icon: AcademicCapIcon },
       { name: "Anggota", href: "/admin/anggota", icon: UserGroupIcon },
-      { name: 'Kalender', href: '/admin_ipnu/kalender', icon: CalendarDaysIcon },
+      
     ],
   };
   const arsipDropdown = {
@@ -97,7 +97,11 @@ export default function Sidebar() {
     href: "/admin_ipnu/laporan-keuangan",
     icon: BanknotesIcon,
   };
-
+const kalender={
+  name: "Kalender",
+  href: "/admin_ipnu/kalender",
+  icon: CalendarDaysIcon,
+}
   const navItems = [
     {
       name: "Dashboard",
@@ -107,7 +111,9 @@ export default function Sidebar() {
     wilayahDropdown,
     arsipDropdown,
     suratDropdown,
-    laporanKeuanganItem, // Tambahkan menu laporan keuangan di akhir navItems
+    laporanKeuanganItem,
+    kalender,
+    // Tambahkan menu laporan keuangan di akhir navItems
   ];
 
   return (

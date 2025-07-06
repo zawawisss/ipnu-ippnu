@@ -103,7 +103,7 @@ function PACTableAdmin() {
       const rankB = order[statusB] !== undefined ? order[statusB] : 3;
       return rankA - rankB;
     });
-  }, [searchTerm, kecamatanData, getStatus, statusFilter]); // Tambahkan statusFilter ke dependency array
+  }, [kecamatanData, getStatus]); // Tambahkan statusFilter ke dependency array
 
   const displayData = useMemo(() => {
     return kecamatanData.data;

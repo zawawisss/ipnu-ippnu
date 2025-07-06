@@ -3,24 +3,27 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import EventForm from '@/app/components/admin/EventForm';
 import EventList from '@/app/components/admin/EventList';
-import { IEvent } from '@/models/Event'; // Import interface Event
+import { IEvent } from '@/models/Event';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, useDisclosure } from '@heroui/react';
+import { Calendar } from '@heroui/react';
+import { getLocalTimeZone, today } from '@internationalized/date';
+import type { DateValue } from '@react-types/datepicker';
 
 const AdminCalendarPage: React.FC = () => {
   const [events, setEvents] = useState<IEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState<IEvent | null>(null);
 
-  // Fungsi untuk mengambil data event dari API
+  const { isOpen: isCalendarOpen, onOpen: onCalendarOpen, onOpenChange: onCalendarOpenChange } = useDisclosure();
+  const { isOpen: isFormOpen, onOpen: onFormOpen, onOpenChange: onFormOpenChange } = useDisclosure();
+
   const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch('/api/events');
-      if (!res.ok) {
-        throw new Error('Gagal mengambil data event');
-      }
+      if (!res.ok) throw new Error('Gagal mengambil data event');
       const data = await res.json();
       setEvents(data);
     } catch (err: any) {
@@ -34,87 +37,95 @@ const AdminCalendarPage: React.FC = () => {
     fetchEvents();
   }, [fetchEvents]);
 
-  // Handler saat event berhasil disimpan (baik tambah baru atau update)
-  const handleEventSaved = (savedEvent: IEvent) => {
-    setShowForm(false);
+  const handleEventSaved = () => {
+    onFormOpenChange(); // Close form modal
     setEditingEvent(null);
-    fetchEvents(); // Muat ulang event untuk menampilkan data terbaru
+    fetchEvents();
   };
 
-  // Handler saat tombol edit diklik
   const handleEditEvent = (event: IEvent) => {
     setEditingEvent(event);
-    setShowForm(true);
+    onFormOpen();
   };
 
-  // Handler saat event dihapus
-  const handleEventDeleted = (deletedId: string) => {
-    setEvents(prevEvents => prevEvents.filter(event => event._id !== deletedId));
+  const handleEventDeleted = (id: string) => {
+    setEvents(prevEvents => prevEvents.filter(event => event._id !== id));
+  };
+  
+  const handleDateSelect = (date: any) => {
+    setEditingEvent(null);
+    const newEvent: Partial<IEvent> = {
+        name: '',
+        date: new Date(date.toString()),
+        time: '',
+        location: '',
+        delegation: '',
+        ipnuAttendees: [],
+        ippnuAttendees: [],
+    };
+    setEditingEvent(newEvent as IEvent);
+    onCalendarOpenChange(); // Close calendar modal
+    onFormOpen(); // Open form modal
   };
 
-  // Handler saat membatalkan form
   const handleCancelForm = () => {
-    setShowForm(false);
+    onFormOpenChange();
     setEditingEvent(null);
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-        <p>Memuat kalender...</p>
-      </div>
-    );
+  const handleOpenAddNew = () => {
+      setEditingEvent(null);
+      onCalendarOpen();
   }
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-900 text-red-500">
-        <p>Error: {error}</p>
-      </div>
-    );
-  }
+  if (loading) return <div className="text-center p-10">Memuat...</div>;
+  if (error) return <div className="text-center p-10 text-red-500">Error: {error}</div>;
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Kalender Organisasi IPNU IPPNU</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Kalender Organisasi</h1>
 
-      <button
-        onClick={() => {
-          setEditingEvent(null);
-          setShowForm(true);
-        }}
-        className="mb-6 px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-      >
+      <Button color="primary" onPress={handleOpenAddNew} className="mb-6">
         Tambah Event Baru
-      </button>
+      </Button>
 
-      {showForm && (
-        <div className="mb-8">
-                    <EventForm
-            initialData={
-              editingEvent
-                ? {
+      {/* Calendar Picker Modal */}
+      <Modal isOpen={isCalendarOpen} onOpenChange={onCalendarOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Pilih Tanggal Acara</ModalHeader>
+              <ModalBody>
+                <Calendar 
+                  aria-label="Pilih Tanggal"
+                  onChange={handleDateSelect}
+                />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Event Form Modal */}
+      <Modal isOpen={isFormOpen} onOpenChange={onFormOpenChange} size="3xl" scrollBehavior="inside">
+        <ModalContent>
+          {(onClose) => (
+             <EventForm
+                initialData={editingEvent ? {
                     ...editingEvent,
-                    _id: editingEvent._id as string, // Ensure _id is string
-                    date:
-                      typeof editingEvent.date === 'string'
-                        ? editingEvent.date
-                        : editingEvent.date instanceof Date
-                        ? editingEvent.date.toISOString().slice(0, 10)
-                        : '',
-                  }
-                : undefined
-            }
-            onSave={handleEventSaved}
-            onCancel={handleCancelForm}
-          />
-        </div>
-      )}
+                    _id: editingEvent._id?.toString(),
+                    date: new Date(editingEvent.date).toISOString().slice(0, 10),
+                } : undefined}
+                onSave={handleEventSaved}
+                onCancel={handleCancelForm}
+              />
+          )}
+        </ModalContent>
+      </Modal>
 
-      <EventList events={events} onEdit={handleEditEvent} onDelete={handleEventDeleted} />
+      <EventList events={events} onEdit={handleEditEvent} onDelete={handleEventDeleted} onUpdate={fetchEvents} />
     </div>
   );
 };
 
 export default AdminCalendarPage;
-
