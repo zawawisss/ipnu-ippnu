@@ -14,7 +14,7 @@ interface StatisticsCardProps {
 
 const StatisticsCard = ({ title, value, icon, color, href }: StatisticsCardProps) => {
   const cardContent = (
-    <Card className={`w-full ${href ? 'cursor-pointer' : ''}`}> {/* Add cursor-pointer class conditionally */}
+    <Card className={`w-full transition-all duration-300 ease-in-out transform hover:scale-105 ${href ? 'cursor-pointer' : ''}`}> {/* Add cursor-pointer class conditionally */}
       <CardBody className="flex flex-col items-center text-center p-6">
         <div className={`p-4 rounded-lg bg-${color}-100 mb-4`}>
           <Icon icon={icon} className={`w-8 h-8 text-${color}-500`} />

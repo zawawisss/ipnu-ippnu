@@ -33,6 +33,7 @@ export default function SidebarIPPNU() {
 
   const navItems = [
     { name: "Dashboard", href: "/admin_ippnu", icon: ChartBarSquareIcon },
+    { name: "Kaderisasi", href: "/admin_ippnu/kaderisasi", icon: AcademicCapIcon },
     { name: "Kecamatan", href: "/admin_ippnu/kecamatan", icon: MapPinIcon },
     { name: "Desa", href: "/admin/desa", icon: MapPinIcon },
     { name: "Komisariat", href: "/admin/komisariat", icon: AcademicCapIcon },

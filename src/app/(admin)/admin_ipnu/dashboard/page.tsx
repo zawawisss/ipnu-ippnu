@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from 'react';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/nextauth";
 import Link from "next/link";
@@ -8,6 +9,37 @@ import { Divider } from "@heroui/react";
 import StatisticsCard from "@/app/components/statistik"; // Import StatisticsCard
 
 function AdminIPNUPage() {
+  const [stats, setStats] = useState({
+    activeKecamatan: 0,
+    activeDesa: 0,
+    activeSekolah: 0,
+    totalAnggota: 0, // Assuming you'll fetch this later
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const spCountsResponse = await fetch('/api/sp-status-counts');
+        const spCountsData = await spCountsResponse.json();
+
+        const anggotaResponse = await fetch('/api/anggota');
+        const anggotaData = await anggotaResponse.json();
+
+        setStats(prevStats => ({
+          ...prevStats,
+          activeKecamatan: spCountsData.activeKecamatan,
+          activeDesa: spCountsData.activeDesa,
+          activeSekolah: spCountsData.activeSekolah,
+          totalAnggota: anggotaData.total,
+        }));
+      } catch (error) {
+        console.error('Failed to fetch statistics:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="flex min-h-screen">
       {/* Main Content */}
@@ -17,32 +49,32 @@ function AdminIPNUPage() {
         {/* Statistik Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <StatisticsCard
-            title="Total Kecamatan"
-            value={0} // Placeholder value
-            icon="mdi:city" // Placeholder icon
+            title="Total Kecamatan (SP Aktif)"
+            value={stats.activeKecamatan}
+            icon="mdi:city"
             color="primary"
-            href="/admin_ipnu/kecamatan" // Link to kecamatan page
+            href="/admin_ipnu/kecamatan"
           />
           <StatisticsCard
-            title="Total Desa"
-            value={0} // Placeholder value
-            icon="mdi:home-city" // Placeholder icon
+            title="Total Desa (SP Aktif)"
+            value={stats.activeDesa}
+            icon="mdi:home-city"
             color="success"
-            href="/admin_ipnu/desa" // Link to desa page (needs to be created)
+            href="/admin_ipnu/desa"
           />
           <StatisticsCard
-            title="Total Komisariat"
-            value={0} // Placeholder value
-            icon="mdi:school" // Placeholder icon
+            title="Total Komisariat (SP Aktif)"
+            value={stats.activeSekolah}
+            icon="mdi:school"
             color="warning"
-            href="/admin_ipnu/sekolah" // Link to sekolah page (needs to be created)
+            href="/admin_ipnu/sekolah"
           />
           <StatisticsCard
             title="Total Anggota"
-            value={0} // Placeholder value
-            icon="mdi:account-group" // Placeholder icon
+            value={stats.totalAnggota} // This still needs to be fetched
+            icon="mdi:account-group"
             color="primary"
-            href="/admin_ipnu/anggota" // Link to anggota page (needs to be created)
+            href="/admin_ipnu/anggota"
           />
         </div>
         <Divider className="my-6 sm:my-8" />

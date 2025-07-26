@@ -10,6 +10,8 @@ import { Divider } from "@heroui/react";
 import StatisticsCard from "../components/statistik";
 import PACTable from "../components/pac-table";
 import { Icon } from "@iconify/react";
+import KaderisasiStats from "../components/KaderisasiStats";
+import Link from "next/link";
 
 function Dashboard() {
   const [data, setData] = useState({
@@ -197,6 +199,15 @@ function Dashboard() {
               href="/anggota" // Link to anggota data (needs to be created)
             />
           </div>
+        </div>
+        <Divider className="my-6 sm:my-8" />
+        <KaderisasiStats />
+        <div className="text-center mt-4">
+          <Link href="/kaderisasi-detail">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Lihat Detail Alumni MAKESTA
+            </button>
+          </Link>
         </div>
         <Divider className="my-6 sm:my-8" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">

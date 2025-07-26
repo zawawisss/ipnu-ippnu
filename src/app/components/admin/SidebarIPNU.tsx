@@ -110,6 +110,11 @@ const kalender={
     },
     wilayahDropdown,
     arsipDropdown,
+    {
+      name: "Kaderisasi",
+      href: "/admin_ipnu/kaderisasi",
+      icon: AcademicCapIcon,
+    },
     suratDropdown,
     laporanKeuanganItem,
     kalender,

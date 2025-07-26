@@ -130,9 +130,9 @@ function PACTableAdmin() {
     refetchData();
   }, []);
 
-  const handleRowClick = (kecId: string) => {
-    if (editingRowId !== kecId) {
-      router.push(`/kecamatan/${kecId}`);
+  const handleRowClick = (kec: any) => {
+    if (editingRowId !== kec._id) {
+      handleEdit(kec);
     }
   };
 
@@ -141,7 +141,7 @@ function PACTableAdmin() {
     setEditedData({
       ...kec,
       tanggal_sp: kec.tanggal_sp
-        ? dayjs(kec.tanggal_sp).format("DD-MM-YYYY")
+        ? dayjs(kec.tanggal_sp).format("YYYY-MM-DD")
         : "",
     });
   };
@@ -149,18 +149,9 @@ function PACTableAdmin() {
   const handleSave = async (kecId: string) => {
     try {
       const dataToSave = { ...editedData };
-      if (dataToSave.tanggal_sp) {
-        const parsedDate = dayjs(dataToSave.tanggal_sp, "DD-MM-YYYY");
-        if (parsedDate.isValid()) {
-          dataToSave.tanggal_sp = parsedDate.format("YYYY-MM-DD");
-        } else {
-          setAlertMessage(
-            "Format tanggal Masa Khidmat tidak valid. Gunakan DD-MM-YYYY."
-          );
-          setAlertColor("danger");
-          return;
-        }
-      } else {
+      // tanggal_sp from type="date" input is already in YYYY-MM-DD format
+      // No need for parsing/reformatting here, just ensure it's not an empty string if null is desired
+      if (dataToSave.tanggal_sp === "") {
         dataToSave.tanggal_sp = null; // Or undefined, depending on how your backend handles empty dates
       }
 
@@ -243,7 +234,8 @@ function PACTableAdmin() {
     saveAs(data, `Data Kecamatan - ${dayjs().format("YYYY-MM-DD")}.xlsx`);
   };
 
-  const colSpanCount = 8; // Sesuaikan dengan jumlah kolom di tabel Anda
+  const isEditingAnyRow = editingRowId !== null;
+  const colSpanCount = isEditingAnyRow ? 8 : 7; // 8 columns when editing, 7 otherwise
 
   return (
     <div className="space-y-4">
@@ -304,7 +296,7 @@ function PACTableAdmin() {
             <TableColumn className="w-24 text-center">
               Jumlah Komisariat
             </TableColumn>
-            <TableColumn className="w-48 text-center">Aksi</TableColumn>
+            {isEditingAnyRow && <TableColumn className="w-48 text-center">Aksi</TableColumn>}
           </TableHeader>
           <TableBody
             emptyContent={isLoading ? "Memuat data..." : "Tidak ada data."}
@@ -319,7 +311,7 @@ function PACTableAdmin() {
               displayData.map((kec: any, index: number) => (
                 <TableRow
                   key={kec._id}
-                  onClick={() => handleRowClick(kec._id)}
+                  onClick={() => handleRowClick(kec)}
                   className="cursor-pointer"
                 >
                   <TableCell className="text-center py-2">
@@ -342,7 +334,7 @@ function PACTableAdmin() {
                   <TableCell className="text-center py-2">
                     {editingRowId === kec._id ? (
                       <Input
-                        type="text"
+                        type="date"
                         value={editedData?.tanggal_sp || ""}
                         onChange={(e) =>
                           setEditedData({
@@ -350,13 +342,7 @@ function PACTableAdmin() {
                             tanggal_sp: e.target.value,
                           })
                         }
-                        placeholder="DD-MM-YYYY"
                         className="w-full"
-                        onKeyDown={(e) => {
-                          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                            e.preventDefault();
-                          }
-                        }}
                       />
                     ) : kec.tanggal_sp ? (
                       dayjs(kec.tanggal_sp).format("DD MMMMYYYY")
@@ -404,9 +390,9 @@ function PACTableAdmin() {
                   <TableCell className="text-center py-2">
                     {kec.jumlah_komisariat || 0}
                   </TableCell>
-                  <TableCell className="text-center py-2">
-                    <div className="flex gap-2 justify-center">
-                      {editingRowId === kec._id ? (
+                  {editingRowId === kec._id && (
+                    <TableCell className="text-center py-2">
+                      <div className="flex gap-2 justify-center">
                         <>
                           <Button
                             size="sm"
@@ -429,23 +415,9 @@ function PACTableAdmin() {
                             Batal
                           </Button>
                         </>
-                      ) : (
-                        <>
-                          <Button
-                            size="sm"
-                            color="primary"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(kec);
-                            }}
-                            startContent={<Edit size={16} />}
-                          >
-                            Edit
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             )}
