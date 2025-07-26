@@ -19,7 +19,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { BellIcon, CalendarDaysIcon } from "lucide-react";
+import { BellIcon } from "lucide-react";
 
 export default function Sidebar() {
   const { data: session } = useSession();
@@ -97,11 +97,19 @@ export default function Sidebar() {
     href: "/admin_ipnu/laporan-keuangan",
     icon: BanknotesIcon,
   };
-const kalender={
-  name: "Kalender",
-  href: "/admin_ipnu/kalender",
-  icon: CalendarDaysIcon,
-}
+  // Menu Kaderisasi dengan submenu
+  const kaderisasiDropdown = {
+    name: "Kaderisasi",
+    icon: AcademicCapIcon,
+    children: [
+      { name: "Data Kader", href: "/admin_ipnu/kaderisasi", icon: UserGroupIcon },
+      { name: "MAKESTA", href: "/admin_ipnu/kaderisasi/makesta", icon: AcademicCapIcon },
+      { name: "LAKMUD", href: "/admin_ipnu/kaderisasi?jenjang=LAKMUD", icon: AcademicCapIcon },
+      { name: "LAKUT", href: "/admin_ipnu/kaderisasi?jenjang=LAKUT", icon: AcademicCapIcon },
+      { name: "LATIN", href: "/admin_ipnu/kaderisasi?jenjang=LATIN", icon: AcademicCapIcon },
+    ],
+  };
+
   const navItems = [
     {
       name: "Dashboard",
@@ -110,14 +118,9 @@ const kalender={
     },
     wilayahDropdown,
     arsipDropdown,
-    {
-      name: "Kaderisasi",
-      href: "/admin_ipnu/kaderisasi",
-      icon: AcademicCapIcon,
-    },
+    kaderisasiDropdown,
     suratDropdown,
     laporanKeuanganItem,
-    kalender,
     // Tambahkan menu laporan keuangan di akhir navItems
   ];
 

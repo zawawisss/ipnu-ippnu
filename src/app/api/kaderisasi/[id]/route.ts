@@ -4,11 +4,11 @@ import Kaderisasi from '@/models/Kaderisasi';
 import mongoose from 'mongoose';
 
 // Handler for GET request (get single kaderisasi data by ID)
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
   try {
     // Connect to database
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -39,11 +39,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // Handler for PUT request (update kaderisasi data)
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
   try {
     // Connect to database
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     // Validate ObjectId
@@ -146,7 +146,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     return NextResponse.json(updatedKaderisasi, { status: 200 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating kaderisasi data:', error);
     
     // Handle validation errors
@@ -166,11 +166,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // Handler for DELETE request (delete kaderisasi data)
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
   try {
     // Connect to database
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {

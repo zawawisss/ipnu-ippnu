@@ -4,10 +4,10 @@ import Event from '@/models/Event';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   await dbConnect();
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const { name, org, action } = await req.json();

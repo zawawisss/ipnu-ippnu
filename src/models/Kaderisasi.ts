@@ -6,7 +6,7 @@ export interface IKaderisasi extends Document {
   komisariat: string;
   kecamatan: string;
   desa: string;
-  jenjangKader: 'PKD' | 'PKL' | 'PKN';
+  jenjangKader: 'MAKESTA' | 'LAKMUD' | 'LAKUT' | 'LATIN' | 'LATPEL';
   statusKader: 'Aktif' | 'Tidak Aktif' | 'Alumni';
   tanggalMulai: Date;
   tanggalSelesai?: Date;
@@ -49,7 +49,7 @@ const KaderisasiSchema: Schema = new Schema(
     jenjangKader: {
       type: String,
       required: [true, 'Jenjang kader harus diisi'],
-      enum: ['PKD', 'PKL', 'PKN']
+      enum: ['MAKESTA', 'LAKMUD', 'LAKUT', 'LATIN', 'LATPEL']
     },
     statusKader: {
       type: String,

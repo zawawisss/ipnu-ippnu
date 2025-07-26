@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newKaderisasi, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating kaderisasi data:', error);
     
     // Handle validation errors

@@ -11,9 +11,9 @@ import { format } from 'date-fns';
 
 // Function to convert Excel serial date to JavaScript Date object
 function excelSerialDateToJSDate(serial: number): Date {
-  const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Excel's epoch is Dec 30, 1899
-  const ms = serial * 24 * 60 * 60 * 1000; // Convert days to milliseconds
-  return new Date(excelEpoch.getTime() + ms);
+  const daysSinceEpoch = serial - 25569; // Days since 1970-01-01
+  const ms = daysSinceEpoch * 24 * 60 * 60 * 1000;
+  return new Date(ms);
 }
 
 function KaderisasiDetailPage() {
@@ -48,8 +48,8 @@ function KaderisasiDetailPage() {
     { key: "PENGKADERAN", label: "Pengkaderan" },
     { key: "PIMPINAN", label: "Pimpinan" },
     { key: "TEMPAT", label: "Tempat" },
-    { key: "JUMLAH", label: "Jumlah" },
-    { key: "organization", label: "Organisasi" },
+    { key: "JUMLAH_GABUNGAN", label: "Peserta (IPNU & IPPNU)" },
+    { key: "TOTAL_JUMLAH", label: "Total" },
   ];
 
   return (
@@ -69,13 +69,19 @@ function KaderisasiDetailPage() {
           </TableHeader>
           <TableBody items={kaderisasiData}>
             {(item: any) => (
-              <TableRow key={item._id}>
+              <TableRow key={item.id}>
                 {(columnKey) => {
-                  let cellValue = getKeyValue(item, columnKey);
-                  if (columnKey === "TANGGAL" && typeof cellValue === 'number') {
-                    cellValue = format(excelSerialDateToJSDate(cellValue), 'dd MMMM yyyy');
+                  if (columnKey === "TANGGAL" && typeof item.TANGGAL === 'number') {
+                    return <TableCell>{format(excelSerialDateToJSDate(item.TANGGAL), 'dd MMMM yyyy')}</TableCell>;
+                  } else if (columnKey === "JUMLAH_GABUNGAN") {
+                    return (
+                      <TableCell>
+                        <div>IPNU: {item.JUMLAH_IPNU || 0}</div>
+                        <div>IPPNU: {item.JUMLAH_IPPNU || 0}</div>
+                      </TableCell>
+                    );
                   }
-                  return <TableCell>{cellValue}</TableCell>;
+                  return <TableCell>{getKeyValue(item, columnKey)}</TableCell>;
                 }}
               </TableRow>
             )}

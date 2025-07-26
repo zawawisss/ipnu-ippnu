@@ -37,7 +37,7 @@ interface KaderisasiData {
   komisariat: string;
   kecamatan: string;
   desa: string;
-  jenjangKader: 'PKD' | 'PKL' | 'PKN';
+  jenjangKader: 'MAKESTA' | 'LAKMUD' | 'LAKUT' | 'LATIN' | 'LATPEL';
   statusKader: 'Aktif' | 'Tidak Aktif' | 'Alumni';
   tanggalMulai: string;
   tanggalSelesai?: string;
@@ -51,9 +51,12 @@ interface KaderisasiData {
 }
 
 const jenjangKaderOptions = [
-  { key: 'PKD', label: 'Pelatihan Kader Dasar (PKD)' },
-  { key: 'PKL', label: 'Pelatihan Kader Lanjutan (PKL)' },
-  { key: 'PKN', label: 'Pelatihan Kader Nasional (PKN)' }
+  // Pengkaderan Formal
+  { key: 'MAKESTA', label: 'Masa Kesetiaan (MAKESTA)' },
+  { key: 'LAKMUD', label: 'Latihan Kader Muda (LAKMUD)' },
+  { key: 'LAKUT', label: 'Latihan Kader Utama (LAKUT)' },
+  // Pengkaderan Non-Formal untuk IPNU
+  { key: 'LATIN', label: 'Latihan Instruktur (LATIN)' }
 ];
 
 const statusKaderOptions = [
@@ -108,7 +111,7 @@ const AdminIPNUKaderisasiPage: React.FC = () => {
     komisariat: '',
     kecamatan: '',
     desa: '',
-    jenjangKader: 'PKD',
+    jenjangKader: 'MAKESTA',
     statusKader: 'Aktif',
     tanggalMulai: '',
     tanggalSelesai: '',
@@ -231,7 +234,7 @@ const AdminIPNUKaderisasiPage: React.FC = () => {
       komisariat: '',
       kecamatan: '',
       desa: '',
-      jenjangKader: 'PKD',
+      jenjangKader: 'MAKESTA',
       statusKader: 'Aktif',
       tanggalMulai: '',
       tanggalSelesai: '',
@@ -264,9 +267,11 @@ const AdminIPNUKaderisasiPage: React.FC = () => {
 
   const getJenjangColor = (jenjang: string) => {
     switch (jenjang) {
-      case 'PKD': return 'secondary';
-      case 'PKL': return 'primary';
-      case 'PKN': return 'warning';
+      case 'MAKESTA': return 'primary';
+      case 'LAKMUD': return 'secondary';
+      case 'LAKUT': return 'warning';
+      case 'LATIN': return 'success';
+      case 'LATPEL': return 'success';
       default: return 'default';
     }
   };
@@ -498,7 +503,7 @@ const AdminIPNUKaderisasiPage: React.FC = () => {
                     isRequired
                   >
                     {jenjangKaderOptions.map((option) => (
-                      <SelectItem key={option.key} value={option.key}>
+                      <SelectItem key={option.key}>
                         {option.label}
                       </SelectItem>
                     ))}
@@ -511,7 +516,7 @@ const AdminIPNUKaderisasiPage: React.FC = () => {
                     isRequired
                   >
                     {statusKaderOptions.map((option) => (
-                      <SelectItem key={option.key} value={option.key}>
+                      <SelectItem key={option.key}>
                         {option.label}
                       </SelectItem>
                     ))}

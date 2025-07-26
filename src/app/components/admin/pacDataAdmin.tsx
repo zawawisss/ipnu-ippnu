@@ -235,7 +235,7 @@ function PACTableAdmin() {
   };
 
   const isEditingAnyRow = editingRowId !== null;
-  const colSpanCount = isEditingAnyRow ? 8 : 7; // 8 columns when editing, 7 otherwise
+  const colSpanCount = 8; // Always 8 columns
 
   return (
     <div className="space-y-4">
@@ -296,7 +296,7 @@ function PACTableAdmin() {
             <TableColumn className="w-24 text-center">
               Jumlah Komisariat
             </TableColumn>
-            {isEditingAnyRow && <TableColumn className="w-48 text-center">Aksi</TableColumn>}
+            <TableColumn className="w-48 text-center">Aksi</TableColumn>
           </TableHeader>
           <TableBody
             emptyContent={isLoading ? "Memuat data..." : "Tidak ada data."}
@@ -390,34 +390,34 @@ function PACTableAdmin() {
                   <TableCell className="text-center py-2">
                     {kec.jumlah_komisariat || 0}
                   </TableCell>
-                  {editingRowId === kec._id && (
-                    <TableCell className="text-center py-2">
+                  <TableCell className="text-center py-2">
+                    {editingRowId === kec._id ? (
                       <div className="flex gap-2 justify-center">
-                        <>
-                          <Button
-                            size="sm"
-                            color="success"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSave(kec._id);
-                            }}
-                          >
-                            Simpan
-                          </Button>
-                          <Button
-                            size="sm"
-                            color="danger"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCancel();
-                            }}
-                          >
-                            Batal
-                          </Button>
-                        </>
+                        <Button
+                          size="sm"
+                          color="success"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSave(kec._id);
+                          }}
+                        >
+                          Simpan
+                        </Button>
+                        <Button
+                          size="sm"
+                          color="danger"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCancel();
+                          }}
+                        >
+                          Batal
+                        </Button>
                       </div>
-                    </TableCell>
-                  )}
+                    ) : (
+                      <div className="text-gray-400">-</div>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))
             )}
