@@ -79,7 +79,7 @@ export const authOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: false, // Tidak perlu secure di localhost
+        secure: process.env.NODE_ENV === "production", // Set secure to true in production
         // domain dihapus karena di localhost tidak diperlukan
       },
     },
