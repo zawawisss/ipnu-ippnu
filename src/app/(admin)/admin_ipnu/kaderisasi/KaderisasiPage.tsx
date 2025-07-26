@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Button,
   Table,
@@ -39,11 +39,7 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  useEffect(() => {
-    fetchData();
-  }, [jenjangKader]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -57,7 +53,11 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [jenjangKader]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleAdd = () => {
     setFormData({ jenjangKader: jenjangKader });
@@ -66,7 +66,11 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
   };
 
   const handleEdit = (item: IKaderisasi) => {
-    setFormData({ ...item, tanggalMulai: item.tanggalMulai ? new Date(item.tanggalMulai).toISOString().split('T')[0] : "" });
+    setFormData({ 
+      ...item, 
+      tanggalMulai: item.tanggalMulai ? new Date(item.tanggalMulai).toISOString().split('T')[0] : "",
+      tanggalSelesai: item.tanggalSelesai ? new Date(item.tanggalSelesai).toISOString().split('T')[0] : ""
+    } as any);
     setSelected(item);
     setIsEditing(true);
     onOpen();
@@ -153,7 +157,7 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
         </TableHeader>
         <TableBody emptyContent={`Belum ada data peserta ${jenjangKader}`}>
           {data.map((item) => (
-            <TableRow key={item._id}>
+            <TableRow key={String(item._id)}>
               <TableCell>{item.nama}</TableCell>
               <TableCell>{item.organization}</TableCell>
               <TableCell>{item.komisariat}</TableCell>
@@ -166,7 +170,7 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
                   <Button size="sm" isIconOnly variant="light" onPress={() => handleEdit(item)}>
                     <PencilIcon className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" isIconOnly variant="light" color="danger" onPress={() => handleDelete(item._id)}>
+                  <Button size="sm" isIconOnly variant="light" color="danger" onPress={() => handleDelete(String(item._id))}>
                     <TrashIcon className="w-4 h-4" />
                   </Button>
                 </div>
@@ -216,15 +220,15 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
                   <Input
                     label="Tanggal Mulai"
                     type="date"
-                    value={formData.tanggalMulai ? new Date(formData.tanggalMulai).toISOString().split('T')[0] : ""}
-                    onChange={e => setFormData({ ...formData, tanggalMulai: e.target.value })}
+                    value={typeof formData.tanggalMulai === 'string' ? formData.tanggalMulai : (formData.tanggalMulai ? new Date(formData.tanggalMulai).toISOString().split('T')[0] : "")}
+                    onChange={e => setFormData({ ...formData, tanggalMulai: e.target.value as any })}
                     isRequired
                   />
                   <Input
                     label="Tanggal Selesai (Opsional)"
                     type="date"
-                    value={formData.tanggalSelesai ? new Date(formData.tanggalSelesai).toISOString().split('T')[0] : ""}
-                    onChange={e => setFormData({ ...formData, tanggalSelesai: e.target.value })}
+                    value={typeof formData.tanggalSelesai === 'string' ? formData.tanggalSelesai : (formData.tanggalSelesai ? new Date(formData.tanggalSelesai).toISOString().split('T')[0] : "")}
+                    onChange={e => setFormData({ ...formData, tanggalSelesai: e.target.value as any })}
                   />
                   <Input
                     label="Mentor"
@@ -242,8 +246,8 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
                     }}
                     isRequired
                   >
-                    <SelectItem key="IPNU" value="IPNU">IPNU</SelectItem>
-                    <SelectItem key="IPPNU" value="IPPNU">IPPNU</SelectItem>
+                    <SelectItem key="IPNU">IPNU</SelectItem>
+                    <SelectItem key="IPPNU">IPPNU</SelectItem>
                   </Select>
                   <Select
                     label="Status Kader"
@@ -255,9 +259,9 @@ const KaderisasiPage: React.FC<KaderisasiPageProps> = ({ jenjangKader }) => {
                     }}
                     isRequired
                   >
-                    <SelectItem key="Aktif" value="Aktif">Aktif</SelectItem>
-                    <SelectItem key="Tidak Aktif" value="Tidak Aktif">Tidak Aktif</SelectItem>
-                    <SelectItem key="Alumni" value="Alumni">Alumni</SelectItem>
+                    <SelectItem key="Aktif">Aktif</SelectItem>
+                    <SelectItem key="Tidak Aktif">Tidak Aktif</SelectItem>
+                    <SelectItem key="Alumni">Alumni</SelectItem>
                   </Select>
                 </div>
               </ModalBody>
