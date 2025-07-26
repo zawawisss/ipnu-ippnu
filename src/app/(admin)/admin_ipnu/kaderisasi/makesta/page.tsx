@@ -2,259 +2,259 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Button,
   Table,
   TableHeader,
   TableColumn,
   TableBody,
   TableRow,
   TableCell,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
+  Button,
+  Chip,
+  Tooltip,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
   Input,
-  Alert
+  Card,
+  CardBody,
 } from "@heroui/react";
-import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { 
+  PlusIcon, 
+  PencilIcon, 
+  TrashIcon, 
+  EllipsisVerticalIcon,
+  MagnifyingGlassIcon 
+} from "@heroicons/react/24/outline";
+import { format } from 'date-fns';
+import MakestaForm from '@/app/components/admin/MakestaForm';
 
-interface MakestaEvent {
-  _id?: string;
-  TANGGAL: number | string; // Excel serial as number or ISO string
-  PENGKADERAN: string;
-  PIMPINAN: string;
-  TEMPAT: string;
-  JUMLAH_IPNU: number;
-  JUMLAH_IPPNU: number;
-  TOTAL_JUMLAH: number;
-}
-
-function excelSerialDateToJSDate(serial: number) {
-  const daysSinceEpoch = serial - 25569;
+// Function to convert Excel serial date to JavaScript Date object
+function excelSerialDateToJSDate(serial: number): Date {
+  const daysSinceEpoch = serial - 25569; // Days since 1970-01-01
   const ms = daysSinceEpoch * 24 * 60 * 60 * 1000;
   return new Date(ms);
 }
 
-const AdminMakestaPage: React.FC = () => {
-  const [data, setData] = useState<MakestaEvent[]>([]);
+function MakestaAdminPage() {
+  const [makestaData, setMakestaData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<MakestaEvent>>({});
-  const [isEditing, setIsEditing] = useState(false);
-  const [selected, setSelected] = useState<MakestaEvent | null>(null);
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertColor, setAlertColor] = useState<"success" | "danger">("success");
-  const [showAlert, setShowAlert] = useState(false);
-
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
+  const [editData, setEditData] = useState(null);
 
   const fetchData = async () => {
-    setLoading(true);
-    setError(null);
     try {
-      const res = await fetch("/api/makesta-event");
-      if (!res.ok) throw new Error("Gagal mengambil data makesta");
-      setData(await res.json());
+      setLoading(true);
+      const response = await fetch("/api/makesta");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setMakestaData(data);
+      setFilteredData(data);
     } catch (err: any) {
-      setError(err.message || "Error memuat data");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAdd = () => {
-    setFormData({});
-    setIsEditing(false);
-    onOpen();
-  };
-
-  const handleEdit = (item: MakestaEvent) => {
-    setFormData({ ...item });
-    setSelected(item);
-    setIsEditing(true);
-    onOpen();
-  };
-
-  const handleDelete = async (id?: string) => {
-    if (!id) return;
-    if (!confirm("Apakah yakin ingin menghapus data ini?")) return;
-    try {
-      const res = await fetch(`/api/makesta-event/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Gagal menghapus data makesta");
-      setAlertMessage("Berhasil menghapus makesta");
-      setAlertColor("success");
-      setShowAlert(true);
-      fetchData();
-    } catch (err: any) {
-      setAlertMessage(err.message || "Error menghapus makesta");
-      setAlertColor("danger");
-      setShowAlert(true);
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      const method = isEditing ? "PUT" : "POST";
-      const url = isEditing && formData._id ? `/api/makesta-event/${formData._id}` : "/api/makesta-event";
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error(isEditing ? "Gagal memperbarui data" : "Gagal menambah data");
-      setAlertMessage(isEditing ? "Berhasil memperbarui makesta" : "Berhasil menambah makesta");
-      setAlertColor("success");
-      setShowAlert(true);
-      onOpenChange();
-      fetchData();
-    } catch (err: any) {
-      setAlertMessage(err.message || "Terjadi kesalahan menyimpan makesta");
-      setAlertColor("danger");
-      setShowAlert(true);
-    }
-  };
-
   useEffect(() => {
-    if (alertMessage) {
-      setShowAlert(true);
-      const t = setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage("");
-      }, 3500);
-      return () => clearTimeout(t);
+    fetchData();
+  }, []);
+
+  // Filter data based on search term
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredData(makestaData);
+    } else {
+      const filtered = makestaData.filter((item: any) => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          item.PIMPINAN?.toLowerCase().includes(searchLower) ||
+          item.TEMPAT?.toLowerCase().includes(searchLower) ||
+          item.PENGKADERAN?.toLowerCase().includes(searchLower) ||
+          item.organisasi?.toLowerCase().includes(searchLower)
+        );
+      });
+      setFilteredData(filtered);
     }
-  }, [alertMessage]);
+  }, [searchTerm, makestaData]);
+
+  const handleCreate = () => {
+    setFormMode('create');
+    setEditData(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = (item: any) => {
+    setFormMode('edit');
+    setEditData(item);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = async (item: any) => {
+    if (confirm(`Apakah Anda yakin ingin menghapus data MAKESTA ini?\n\nPimpinan: ${item.PIMPINAN}\nTempat: ${item.TEMPAT}`)) {
+      try {
+        const response = await fetch(`/api/makesta?id=${item._id}&organisasi=${item.organisasi}`, {
+          method: 'DELETE',
+        });
+        
+        if (response.ok) {
+          await fetchData(); // Refresh data
+          alert('Data berhasil dihapus!');
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        console.error('Error deleting data:', error);
+        alert('Terjadi kesalahan saat menghapus data');
+      }
+    }
+  };
+
+  const handleFormSuccess = () => {
+    fetchData(); // Refresh data after successful create/update
+  };
+
+  if (loading) return <div className="text-center py-8">Loading data...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+
+  const columns = [
+    { key: "organisasi", label: "Organisasi" },
+    { key: "TANGGAL", label: "Tanggal" },
+    { key: "PENGKADERAN", label: "Pengkaderan" },
+    { key: "PIMPINAN", label: "Pimpinan" },
+    { key: "TEMPAT", label: "Tempat" },
+    { key: "JUMLAH", label: "Jumlah Peserta" },
+    { key: "actions", label: "Aksi" },
+  ];
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      {showAlert && (
-        <div className="fixed top-4 right-4 z-50">
-          <Alert color={alertColor}>{alertMessage}</Alert>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Kelola Data MAKESTA</h1>
+          <Button
+            color="primary"
+            startContent={<PlusIcon className="w-4 h-4" />}
+            onPress={handleCreate}
+          >
+            Tambah Data
+          </Button>
         </div>
-      )}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Manajemen Rekap Makesta (Event)</h1>
-        <Button color="primary" startContent={<PlusIcon className="w-4 h-4" />} onPress={handleAdd}>Tambah Event</Button>
+        
+        <Card>
+          <CardBody>
+            <div className="flex gap-4 items-center">
+              <Input
+                placeholder="Cari berdasarkan pimpinan, tempat, atau organisasi..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                startContent={<MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />}
+                className="flex-1"
+              />
+              <div className="text-sm text-gray-500 whitespace-nowrap">
+                {filteredData.length} dari {makestaData.length} data
+              </div>
+            </div>
+          </CardBody>
+        </Card>
       </div>
-      {loading && <div>Loading data...</div>}
-      {error && <div className="text-red-500">{error}</div>}
-      <Table aria-label="Tabel Rekap Makesta">
-        <TableHeader>
-          <TableColumn>TANGGAL</TableColumn>
-          <TableColumn>PENGKADERAN</TableColumn>
-          <TableColumn>PIMPINAN</TableColumn>
-          <TableColumn>TEMPAT</TableColumn>
-          <TableColumn>PESERTA IPNU</TableColumn>
-          <TableColumn>PESERTA IPPNU</TableColumn>
-          <TableColumn>TOTAL PESERTA</TableColumn>
-          <TableColumn>AKSI</TableColumn>
-        </TableHeader>
-        <TableBody emptyContent="Belum ada data makesta">
-          {data.map((item) => (
-            <TableRow key={item._id}>
-              <TableCell>{
-                typeof item.TANGGAL === "number"
-                  ? excelSerialDateToJSDate(item.TANGGAL).toLocaleDateString("id-ID")
-                  : item.TANGGAL
-              }</TableCell>
-              <TableCell>{item.PENGKADERAN}</TableCell>
-              <TableCell>{item.PIMPINAN}</TableCell>
-              <TableCell>{item.TEMPAT}</TableCell>
-              <TableCell>{item.JUMLAH_IPNU}</TableCell>
-              <TableCell>{item.JUMLAH_IPPNU}</TableCell>
-              <TableCell>{item.TOTAL_JUMLAH}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button size="sm" isIconOnly variant="light" onPress={() => handleEdit(item)}>
-                    <PencilIcon className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" isIconOnly variant="light" color="danger" onPress={() => handleDelete(item._id)}>
-                    <TrashIcon className="w-4 h-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>{isEditing ? "Edit Event Makesta" : "Tambah Event Makesta"}</ModalHeader>
-              <ModalBody>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label="Tanggal (Excel serial atau yyyy-mm-dd)"
-                    type="text"
-                    value={formData.TANGGAL?.toString() || ""}
-                    onChange={e => setFormData({ ...formData, TANGGAL: e.target.value })}
-                    isRequired
-                  />
-                  <Input
-                    label="Jenis Pengkaderan"
-                    value={formData.PENGKADERAN || "MAKESTA"}
-                    onChange={e => setFormData({ ...formData, PENGKADERAN: e.target.value })}
-                    isRequired
-                  />
-                  <Input
-                    label="Pimpinan"
-                    value={formData.PIMPINAN || ""}
-                    onChange={e => setFormData({ ...formData, PIMPINAN: e.target.value })}
-                    isRequired
-                  />
-                  <Input
-                    label="Tempat"
-                    value={formData.TEMPAT || ""}
-                    onChange={e => setFormData({ ...formData, TEMPAT: e.target.value })}
-                    isRequired
-                  />
-                  <Input
-                    label="Jumlah IPNU"
-                    type="number"
-                    value={formData.JUMLAH_IPNU?.toString() || "0"}
-                    onChange={e => setFormData({ ...formData, JUMLAH_IPNU: parseInt(e.target.value) || 0 })}
-                    isRequired
-                  />
-                  <Input
-                    label="Jumlah IPPNU"
-                    type="number"
-                    value={formData.JUMLAH_IPPNU?.toString() || "0"}
-                    onChange={e => setFormData({ ...formData, JUMLAH_IPPNU: parseInt(e.target.value) || 0 })}
-                    isRequired
-                  />
-                </div>
-                <Input
-                  className="mt-4"
-                  label="Total Peserta"
-                  type="number"
-                  value={formData.TOTAL_JUMLAH?.toString() || "0"}
-                  readOnly
-                  disabled
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Batal
-                </Button>
-                <Button color="primary" onPress={handleSave}>
-                  {isEditing ? "Perbarui" : "Simpan"}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+
+      <div className="overflow-x-auto">
+        <Table
+          aria-label="Tabel Data MAKESTA"
+          className="min-w-full"
+        >
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.key} className={column.key === 'actions' ? 'text-center' : ''}>
+                {column.label}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={filteredData} emptyContent="Tidak ada data">
+            {(item: any) => (
+              <TableRow key={item._id}>
+                {(columnKey) => {
+                  if (columnKey === "organisasi") {
+                    return (
+                      <TableCell>
+                        <Chip 
+                          color={item.organisasi === 'IPNU' ? 'primary' : 'success'}
+                          variant="flat"
+                          size="sm"
+                        >
+                          {item.organisasi}
+                        </Chip>
+                      </TableCell>
+                    );
+                  } else if (columnKey === "TANGGAL" && typeof item.TANGGAL === 'number') {
+                    return (
+                      <TableCell>
+                        {format(excelSerialDateToJSDate(item.TANGGAL), 'dd MMMM yyyy')}
+                      </TableCell>
+                    );
+                  } else if (columnKey === "actions") {
+                    return (
+                      <TableCell>
+                        <div className="flex justify-center">
+                          <Dropdown>
+                            <DropdownTrigger>
+                              <Button
+                                isIconOnly
+                                size="sm"
+                                variant="light"
+                              >
+                                <EllipsisVerticalIcon className="w-4 h-4" />
+                              </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu>
+                              <DropdownItem
+                                key="edit"
+                                startContent={<PencilIcon className="w-4 h-4" />}
+                                onPress={() => handleEdit(item)}
+                              >
+                                Edit
+                              </DropdownItem>
+                              <DropdownItem
+                                key="delete"
+                                className="text-danger"
+                                color="danger"
+                                startContent={<TrashIcon className="w-4 h-4" />}
+                                onPress={() => handleDelete(item)}
+                              >
+                                Hapus
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
+                      </TableCell>
+                    );
+                  }
+                  return <TableCell>{item[columnKey as keyof typeof item] || '-'}</TableCell>;
+                }}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <MakestaForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSuccess={handleFormSuccess}
+        editData={editData}
+        mode={formMode}
+      />
     </div>
   );
-};
+}
 
-export default AdminMakestaPage;
+export default MakestaAdminPage;

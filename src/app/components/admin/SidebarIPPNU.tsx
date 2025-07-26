@@ -33,7 +33,17 @@ export default function SidebarIPPNU() {
 
   const navItems = [
     { name: "Dashboard", href: "/admin_ippnu", icon: ChartBarSquareIcon },
-    { name: "Kaderisasi", href: "/admin_ippnu/kaderisasi", icon: AcademicCapIcon },
+    {
+      name: "Kaderisasi",
+      icon: AcademicCapIcon,
+      children: [
+        { name: "Data Kader", href: "/admin_ippnu/kaderisasi", icon: AcademicCapIcon },
+        { name: "MAKESTA", href: "/admin_ippnu/kaderisasi/makesta", icon: AcademicCapIcon },
+        { name: "LAKMUD", href: "/admin_ippnu/kaderisasi?jenjang=LAKMUD", icon: AcademicCapIcon },
+        { name: "LAKUT", href: "/admin_ippnu/kaderisasi?jenjang=LAKUT", icon: AcademicCapIcon },
+        { name: "LATPEL", href: "/admin_ippnu/kaderisasi?jenjang=LATPEL", icon: AcademicCapIcon },
+      ],
+    },
     { name: "Kecamatan", href: "/admin_ippnu/kecamatan", icon: MapPinIcon },
     { name: "Desa", href: "/admin/desa", icon: MapPinIcon },
     { name: "Komisariat", href: "/admin/komisariat", icon: AcademicCapIcon },
