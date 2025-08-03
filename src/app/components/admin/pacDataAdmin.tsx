@@ -1,5 +1,5 @@
 //app/components/admin/pacDataAdmin.tsx
-"use client";
+'use client';
 
 import {
   Button,
@@ -15,17 +15,17 @@ import {
   Alert,
   Select, // Import Select
   SelectItem, // Import SelectItem
-} from "@heroui/react";
-import { useEffect, useMemo, useState, useCallback } from "react"; // Import useCallback
-import { StarIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline"; // Import ArrowDownTrayIcon
-import { useRouter } from "next/navigation";
-import { Trash2, Edit } from "lucide-react";
-import dayjs from "dayjs";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import * as XLSX from "xlsx"; // Import xlsx
-import { saveAs } from "file-saver"; // Import saveAs
+} from '@heroui/react';
+import { useEffect, useMemo, useState, useCallback } from 'react'; // Import useCallback
+import { StarIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'; // Import ArrowDownTrayIcon
+import { useRouter } from 'next/navigation';
+import { Trash2, Edit } from 'lucide-react';
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import * as XLSX from 'xlsx'; // Import xlsx
+import { saveAs } from 'file-saver'; // Import saveAs
 
 // Extend Day.js with the plugins
 dayjs.extend(isSameOrAfter);
@@ -37,7 +37,7 @@ function PACTableAdmin() {
     data: [],
     total: 0,
   });
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -45,18 +45,18 @@ function PACTableAdmin() {
   const [editedData, setEditedData] = useState<any | null>(null);
 
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertColor, setAlertColor] = useState<"success" | "danger">("success");
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertColor, setAlertColor] = useState<'success' | 'danger'>('success');
 
   // --- PERUBAHAN BARU: State untuk filter status ---
-  const [statusFilter, setStatusFilter] = useState<string>("all"); // 'all', 'Aktif', 'Hampir Berakhir', 'Tidak Aktif'
+  const [statusFilter, setStatusFilter] = useState<string>('all'); // 'all', 'Aktif', 'Hampir Berakhir', 'Tidak Aktif'
 
   useEffect(() => {
     if (alertMessage) {
       setShowAlert(true);
       const timer = setTimeout(() => {
         setShowAlert(false);
-        setAlertMessage("");
+        setAlertMessage('');
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -68,17 +68,17 @@ function PACTableAdmin() {
 
   // FIX: Wrap getStatus in useCallback
   const getStatus = useCallback((kec: any) => {
-    if (!kec.tanggal_sp) return "";
+    if (!kec.tanggal_sp) return '';
     const endDate = dayjs(kec.tanggal_sp);
-    const twoWeeksBefore = endDate.subtract(14, "day");
+    const twoWeeksBefore = endDate.subtract(14, 'day');
     const now = dayjs();
 
     if (now.isBefore(twoWeeksBefore)) {
-      return "Aktif";
+      return 'Aktif';
     } else if (now.isBefore(endDate)) {
-      return "Hampir Berakhir";
+      return 'Hampir Berakhir';
     } else {
-      return "Tidak Aktif";
+      return 'Tidak Aktif';
     }
   }, []); // getStatus does not depend on any props or state from outside its scope, so an empty dependency array is appropriate.
 
@@ -92,13 +92,13 @@ function PACTableAdmin() {
     // --- PERUBAHAN BARU: Filter berdasarkan status ---
 
     const order: { [key: string]: number } = {
-      "Hampir Berakhir": 0,
+      'Hampir Berakhir': 0,
       Aktif: 1,
-      "Tidak Aktif": 2,
+      'Tidak Aktif': 2,
     };
     return filtered.sort((a: any, b: any) => {
-      const statusA = getStatus(a) || "";
-      const statusB = getStatus(b) || "";
+      const statusA = getStatus(a) || '';
+      const statusB = getStatus(b) || '';
       const rankA = order[statusA] !== undefined ? order[statusA] : 3;
       const rankB = order[statusB] !== undefined ? order[statusB] : 3;
       return rankA - rankB;
@@ -112,17 +112,17 @@ function PACTableAdmin() {
   const refetchData = () => {
     setIsLoading(true);
     fetch(`/api/kecamatanList`)
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setKecamatanData(data);
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.error("Error refetching data:", error);
+      .catch(error => {
+        console.error('Error refetching data:', error);
         setKecamatanData({ data: [], total: 0 });
         setIsLoading(false);
-        setAlertMessage("Gagal memuat data kecamatan.");
-        setAlertColor("danger");
+        setAlertMessage('Gagal memuat data kecamatan.');
+        setAlertColor('danger');
       });
   };
 
@@ -141,8 +141,8 @@ function PACTableAdmin() {
     setEditedData({
       ...kec,
       tanggal_sp: kec.tanggal_sp
-        ? dayjs(kec.tanggal_sp).format("YYYY-MM-DD")
-        : "",
+        ? dayjs(kec.tanggal_sp).format('YYYY-MM-DD')
+        : '',
     });
   };
 
@@ -151,30 +151,30 @@ function PACTableAdmin() {
       const dataToSave = { ...editedData };
       // tanggal_sp from type="date" input is already in YYYY-MM-DD format
       // No need for parsing/reformatting here, just ensure it's not an empty string if null is desired
-      if (dataToSave.tanggal_sp === "") {
+      if (dataToSave.tanggal_sp === '') {
         dataToSave.tanggal_sp = null; // Or undefined, depending on how your backend handles empty dates
       }
 
       const response = await fetch(`/api/kecamatan/${kecId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataToSave),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Gagal menyimpan data.");
+        throw new Error(errorData.message || 'Gagal menyimpan data.');
       }
 
-      setAlertMessage("Data berhasil disimpan!");
-      setAlertColor("success");
+      setAlertMessage('Data berhasil disimpan!');
+      setAlertColor('success');
       setEditingRowId(null);
       setEditedData(null);
       refetchData();
     } catch (error: any) {
-      console.error("Error saving data:", error);
+      console.error('Error saving data:', error);
       setAlertMessage(`Gagal menyimpan data: ${error.message}`);
-      setAlertColor("danger");
+      setAlertColor('danger');
     }
   };
 
@@ -184,24 +184,24 @@ function PACTableAdmin() {
   };
 
   const handleDelete = async (kecId: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus Kecamatan ini?")) {
+    if (window.confirm('Apakah Anda yakin ingin menghapus Kecamatan ini?')) {
       try {
         const response = await fetch(`/api/kecamatan/${kecId}`, {
-          method: "DELETE",
+          method: 'DELETE',
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || "Gagal menghapus data.");
+          throw new Error(errorData.message || 'Gagal menghapus data.');
         }
 
-        setAlertMessage("Data berhasil dihapus!");
-        setAlertColor("success");
+        setAlertMessage('Data berhasil dihapus!');
+        setAlertColor('success');
         refetchData();
       } catch (error: any) {
-        console.error("Error deleting data:", error);
+        console.error('Error deleting data:', error);
         setAlertMessage(`Gagal menghapus data: ${error.message}`);
-        setAlertColor("danger");
+        setAlertColor('danger');
       }
     }
   };
@@ -209,38 +209,38 @@ function PACTableAdmin() {
   // --- PERUBAHAN BARU: Fungsi untuk ekspor ke Excel ---
   const handleExportToExcel = () => {
     const dataToExport = displayData.map((kec: any, index: number) => ({
-      "No.": index + 1,
-      Kecamatan: kec.kecamatan || "-",
-      "Status SP": getStatus(kec) || "-",
-      "Masa Khidmat": kec.tanggal_sp
-        ? dayjs(kec.tanggal_sp).format("DD MMMMYYYY")
-        : "-",
-      "Nomor SP": kec.nomor_sp || "-",
-      "Jumlah Desa": kec.jumlah_desa || "-",
-      "Jumlah Ranting": kec.jumlah_ranting || "-",
-      "Jumlah Komisariat": kec.jumlah_komisariat || "-",
+      'No.': index + 1,
+      Kecamatan: kec.kecamatan || '-',
+      'Status SP': getStatus(kec) || '-',
+      'Masa Khidmat': kec.tanggal_sp
+        ? dayjs(kec.tanggal_sp).format('DD MMMMYYYY')
+        : '-',
+      'Nomor SP': kec.nomor_sp || '-',
+      'Jumlah Desa': kec.jumlah_desa || '-',
+      'Jumlah Ranting': kec.jumlah_ranting || '-',
+      'Jumlah Komisariat': kec.jumlah_komisariat || '-',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Kecamatan");
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Kecamatan');
     const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
+      bookType: 'xlsx',
+      type: 'array',
     });
     const data = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
     });
-    saveAs(data, `Data Kecamatan - ${dayjs().format("YYYY-MM-DD")}.xlsx`);
+    saveAs(data, `Data Kecamatan - ${dayjs().format('YYYY-MM-DD')}.xlsx`);
   };
 
   const isEditingAnyRow = editingRowId !== null;
   const colSpanCount = 8; // Always 8 columns
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {showAlert && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down">
+        <div className='fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down'>
           <Alert
             color={alertColor}
             title={alertMessage}
@@ -248,63 +248,63 @@ function PACTableAdmin() {
           />
         </div>
       )}
-      <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
+      <div className='flex flex-col sm:flex-row justify-between gap-4 items-center'>
         {/* items-center untuk alignment */}
         <Input
-          type="text"
-          placeholder="Cari Kecamatan..."
+          type='text'
+          placeholder='Cari Kecamatan...'
           value={searchTerm}
           onChange={handleSearchChange}
-          startContent={<StarIcon className="w-5 h-5 text-gray-400" />}
-          className="w-full sm:w-64"
+          startContent={<StarIcon className='w-5 h-5 text-gray-400' />}
+          className='w-full sm:w-64'
         />
         {/* --- PERUBAHAN BARU: Filter Status & Tombol Ekspor --- */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+        <div className='flex flex-col sm:flex-row gap-4 w-full sm:w-auto'>
           <Select
-            label="Filter Status"
+            label='Filter Status'
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full sm:w-48"
-            size="sm"
-            labelPlacement="outside"
+            onChange={e => setStatusFilter(e.target.value)}
+            className='w-full sm:w-48'
+            size='sm'
+            labelPlacement='outside'
           >
-            <SelectItem key="all">Semua Status</SelectItem>
-            <SelectItem key="Aktif">Aktif</SelectItem>
-            <SelectItem key="Hampir Berakhir">Hampir Berakhir</SelectItem>
-            <SelectItem key="Tidak Aktif">Tidak Aktif</SelectItem>
+            <SelectItem key='all'>Semua Status</SelectItem>
+            <SelectItem key='Aktif'>Aktif</SelectItem>
+            <SelectItem key='Hampir Berakhir'>Hampir Berakhir</SelectItem>
+            <SelectItem key='Tidak Aktif'>Tidak Aktif</SelectItem>
           </Select>
           <Button
-            color="secondary" // Warna tombol
+            color='secondary' // Warna tombol
             onClick={handleExportToExcel}
-            startContent={<ArrowDownTrayIcon className="w-5 h-5" />} // Ikon Unduh
-            className="w-full sm:w-auto"
+            startContent={<ArrowDownTrayIcon className='w-5 h-5' />} // Ikon Unduh
+            className='w-full sm:w-auto'
           >
             Ekspor Excel
           </Button>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <Table aria-label="Tabel Data Kecamatan">
+      <div className='overflow-x-auto'>
+        <Table aria-label='Tabel Data Kecamatan'>
           <TableHeader>
-            <TableColumn className="w-16 text-center">No.</TableColumn>
-            <TableColumn className="w-64">Kecamatan</TableColumn>
-            <TableColumn className="w-32 text-center">Status SP</TableColumn>
-            <TableColumn className="w-32 text-center">Masa Khidmat</TableColumn>
-            <TableColumn className="w-32">Nomor SP</TableColumn>
-            <TableColumn className="w-24 text-center">Jumlah Desa</TableColumn>
-            <TableColumn className="w-24 text-center">
+            <TableColumn className='w-16 text-center'>No.</TableColumn>
+            <TableColumn className='w-64'>Kecamatan</TableColumn>
+            <TableColumn className='w-32 text-center'>Status SP</TableColumn>
+            <TableColumn className='w-32 text-center'>Masa Khidmat</TableColumn>
+            <TableColumn className='w-32'>Nomor SP</TableColumn>
+            <TableColumn className='w-24 text-center'>Jumlah Desa</TableColumn>
+            <TableColumn className='w-24 text-center'>
               Jumlah Komisariat
             </TableColumn>
-            <TableColumn className="w-48 text-center">Aksi</TableColumn>
+            <TableColumn className='w-48 text-center'>Aksi</TableColumn>
           </TableHeader>
           <TableBody
-            emptyContent={isLoading ? "Memuat data..." : "Tidak ada data."}
+            emptyContent={isLoading ? 'Memuat data...' : 'Tidak ada data.'}
           >
             {isLoading ? (
-              <TableRow key="loading">
-                <TableCell colSpan={colSpanCount} className="text-center py-8">
-                  <Spinner size="lg" />
+              <TableRow key='loading'>
+                <TableCell colSpan={colSpanCount} className='text-center py-8'>
+                  <Spinner size='lg' />
                 </TableCell>
               </TableRow>
             ) : (
@@ -312,57 +312,57 @@ function PACTableAdmin() {
                 <TableRow
                   key={kec._id}
                   onClick={() => handleRowClick(kec)}
-                  className="cursor-pointer"
+                  className='cursor-pointer'
                 >
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {index + 1}.
                   </TableCell>
-                  <TableCell className="py-2">{kec.kecamatan}</TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='py-2'>{kec.kecamatan}</TableCell>
+                  <TableCell className='text-center py-2'>
                     <Chip
                       color={
-                        getStatus(kec) === "Aktif"
-                          ? "success"
-                          : getStatus(kec) === "Hampir Berakhir"
-                          ? "warning"
-                          : "danger"
+                        getStatus(kec) === 'Aktif'
+                          ? 'success'
+                          : getStatus(kec) === 'Hampir Berakhir'
+                            ? 'warning'
+                            : 'danger'
                       }
                     >
-                      {getStatus(kec) || "Tidak Tersedia"}
+                      {getStatus(kec) || 'Tidak Tersedia'}
                     </Chip>
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {editingRowId === kec._id ? (
                       <Input
-                        type="date"
-                        value={editedData?.tanggal_sp || ""}
-                        onChange={(e) =>
+                        type='date'
+                        value={editedData?.tanggal_sp || ''}
+                        onChange={e =>
                           setEditedData({
                             ...editedData,
                             tanggal_sp: e.target.value,
                           })
                         }
-                        className="w-full"
+                        className='w-full'
                       />
                     ) : kec.tanggal_sp ? (
-                      dayjs(kec.tanggal_sp).format("DD MMMMYYYY")
+                      dayjs(kec.tanggal_sp).format('DD MMMMYYYY')
                     ) : (
-                      "-"
+                      '-'
                     )}
                   </TableCell>
-                  <TableCell className="py-2">
+                  <TableCell className='py-2'>
                     {editingRowId === kec._id ? (
                       <Input
-                        type="text"
-                        value={editedData?.nomor_sp || ""}
-                        onChange={(e) =>
+                        type='text'
+                        value={editedData?.nomor_sp || ''}
+                        onChange={e =>
                           setEditedData({
                             ...editedData,
                             nomor_sp: e.target.value,
                           })
                         }
-                        className="w-full"
-                        onKeyDown={(e) => {
+                        className='w-full'
+                        onKeyDown={e => {
                           if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                             e.preventDefault();
                             // Allow normal cursor movement within the input
@@ -371,7 +371,7 @@ function PACTableAdmin() {
                               input.focus();
                               input.setSelectionRange(
                                 Math.max(0, input.selectionStart - 1),
-                                input.selectionEnd,
+                                input.selectionEnd
                               );
                             } else {
                               // If selectionStart is null, just focus the input
@@ -381,22 +381,22 @@ function PACTableAdmin() {
                         }}
                       />
                     ) : (
-                      kec.nomor_sp || "-"
+                      kec.nomor_sp || '-'
                     )}
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {kec.jumlah_desa || 0}
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {kec.jumlah_komisariat || 0}
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {editingRowId === kec._id ? (
-                      <div className="flex gap-2 justify-center">
+                      <div className='flex gap-2 justify-center'>
                         <Button
-                          size="sm"
-                          color="success"
-                          onClick={(e) => {
+                          size='sm'
+                          color='success'
+                          onClick={e => {
                             e.stopPropagation();
                             handleSave(kec._id);
                           }}
@@ -404,9 +404,9 @@ function PACTableAdmin() {
                           Simpan
                         </Button>
                         <Button
-                          size="sm"
-                          color="danger"
-                          onClick={(e) => {
+                          size='sm'
+                          color='danger'
+                          onClick={e => {
                             e.stopPropagation();
                             handleCancel();
                           }}
@@ -415,7 +415,7 @@ function PACTableAdmin() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="text-gray-400">-</div>
+                      <div className='text-gray-400'>-</div>
                     )}
                   </TableCell>
                 </TableRow>

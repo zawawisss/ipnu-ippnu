@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -47,7 +47,7 @@ const MakestaForm: React.FC<MakestaFormProps> = ({
   onClose,
   onSuccess,
   editData,
-  mode
+  mode,
 }) => {
   const [formData, setFormData] = useState({
     organisasi: 'IPNU',
@@ -86,7 +86,7 @@ const MakestaForm: React.FC<MakestaFormProps> = ({
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -95,7 +95,12 @@ const MakestaForm: React.FC<MakestaFormProps> = ({
       setIsLoading(true);
 
       // Validate required fields
-      if (!formData.TANGGAL || !formData.PIMPINAN || !formData.TEMPAT || !formData.JUMLAH) {
+      if (
+        !formData.TANGGAL ||
+        !formData.PIMPINAN ||
+        !formData.TEMPAT ||
+        !formData.JUMLAH
+      ) {
         alert('Semua field harus diisi!');
         return;
       }
@@ -147,7 +152,11 @@ const MakestaForm: React.FC<MakestaFormProps> = ({
       }
 
       if (response.ok) {
-        alert(mode === 'create' ? 'Data berhasil ditambahkan!' : 'Data berhasil diperbarui!');
+        alert(
+          mode === 'create'
+            ? 'Data berhasil ditambahkan!'
+            : 'Data berhasil diperbarui!'
+        );
         onSuccess();
         onClose();
       } else {
@@ -163,80 +172,76 @@ const MakestaForm: React.FC<MakestaFormProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+    <Modal isOpen={isOpen} onClose={onClose} size='2xl'>
       <ModalContent>
         <ModalHeader>
           {mode === 'create' ? 'Tambah Data MAKESTA' : 'Edit Data MAKESTA'}
         </ModalHeader>
         <ModalBody>
-          <div className="flex flex-col gap-4">
+          <div className='flex flex-col gap-4'>
             <Select
-              label="Organisasi"
+              label='Organisasi'
               selectedKeys={[formData.organisasi]}
-              onSelectionChange={(keys) => {
+              onSelectionChange={keys => {
                 const value = Array.from(keys)[0] as string;
                 handleInputChange('organisasi', value);
               }}
             >
-              <SelectItem key="IPNU">IPNU</SelectItem>
-              <SelectItem key="IPPNU">IPPNU</SelectItem>
+              <SelectItem key='IPNU'>IPNU</SelectItem>
+              <SelectItem key='IPPNU'>IPPNU</SelectItem>
             </Select>
 
             <Input
-              type="date"
-              label="Tanggal"
+              type='date'
+              label='Tanggal'
               value={formData.TANGGAL}
-              onChange={(e) => handleInputChange('TANGGAL', e.target.value)}
+              onChange={e => handleInputChange('TANGGAL', e.target.value)}
               isRequired
             />
 
             <Input
-              label="Jenis Pengkaderan"
+              label='Jenis Pengkaderan'
               value={formData.PENGKADERAN}
-              onChange={(e) => handleInputChange('PENGKADERAN', e.target.value)}
+              onChange={e => handleInputChange('PENGKADERAN', e.target.value)}
               isRequired
             />
 
             <Input
-              label="Pimpinan"
-              placeholder="contoh: PAC IPNU Babadan"
+              label='Pimpinan'
+              placeholder='contoh: PAC IPNU Babadan'
               value={formData.PIMPINAN}
-              onChange={(e) => handleInputChange('PIMPINAN', e.target.value)}
+              onChange={e => handleInputChange('PIMPINAN', e.target.value)}
               isRequired
             />
 
             <Input
-              label="Tempat"
-              placeholder="contoh: Gedung Serbaguna Babadan"
+              label='Tempat'
+              placeholder='contoh: Gedung Serbaguna Babadan'
               value={formData.TEMPAT}
-              onChange={(e) => handleInputChange('TEMPAT', e.target.value)}
+              onChange={e => handleInputChange('TEMPAT', e.target.value)}
               isRequired
             />
 
             <Input
-              type="number"
-              label="Jumlah Peserta"
+              type='number'
+              label='Jumlah Peserta'
               value={formData.JUMLAH}
-              onChange={(e) => handleInputChange('JUMLAH', e.target.value)}
+              onChange={e => handleInputChange('JUMLAH', e.target.value)}
               isRequired
-              min="1"
+              min='1'
             />
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button 
-            color="danger" 
-            variant="light" 
+          <Button
+            color='danger'
+            variant='light'
             onPress={onClose}
             disabled={isLoading}
           >
             Batal
           </Button>
-          <Button 
-            color="primary" 
-            onPress={handleSubmit}
-            isLoading={isLoading}
-          >
+          <Button color='primary' onPress={handleSubmit} isLoading={isLoading}>
             {mode === 'create' ? 'Tambah' : 'Simpan'}
           </Button>
         </ModalFooter>

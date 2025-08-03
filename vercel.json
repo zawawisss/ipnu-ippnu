@@ -1,0 +1,30 @@
+{
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin_ipnu/:path*",
+      "destination": "/admin_ipnu/:path*"
+    },
+    {
+      "source": "/admin_ippnu/:path*", 
+      "destination": "/admin_ippnu/:path*"
+    }
+  ]
+}

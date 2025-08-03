@@ -1,6 +1,6 @@
-import { NextResponse, NextRequest } from "next/server";
-import dbConnect from "@/lib/db";
-import Desa from "@/models/Desa";
+import { NextResponse, NextRequest } from 'next/server';
+import dbConnect from '@/lib/db';
+import Desa from '@/models/Desa';
 // import { checkAdminSessionServer } from "@/lib/checkAdminSession";
 
 export async function GET(request: NextRequest) {
@@ -12,22 +12,22 @@ export async function GET(request: NextRequest) {
   await dbConnect();
   try {
     const { searchParams } = new URL(request.url);
-    const getAll = searchParams.get("all") === "true";
-    const search = searchParams.get("search") || ""; // Add search parameter
+    const getAll = searchParams.get('all') === 'true';
+    const search = searchParams.get('search') || ''; // Add search parameter
 
     let desa;
     let total;
-    let page = parseInt(searchParams.get("page") || "1"); // Default page
-    let limit = parseInt(searchParams.get("limit") || "10"); // Default limit
+    let page = parseInt(searchParams.get('page') || '1'); // Default page
+    let limit = parseInt(searchParams.get('limit') || '10'); // Default limit
 
     // Build query filter based on search parameter
     let queryFilter = {};
     if (search.trim()) {
       queryFilter = {
         $or: [
-          { nama_desa: { $regex: search, $options: "i" } }, // Case-insensitive search on nama_desa
-          { status_sp: { $regex: search, $options: "i" } }, // Case-insensitive search on status_sp
-          { nomor_sp: { $regex: search, $options: "i" } }, // Case-insensitive search on nomor_sp
+          { nama_desa: { $regex: search, $options: 'i' } }, // Case-insensitive search on nama_desa
+          { status_sp: { $regex: search, $options: 'i' } }, // Case-insensitive search on status_sp
+          { nomor_sp: { $regex: search, $options: 'i' } }, // Case-insensitive search on nomor_sp
         ],
       };
     }
@@ -51,9 +51,9 @@ export async function GET(request: NextRequest) {
       search, // Include search parameter in response
     });
   } catch (error) {
-    console.error("Failed to fetch desa data:", error);
+    console.error('Failed to fetch desa data:', error);
     return NextResponse.json(
-      { error: "Failed to fetch desa data" },
+      { error: 'Failed to fetch desa data' },
       { status: 500 }
     );
   }
@@ -68,11 +68,11 @@ export async function PUT(request: NextRequest) {
   await dbConnect();
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { message: "Desa ID is required" },
+        { message: 'Desa ID is required' },
         { status: 400 }
       );
     }
@@ -81,17 +81,17 @@ export async function PUT(request: NextRequest) {
     const updatedDesa = await Desa.findByIdAndUpdate(id, body, { new: true });
 
     if (!updatedDesa) {
-      return NextResponse.json({ message: "Desa not found" }, { status: 404 });
+      return NextResponse.json({ message: 'Desa not found' }, { status: 404 });
     }
 
     return NextResponse.json({
-      message: "Desa updated successfully",
+      message: 'Desa updated successfully',
       data: updatedDesa,
     });
   } catch (error) {
-    console.error("Failed to update desa data:", error);
+    console.error('Failed to update desa data:', error);
     return NextResponse.json(
-      { error: "Failed to update desa data" },
+      { error: 'Failed to update desa data' },
       { status: 500 }
     );
   }

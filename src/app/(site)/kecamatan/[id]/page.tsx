@@ -1,4 +1,4 @@
-import KecamatanDetail from "@/app/components/pac-data";
+import KecamatanDetail from '@/app/components/pac-data';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -10,7 +10,6 @@ async function Hasil({ params }: Props) {
   return (
     <>
       <KecamatanDetail id={id} />
-
     </>
   );
 }

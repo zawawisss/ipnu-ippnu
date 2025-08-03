@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose, { Schema, model, models } from 'mongoose';
 
 const KeuanganSchema = new Schema(
   {
@@ -13,4 +13,4 @@ const KeuanganSchema = new Schema(
   { timestamps: true }
 );
 
-export default models.Keuangan || model("Keuangan", KeuanganSchema);
+export default models.Keuangan || model('Keuangan', KeuanganSchema);

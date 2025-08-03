@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import KaderisasiPage from "../KaderisasiPage";
+import KaderisasiPage from '../KaderisasiPage';
 
 const AdminLakmudPage: React.FC = () => {
-  return <KaderisasiPage jenjangKader="LAKMUD" />;
+  return <KaderisasiPage jenjangKader='LAKMUD' />;
 };
 
 export default AdminLakmudPage;

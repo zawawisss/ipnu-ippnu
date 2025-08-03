@@ -16,55 +16,71 @@ function excelSerialDateToJSDate(serial: number): Date {
 }
 
 export async function GET() {
-    try {
-        await db();
+  try {
+    await db();
 
-        const ipnuCollection = mongoose.connection.collection('DATA_KADERISASI_IPNU');
-        const ippnuCollection = mongoose.connection.collection('DATA_KADERISASI_IPPNU');
+    const ipnuCollection = mongoose.connection.collection(
+      'DATA_KADERISASI_IPNU'
+    );
+    const ippnuCollection = mongoose.connection.collection(
+      'DATA_KADERISASI_IPPNU'
+    );
 
-        const ipnuData = await ipnuCollection.find({}).toArray();
-        const ippnuData = await ippnuCollection.find({}).toArray();
+    const ipnuData = await ipnuCollection.find({}).toArray();
+    const ippnuData = await ippnuCollection.find({}).toArray();
 
-        const monthlyDataMap = new Map<string, { ipnu: number, ippnu: number }>();
+    const monthlyDataMap = new Map<string, { ipnu: number; ippnu: number }>();
 
-        const processData = (data: any[], organization: 'ipnu' | 'ippnu') => {
-            data.forEach(doc => {
-                if (doc.TANGGAL && typeof doc.TANGGAL === 'number' && doc.JUMLAH && typeof doc.JUMLAH === 'number') {
-                    const date = excelSerialDateToJSDate(doc.TANGGAL);
-                    const year = date.getFullYear();
-                    const month = date.getMonth(); // 0-indexed
-                    const monthName = new Date(year, month).toLocaleString('id-ID', { month: 'short', year: 'numeric' });
+    const processData = (data: any[], organization: 'ipnu' | 'ippnu') => {
+      data.forEach(doc => {
+        if (
+          doc.TANGGAL &&
+          typeof doc.TANGGAL === 'number' &&
+          doc.JUMLAH &&
+          typeof doc.JUMLAH === 'number'
+        ) {
+          const date = excelSerialDateToJSDate(doc.TANGGAL);
+          const year = date.getFullYear();
+          const month = date.getMonth(); // 0-indexed
+          const monthName = new Date(year, month).toLocaleString('id-ID', {
+            month: 'short',
+            year: 'numeric',
+          });
 
-                    if (!monthlyDataMap.has(monthName)) {
-                        monthlyDataMap.set(monthName, { ipnu: 0, ippnu: 0 });
-                    }
-                    const currentMonthData = monthlyDataMap.get(monthName)!;
-                    currentMonthData[organization] += doc.JUMLAH;
-                }
-            });
-        };
+          if (!monthlyDataMap.has(monthName)) {
+            monthlyDataMap.set(monthName, { ipnu: 0, ippnu: 0 });
+          }
+          const currentMonthData = monthlyDataMap.get(monthName)!;
+          currentMonthData[organization] += doc.JUMLAH;
+        }
+      });
+    };
 
-        processData(ipnuData, 'ipnu');
-        processData(ippnuData, 'ippnu');
+    processData(ipnuData, 'ipnu');
+    processData(ippnuData, 'ippnu');
 
-        const monthlyArray = Array.from(monthlyDataMap.entries()).map(([monthName, counts]) => ({
-            month: monthName,
-            ipnu: counts.ipnu,
-            ippnu: counts.ippnu,
-            total: counts.ipnu + counts.ippnu
-        }));
+    const monthlyArray = Array.from(monthlyDataMap.entries()).map(
+      ([monthName, counts]) => ({
+        month: monthName,
+        ipnu: counts.ipnu,
+        ippnu: counts.ippnu,
+        total: counts.ipnu + counts.ippnu,
+      })
+    );
 
-        // Sort by date (need to re-parse month name to date for sorting)
-        monthlyArray.sort((a, b) => {
-            const dateA = new Date(a.month.replace(' ', ' 1, ')); // e.g., 'Jul 2025' -> 'Jul 1, 2025'
-            const dateB = new Date(b.month.replace(' ', ' 1, '));
-            return dateA.getTime() - dateB.getTime();
-        });
+    // Sort by date (need to re-parse month name to date for sorting)
+    monthlyArray.sort((a, b) => {
+      const dateA = new Date(a.month.replace(' ', ' 1, ')); // e.g., 'Jul 2025' -> 'Jul 1, 2025'
+      const dateB = new Date(b.month.replace(' ', ' 1, '));
+      return dateA.getTime() - dateB.getTime();
+    });
 
-        return NextResponse.json(monthlyArray);
-
-    } catch (error) {
-        console.error('Error fetching kaderisasi recap:', error);
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
-    }
+    return NextResponse.json(monthlyArray);
+  } catch (error) {
+    console.error('Error fetching kaderisasi recap:', error);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
 }

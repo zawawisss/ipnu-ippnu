@@ -1,5 +1,5 @@
 // components/Navbar
-"use client";
+'use client';
 import {
   Button,
   Link,
@@ -10,17 +10,17 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-} from "@heroui/react";
-import { Icon } from "@iconify/react";
-import React, { useEffect } from "react";
-import { useTheme } from "next-themes";
+} from '@heroui/react';
+import { Icon } from '@iconify/react';
+import React, { useEffect } from 'react';
+import { useTheme } from 'next-themes';
 
 function AppNavbar() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const menuItems = [
-    { name: "Home", href: "/" },
-    { name: "Statistik PAC", href: "#" },
-    { name: "Tentang Kami", href: "#" },
+    { name: 'Home', href: '/' },
+    { name: 'Statistik PAC', href: '#' },
+    { name: 'Tentang Kami', href: '#' },
   ];
   const [isMounted, setIsMounted] = React.useState(false);
   const { theme, setTheme } = useTheme();
@@ -30,7 +30,7 @@ function AppNavbar() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   if (!isMounted) return null;
@@ -39,33 +39,33 @@ function AppNavbar() {
       isBordered
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
-      className="top-0 left-0 right-0 z-50 px-4 sm:px-6 shadow-md"
+      className='top-0 left-0 right-0 z-50 px-4 sm:px-6 shadow-md'
     >
-      <NavbarContent className="sm:hidden" justify="start">
+      <NavbarContent className='sm:hidden' justify='start'>
         <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
         />
       </NavbarContent>
 
-      <NavbarContent className="sm:hidden pr-3" justify="center">
+      <NavbarContent className='sm:hidden pr-3' justify='center'>
         <NavbarBrand>
-          <Icon icon="lucide:bar-chart" className="w-6 h-6 text-primary" />
-          <p className="font-bold text-inherit ml-2">PC IPNU-IPPNU</p>
+          <Icon icon='lucide:bar-chart' className='w-6 h-6 text-primary' />
+          <p className='font-bold text-inherit ml-2'>PC IPNU-IPPNU</p>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex" justify="start">
+      <NavbarContent className='hidden sm:flex' justify='start'>
         <NavbarBrand>
-          <Icon icon="lucide:bar-chart" className="w-6 h-6 text-primary" />
-          <p className="font-bold text-inherit ml-2">PC IPNU-IPPNU Ponorogo</p>
+          <Icon icon='lucide:bar-chart' className='w-6 h-6 text-primary' />
+          <p className='font-bold text-inherit ml-2'>PC IPNU-IPPNU Ponorogo</p>
         </NavbarBrand>
-        <NavbarContent className="hidden sm:flex gap-4" >
+        <NavbarContent className='hidden sm:flex gap-4'>
           {menuItems.map((item, index) => (
             <NavbarItem key={`${item.name}-${index}`}>
               <Link
-                color="foreground"
+                color='foreground'
                 href={item.href}
-                className={index === 0 ? "active-link" : ""}
+                className={index === 0 ? 'active-link' : ''}
               >
                 {item.name}
               </Link>
@@ -74,48 +74,48 @@ function AppNavbar() {
         </NavbarContent>
       </NavbarContent>
 
-      <NavbarContent justify="end">
+      <NavbarContent justify='end'>
         <NavbarItem>
           <Button
-            variant="flat"
+            variant='flat'
             onPress={toggleTheme}
             isIconOnly
-            className="sm:hidden"
+            className='sm:hidden'
           >
             <Icon
-              icon={theme === "light" ? "lucide:moon" : "lucide:sun"}
-              className="w-5 h-5"
+              icon={theme === 'light' ? 'lucide:moon' : 'lucide:sun'}
+              className='w-5 h-5'
             />
           </Button>
           <Button
-            variant="flat"
+            variant='flat'
             onPress={toggleTheme}
             startContent={
-              <Icon icon={theme === "light" ? "lucide:moon" : "lucide:sun"} />
+              <Icon icon={theme === 'light' ? 'lucide:moon' : 'lucide:sun'} />
             }
-            className="hidden sm:flex"
+            className='hidden sm:flex'
           >
-            {theme === "light" ? "Dark" : "Light"} Mode
+            {theme === 'light' ? 'Dark' : 'Light'} Mode
           </Button>
         </NavbarItem>
         <NavbarItem>
           <Button
-            color="primary"
-            variant="solid"
+            color='primary'
+            variant='solid'
             as={Link}
-            href="/login"
+            href='/login'
             isIconOnly
-            className="sm:hidden"
+            className='sm:hidden'
           >
-            <Icon icon="lucide:user" className="w-5 h-5" />
+            <Icon icon='lucide:user' className='w-5 h-5' />
           </Button>
           <Button
-            color="primary"
-            variant="solid"
+            color='primary'
+            variant='solid'
             as={Link}
-            href="/login"
-            startContent={<Icon icon="lucide:user" />}
-            className="hidden sm:flex"
+            href='/login'
+            startContent={<Icon icon='lucide:user' />}
+            className='hidden sm:flex'
           >
             Admin Login
           </Button>
@@ -126,10 +126,10 @@ function AppNavbar() {
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item.name}-${index}`}>
             <Link
-              color={index === 0 ? "primary" : "foreground"}
-              className="w-full"
+              color={index === 0 ? 'primary' : 'foreground'}
+              className='w-full'
               href={item.href}
-              size="lg"
+              size='lg'
             >
               {item.name}
             </Link>

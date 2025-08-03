@@ -16,6 +16,8 @@ const ArsipKeluarSchema: Schema = new Schema({
   perihal: { type: String, required: true },
 });
 
-const ArsipKeluar = mongoose.models.ArsipKeluar || mongoose.model<IArsipKeluar>('ArsipKeluar', ArsipKeluarSchema, 'arsipkeluar');
+const ArsipKeluar =
+  mongoose.models.ArsipKeluar ||
+  mongoose.model<IArsipKeluar>('ArsipKeluar', ArsipKeluarSchema, 'arsipkeluar');
 
 export default ArsipKeluar;

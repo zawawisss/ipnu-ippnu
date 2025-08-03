@@ -1,12 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import PizZip from "pizzip";
-import Docxtemplater from "docxtemplater";
-import { toHijri } from "hijri-converter";
-import db from "@/lib/db";
-import KecamatanModel from "@/models/Kecamatan";
-
+import { NextRequest, NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import path from 'path';
+import PizZip from 'pizzip';
+import Docxtemplater from 'docxtemplater';
+import { toHijri } from 'hijri-converter';
+import db from '@/lib/db';
+import KecamatanModel from '@/models/Kecamatan';
 
 // Define interfaces matching the data structure from the form
 interface SimpleListItem {
@@ -73,7 +72,7 @@ export function POST(req: NextRequest): Promise<NextResponse> {
       let nomorUrut;
       try {
         const nextSequenceResponse = await fetch(
-          new URL("/api/arsipkeluar?getNextSequence=true", req.url),
+          new URL('/api/arsipkeluar?getNextSequence=true', req.url),
           { headers: req.headers }
         );
 
@@ -83,64 +82,72 @@ export function POST(req: NextRequest): Promise<NextResponse> {
           console.error(
             `Error fetching sequence number: ${nextSequenceResponse.status} - ${errorText}`
           );
-          resolve(NextResponse.json(
-            {
-              error: `Failed to fetch sequence number from /api/arsipkeluar. Status: ${nextSequenceResponse.status}`,
-            },
-            { status: 500 }
-          ));
+          resolve(
+            NextResponse.json(
+              {
+                error: `Failed to fetch sequence number from /api/arsipkeluar. Status: ${nextSequenceResponse.status}`,
+              },
+              { status: 500 }
+            )
+          );
           return;
         }
 
         const sequenceData = await nextSequenceResponse.json();
 
         // Check if nextNumber exists and is a number
-        if (typeof sequenceData.nextNumber !== "number") {
+        if (typeof sequenceData.nextNumber !== 'number') {
           console.error(
-            "Invalid data received from /api/arsipkeluar:",
+            'Invalid data received from /api/arsipkeluar:',
             sequenceData
           );
-          resolve(NextResponse.json(
-            { error: "Invalid sequence data received from /api/arsipkeluar." },
-            { status: 500 }
-          ));
+          resolve(
+            NextResponse.json(
+              {
+                error: 'Invalid sequence data received from /api/arsipkeluar.',
+              },
+              { status: 500 }
+            )
+          );
           return;
         }
 
-        nomorUrut = sequenceData.nextNumber.toString().padStart(3, "0");
+        nomorUrut = sequenceData.nextNumber.toString().padStart(3, '0');
       } catch (fetchError) {
-        console.error("Exception while fetching sequence number:", fetchError);
-        resolve(NextResponse.json(
-          {
-            error: `Exception fetching sequence number from /api/arsipkeluar: ${
-              fetchError instanceof Error
-                ? fetchError.message
-                : String(fetchError)
-            }`,
-          },
-          { status: 500 }
-        ));
+        console.error('Exception while fetching sequence number:', fetchError);
+        resolve(
+          NextResponse.json(
+            {
+              error: `Exception fetching sequence number from /api/arsipkeluar: ${
+                fetchError instanceof Error
+                  ? fetchError.message
+                  : String(fetchError)
+              }`,
+            },
+            { status: 500 }
+          )
+        );
         return;
       }
 
       // Format nomor surat otomatis
-      const tingkat = "PC";
-      const kodeSurat = "SP"; // Surat Pengesahan
-      const periodisasi = "XXXI"; // Hardcoded, consider making this dynamic if needed
-      const tahunKelahiran = "7354"; // Hardcoded, consider making this dynamic if needed
+      const tingkat = 'PC';
+      const kodeSurat = 'SP'; // Surat Pengesahan
+      const periodisasi = 'XXXI'; // Hardcoded, consider making this dynamic if needed
+      const tahunKelahiran = '7354'; // Hardcoded, consider making this dynamic if needed
       const bulanRomawiArr = [
-        "I",
-        "II",
-        "III",
-        "IV",
-        "V",
-        "VI",
-        "VII",
-        "VIII",
-        "IX",
-        "X",
-        "XI",
-        "XII",
+        'I',
+        'II',
+        'III',
+        'IV',
+        'V',
+        'VI',
+        'VII',
+        'VIII',
+        'IX',
+        'X',
+        'XI',
+        'XII',
       ];
       const now = new Date();
       const bulanRomawi = bulanRomawiArr[now.getMonth()];
@@ -150,25 +157,27 @@ export function POST(req: NextRequest): Promise<NextResponse> {
       // Path template
       const templatePath = path.join(
         process.cwd(),
-        "src/app/template",
-        "SuratPengesahanTemplateIPNUPAC.docx"
+        'src/app/template',
+        'SuratPengesahanTemplateIPNUPAC.docx'
       );
       // Check if template file exists
       let content;
       try {
-        content = await fs.readFile(templatePath, "binary");
+        content = await fs.readFile(templatePath, 'binary');
       } catch (fileReadError) {
         console.error(
-          "Error reading template file:",
+          'Error reading template file:',
           templatePath,
           fileReadError
         );
-        resolve(NextResponse.json(
-          {
-            error: `Failed to read template file: ${templatePath}. Please ensure the file exists.`,
-          },
-          { status: 500 }
-        ));
+        resolve(
+          NextResponse.json(
+            {
+              error: `Failed to read template file: ${templatePath}. Please ensure the file exists.`,
+            },
+            { status: 500 }
+          )
+        );
         return;
       }
 
@@ -180,36 +189,40 @@ export function POST(req: NextRequest): Promise<NextResponse> {
 
       // Format tanggal hijriah & masehi
       const bulan = [
-        "Januari",
-        "Februari",
-        "Maret",
-        "April",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agustus",
-        "September",
-        "Oktober",
-        "November",
-        "Desember",
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
       ];
       const tanggal_masehi = `${now.getDate()} ${
         bulan[now.getMonth()]
       } ${now.getFullYear()}`;
-      const hijri = toHijri(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      const hijri = toHijri(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        now.getDate()
+      );
       const bulan_hijriah = [
-        "Muharram",
-        "Safar",
-        "Rabiul Awal",
-        "Rabiul Akhir",
-        "Jumadil Awal",
-        "Jumadil Akhir",
-        "Rajab",
-        "Syaban",
-        "Ramadhan",
-        "Syawwal",
-        "Dzulqaidah",
-        "Dzulhijjah",
+        'Muharram',
+        'Safar',
+        'Rabiul Awal',
+        'Rabiul Akhir',
+        'Jumadil Awal',
+        'Jumadil Akhir',
+        'Rajab',
+        'Syaban',
+        'Ramadhan',
+        'Syawwal',
+        'Dzulqaidah',
+        'Dzulhijjah',
       ];
       const tanggal_hijriah = `${hijri.hd} ${bulan_hijriah[hijri.hm - 1]} ${
         hijri.hy
@@ -217,14 +230,14 @@ export function POST(req: NextRequest): Promise<NextResponse> {
 
       // Helper untuk memformat string tanggal ke "DD Bulan BBBB"
       function formatTanggalIndonesia(dateStr: string): string {
-        if (!dateStr) return "";
+        if (!dateStr) return '';
         const date = new Date(dateStr);
         // Memeriksa apakah tanggal valid
         if (isNaN(date.getTime())) {
-          console.warn("Invalid date string provided:", dateStr);
+          console.warn('Invalid date string provided:', dateStr);
           return dateStr; // Mengembalikan string asli atau placeholder jika tidak valid
         }
-        const tgl = date.getDate().toString().padStart(2, "0");
+        const tgl = date.getDate().toString().padStart(2, '0');
         const bln = bulan[date.getMonth()];
         const thn = date.getFullYear();
         return `${tgl} ${bln} ${thn}`;
@@ -232,7 +245,9 @@ export function POST(req: NextRequest): Promise<NextResponse> {
       const tanggal_konferancab_fmt = formatTanggalIndonesia(
         data.tanggal_konferancab
       );
-      const tanggal_berakhir_fmt = formatTanggalIndonesia(data.tanggal_berakhir);
+      const tanggal_berakhir_fmt = formatTanggalIndonesia(
+        data.tanggal_berakhir
+      );
 
       // Siapkan data untuk rendering
       // Format item daftar dengan indeks dan nama untuk template
@@ -258,56 +273,56 @@ export function POST(req: NextRequest): Promise<NextResponse> {
 
         // Daftar yang menggunakan formatted_item
         pelindung: data.pelindung
-          .filter((item) => item.nama.trim() !== "")
+          .filter(item => item.nama.trim() !== '')
           .map((item, index) => ({
             formatted_item: `${index + 1}. ${item.nama}\n`,
           })),
         pembina: data.pembina
-          .filter((item) => item.nama.trim() !== "")
+          .filter(item => item.nama.trim() !== '')
           .map((item, index) => ({
             formatted_item: `${index + 1}. ${item.nama}\n`,
           })),
-        wakil_ketua: data.wakil_ketua.filter((item) => item.nama.trim() !== ""),
+        wakil_ketua: data.wakil_ketua.filter(item => item.nama.trim() !== ''),
         wakil_sekretaris: data.wakil_sekretaris.filter(
-          (item) => item.nama.trim() !== ""
+          item => item.nama.trim() !== ''
         ),
         wakil_bendahara: data.wakil_bendahara.filter(
-          (item) => item.nama.trim() !== ""
+          item => item.nama.trim() !== ''
         ),
 
         // Departemen dan lembaga: anggota menggunakan formatted_anggota
         departemen: data.departemen
           .filter(
-            (dep) =>
-              dep.departemen.trim() !== "" ||
-              dep.koordinator.trim() !== "" ||
-              dep.anggota.some((a) => a.nama.trim() !== "")
+            dep =>
+              dep.departemen.trim() !== '' ||
+              dep.koordinator.trim() !== '' ||
+              dep.anggota.some(a => a.nama.trim() !== '')
           )
-          .map((dep) => ({
+          .map(dep => ({
             departemen: dep.departemen,
             koordinator: dep.koordinator,
             anggota: dep.anggota
-              .filter((a) => a.nama.trim() !== "")
-              .map((a) => ({
-                nama: a.nama + "\n",
+              .filter(a => a.nama.trim() !== '')
+              .map(a => ({
+                nama: a.nama + '\n',
               })),
           })),
         lembaga: data.lembaga
           .filter(
-            (lem) =>
-              lem.lembaga.trim() !== "" ||
-              lem.direktur.trim() !== "" ||
-              lem.sekretaris_lembaga.trim() !== "" ||
-              lem.anggota_lembaga.some((a) => a.nama.trim() !== "")
+            lem =>
+              lem.lembaga.trim() !== '' ||
+              lem.direktur.trim() !== '' ||
+              lem.sekretaris_lembaga.trim() !== '' ||
+              lem.anggota_lembaga.some(a => a.nama.trim() !== '')
           )
-          .map((lem) => ({
+          .map(lem => ({
             lembaga: lem.lembaga,
             direktur: lem.direktur,
             sekretaris_lembaga: lem.sekretaris_lembaga,
             anggota_lembaga: lem.anggota_lembaga
-              .filter((a) => a.nama.trim() !== "")
-              .map((a) => ({
-                nama: a.nama + "\n",
+              .filter(a => a.nama.trim() !== '')
+              .map(a => ({
+                nama: a.nama + '\n',
               })),
           })),
 
@@ -322,7 +337,7 @@ export function POST(req: NextRequest): Promise<NextResponse> {
                       wakil_komandan &&
                       (Array.isArray(wakil_komandan.nama_wakil_komandan)
                         ? wakil_komandan.nama_wakil_komandan.some(
-                            (a: any) => a.nama && a.nama.trim() !== ""
+                            (a: any) => a.nama && a.nama.trim() !== ''
                           )
                         : false)
                   )
@@ -331,9 +346,9 @@ export function POST(req: NextRequest): Promise<NextResponse> {
                       wakil_komandan.nama_wakil_komandan
                     )
                       ? wakil_komandan.nama_wakil_komandan
-                          .filter((a: any) => a.nama && a.nama.trim() !== "")
+                          .filter((a: any) => a.nama && a.nama.trim() !== '')
                           .map((a: any) => ({
-                            nama: a.nama + "\n",
+                            nama: a.nama + '\n',
                           }))
                       : [],
                   })),
@@ -341,28 +356,28 @@ export function POST(req: NextRequest): Promise<NextResponse> {
                   .filter(
                     (div: any) =>
                       div &&
-                      ((div.divisi && div.divisi.trim() !== "") ||
-                        (div.kepala && div.kepala.trim() !== "") ||
+                      ((div.divisi && div.divisi.trim() !== '') ||
+                        (div.kepala && div.kepala.trim() !== '') ||
                         (Array.isArray(div.anggota_divisi) &&
                           div.anggota_divisi.some(
-                            (a: any) => a.nama && a.nama.trim() !== ""
+                            (a: any) => a.nama && a.nama.trim() !== ''
                           )))
                   )
                   .map((div: any) => ({
-                    divisi: div.divisi || "",
-                    kepala: div.kepala || "",
+                    divisi: div.divisi || '',
+                    kepala: div.kepala || '',
                     anggota_divisi: Array.isArray(div.anggota_divisi) // Perbaikan di sini
                       ? div.anggota_divisi
-                          .filter((a: any) => a.nama && a.nama.trim() !== "")
+                          .filter((a: any) => a.nama && a.nama.trim() !== '')
                           .map((a: any) => ({
-                            nama: a.nama + "\n",
+                            nama: a.nama + '\n',
                           }))
                       : [],
                   })),
               },
             ].filter(
-              (cbpItem) =>
-                (cbpItem.komandan && cbpItem.komandan.trim() !== "") ||
+              cbpItem =>
+                (cbpItem.komandan && cbpItem.komandan.trim() !== '') ||
                 (Array.isArray(cbpItem.wakil_komandan) &&
                   cbpItem.wakil_komandan.length > 0) ||
                 (Array.isArray(cbpItem.divisi) && cbpItem.divisi.length > 0)
@@ -372,15 +387,15 @@ export function POST(req: NextRequest): Promise<NextResponse> {
 
       doc.render(renderData);
       const buf = doc.getZip().generate({
-        type: "nodebuffer",
-        compression: "DEFLATE",
+        type: 'nodebuffer',
+        compression: 'DEFLATE',
       });
 
       // Simpan file ke public
-      const sanitizedNomorSurat = nomorSuratOtomatis.replace(/\//g, "-");
+      const sanitizedNomorSurat = nomorSuratOtomatis.replace(/\//g, '-');
       const outputPath = path.join(
         process.cwd(),
-        "public",
+        'public',
         `SuratPengesahan-${sanitizedNomorSurat}.docx`
       );
       await fs.writeFile(outputPath, buf);
@@ -389,7 +404,7 @@ export function POST(req: NextRequest): Promise<NextResponse> {
       try {
         await db();
         const updated = await KecamatanModel.findOneAndUpdate(
-          { kecamatan: new RegExp(`^${data.kecamatan}$`, "i") }, // case-insensitive
+          { kecamatan: new RegExp(`^${data.kecamatan}$`, 'i') }, // case-insensitive
           {
             tanggal_sp: new Date(data.tanggal_berakhir), // Diubah ke tanggal_sp dan dikonversi ke Date
             nomor_sp: nomorSuratOtomatis,
@@ -397,30 +412,33 @@ export function POST(req: NextRequest): Promise<NextResponse> {
           { new: true, upsert: false }
         );
         if (!updated) {
-          console.error("Kecamatan not found or not updated:", data.kecamatan);
+          console.error('Kecamatan not found or not updated:', data.kecamatan);
         }
       } catch (updateErr) {
-        console.error("Error updating MongoDB:", updateErr);
+        console.error('Error updating MongoDB:', updateErr);
       }
 
       // Kembalikan link download
-      resolve(NextResponse.json({
-        message: "Surat berhasil dibuat",
-        downloadUrl: `/SuratPengesahan-${sanitizedNomorSurat}.docx`,
-        nomor_surat: nomorSuratOtomatis,
-      }));
+      resolve(
+        NextResponse.json({
+          message: 'Surat berhasil dibuat',
+          downloadUrl: `/SuratPengesahan-${sanitizedNomorSurat}.docx`,
+          nomor_surat: nomorSuratOtomatis,
+        })
+      );
     } catch (error) {
       // Generic catch block for any other unexpected errors
-      console.error("Unexpected error generating document:", error);
-      resolve(NextResponse.json(
-        {
-          error: `An unexpected error occurred: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-        },
-        { status: 500 }
-      ));
+      console.error('Unexpected error generating document:', error);
+      resolve(
+        NextResponse.json(
+          {
+            error: `An unexpected error occurred: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          },
+          { status: 500 }
+        )
+      );
     }
   });
 }
-

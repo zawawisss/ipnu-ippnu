@@ -13,12 +13,18 @@ export async function POST(
     const { name, org, action } = await req.json();
 
     if (!name || !org || !action) {
-      return NextResponse.json({ message: 'Data tidak lengkap' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Data tidak lengkap' },
+        { status: 400 }
+      );
     }
 
     const event = await Event.findById(id);
     if (!event) {
-      return NextResponse.json({ message: 'Event tidak ditemukan' }, { status: 404 });
+      return NextResponse.json(
+        { message: 'Event tidak ditemukan' },
+        { status: 404 }
+      );
     }
 
     if (org === 'ipnu') {
@@ -36,14 +42,19 @@ export async function POST(
         event.ippnuAttendees.push(name);
       }
     } else {
-      return NextResponse.json({ message: 'Organisasi tidak valid' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Organisasi tidak valid' },
+        { status: 400 }
+      );
     }
 
     await event.save();
     return NextResponse.json(event, { status: 200 });
-
   } catch (error) {
     console.error('Error processing approval:', error);
-    return NextResponse.json({ message: 'Gagal memproses permintaan' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Gagal memproses permintaan' },
+      { status: 500 }
+    );
   }
 }

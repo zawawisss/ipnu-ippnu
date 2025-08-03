@@ -1,15 +1,14 @@
-import { NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
-import ArsipMasuk from "@/models/ArsipMasuk";
-
+import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/db';
+import ArsipMasuk from '@/models/ArsipMasuk';
 
 const allowedRoles = [
-  "ipnu_ketua",
-  "ipnu_admin",
-  "ippnu_admin",
-  "ipnu_sekretaris",
-  "ippnu_sekretaris",
-  "ippnu_ketua",
+  'ipnu_ketua',
+  'ipnu_admin',
+  'ippnu_admin',
+  'ipnu_sekretaris',
+  'ippnu_sekretaris',
+  'ippnu_ketua',
 ];
 
 type Params = Promise<{ id: string }>;
@@ -25,19 +24,20 @@ export function GET(
       await dbConnect();
       const arsipMasuk = await ArsipMasuk.findById(id);
       if (!arsipMasuk) {
-        resolve(NextResponse.json(
-          { message: "Arsip Masuk not found" },
-          { status: 404 }
-        ));
+        resolve(
+          NextResponse.json(
+            { message: 'Arsip Masuk not found' },
+            { status: 404 }
+          )
+        );
         return;
       }
       resolve(NextResponse.json(arsipMasuk));
     } catch (error) {
       console.error('Failed to fetch arsip masuk:', error);
-      resolve(NextResponse.json(
-        { message: "Error fetching data" },
-        { status: 500 }
-      ));
+      resolve(
+        NextResponse.json({ message: 'Error fetching data' }, { status: 500 })
+      );
     }
   });
 }
@@ -57,19 +57,20 @@ export function PUT(
       });
 
       if (!updatedArsipMasuk) {
-        resolve(NextResponse.json(
-          { message: "Arsip Masuk not found" },
-          { status: 404 }
-        ));
+        resolve(
+          NextResponse.json(
+            { message: 'Arsip Masuk not found' },
+            { status: 404 }
+          )
+        );
         return;
       }
       resolve(NextResponse.json(updatedArsipMasuk));
     } catch (error) {
-      console.error("Error updating arsip masuk:", error);
-      resolve(NextResponse.json(
-        { message: "Error updating data" },
-        { status: 500 }
-      ));
+      console.error('Error updating arsip masuk:', error);
+      resolve(
+        NextResponse.json({ message: 'Error updating data' }, { status: 500 })
+      );
     }
   });
 }

@@ -26,14 +26,20 @@ export async function GET(
 
     // Jika desa tidak ditemukan, kembalikan response 404.
     if (!desa) {
-      return NextResponse.json({ message: 'Desa tidak ditemukan' }, { status: 404 });
+      return NextResponse.json(
+        { message: 'Desa tidak ditemukan' },
+        { status: 404 }
+      );
     }
 
     // Mengembalikan data desa jika berhasil.
     return NextResponse.json({ data: desa });
   } catch (error) {
     console.error('Gagal mengambil data desa:', error);
-    return NextResponse.json({ error: 'Gagal mengambil data desa' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Gagal mengambil data desa' },
+      { status: 500 }
+    );
   }
 }
 
@@ -61,14 +67,23 @@ export async function PUT(
 
     // Jika desa tidak ditemukan, kembalikan response 404.
     if (!updatedDesa) {
-      return NextResponse.json({ message: 'Desa tidak ditemukan' }, { status: 404 });
+      return NextResponse.json(
+        { message: 'Desa tidak ditemukan' },
+        { status: 404 }
+      );
     }
 
     // Mengembalikan data desa yang diperbarui jika berhasil.
-    return NextResponse.json({ message: 'Desa berhasil diperbarui', data: updatedDesa });
+    return NextResponse.json({
+      message: 'Desa berhasil diperbarui',
+      data: updatedDesa,
+    });
   } catch (error) {
     console.error('Gagal memperbarui data desa:', error);
-    return NextResponse.json({ error: 'Gagal memperbarui data desa' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Gagal memperbarui data desa' },
+      { status: 500 }
+    );
   }
 }
 
@@ -95,13 +110,19 @@ export async function DELETE(
 
     // Jika desa tidak ditemukan, kembalikan response 404.
     if (!deletedDesa) {
-      return NextResponse.json({ message: 'Desa tidak ditemukan' }, { status: 404 });
+      return NextResponse.json(
+        { message: 'Desa tidak ditemukan' },
+        { status: 404 }
+      );
     }
 
     // Mengembalikan pesan sukses jika berhasil dihapus.
     return NextResponse.json({ message: 'Desa berhasil dihapus' });
   } catch (error) {
     console.error('Gagal menghapus data desa:', error);
-    return NextResponse.json({ error: 'Gagal menghapus data desa' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Gagal menghapus data desa' },
+      { status: 500 }
+    );
   }
 }

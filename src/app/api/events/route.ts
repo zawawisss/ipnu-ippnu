@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Event from '@/models/Event'; // Import model Event yang baru dibuat
 
-
 // Koneksikan ke database
 dbConnect();
 
@@ -14,7 +13,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(events, { status: 200 });
   } catch (error) {
     console.error('Error fetching events:', error);
-    return NextResponse.json({ message: 'Gagal mengambil event', error }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Gagal mengambil event', error },
+      { status: 500 }
+    );
   }
 }
 
@@ -22,11 +24,22 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, date, time, location, delegation, ipnuAttendees, ippnuAttendees } = body;
+    const {
+      name,
+      date,
+      time,
+      location,
+      delegation,
+      ipnuAttendees,
+      ippnuAttendees,
+    } = body;
 
     // Validasi input dasar
     if (!name || !date || !time || !location || !delegation) {
-      return NextResponse.json({ message: 'Semua field harus diisi, termasuk pendelegasian.' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Semua field harus diisi, termasuk pendelegasian.' },
+        { status: 400 }
+      );
     }
 
     // Buat event baru
@@ -45,6 +58,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(newEvent, { status: 201 });
   } catch (error) {
     console.error('Error creating event:', error);
-    return NextResponse.json({ message: 'Gagal membuat event baru', error }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Gagal membuat event baru', error },
+      { status: 500 }
+    );
   }
 }

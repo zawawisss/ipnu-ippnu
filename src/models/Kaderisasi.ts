@@ -25,75 +25,75 @@ const KaderisasiSchema: Schema = new Schema(
     nama: {
       type: String,
       required: [true, 'Nama harus diisi'],
-      trim: true
+      trim: true,
     },
     nim: {
       type: String,
-      trim: true
+      trim: true,
     },
     komisariat: {
       type: String,
       required: [true, 'Komisariat harus diisi'],
-      trim: true
+      trim: true,
     },
     kecamatan: {
       type: String,
       required: [true, 'Kecamatan harus diisi'],
-      trim: true
+      trim: true,
     },
     desa: {
       type: String,
       required: [true, 'Desa harus diisi'],
-      trim: true
+      trim: true,
     },
     jenjangKader: {
       type: String,
       required: [true, 'Jenjang kader harus diisi'],
-      enum: ['MAKESTA', 'LAKMUD', 'LAKUT', 'LATIN', 'LATPEL']
+      enum: ['MAKESTA', 'LAKMUD', 'LAKUT', 'LATIN', 'LATPEL'],
     },
     statusKader: {
       type: String,
       required: [true, 'Status kader harus diisi'],
       enum: ['Aktif', 'Tidak Aktif', 'Alumni'],
-      default: 'Aktif'
+      default: 'Aktif',
     },
     tanggalMulai: {
       type: Date,
-      required: [true, 'Tanggal mulai harus diisi']
+      required: [true, 'Tanggal mulai harus diisi'],
     },
     tanggalSelesai: {
-      type: Date
+      type: Date,
     },
     mentor: {
       type: String,
       required: [true, 'Mentor harus diisi'],
-      trim: true
+      trim: true,
     },
     materiSelesai: {
       type: [String],
-      default: []
+      default: [],
     },
     nilaiAkhir: {
       type: Number,
       min: 0,
-      max: 100
+      max: 100,
     },
     sertifikat: {
       type: Boolean,
-      default: false
+      default: false,
     },
     catatan: {
       type: String,
-      trim: true
+      trim: true,
     },
     organization: {
       type: String,
       required: [true, 'Organisasi harus diisi'],
-      enum: ['IPNU', 'IPPNU']
-    }
+      enum: ['IPNU', 'IPPNU'],
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
@@ -102,6 +102,8 @@ KaderisasiSchema.index({ nama: 'text', komisariat: 'text', nim: 'text' });
 KaderisasiSchema.index({ organization: 1, statusKader: 1 });
 KaderisasiSchema.index({ jenjangKader: 1, organization: 1 });
 
-const Kaderisasi = mongoose.models.Kaderisasi || mongoose.model<IKaderisasi>('Kaderisasi', KaderisasiSchema);
+const Kaderisasi =
+  mongoose.models.Kaderisasi ||
+  mongoose.model<IKaderisasi>('Kaderisasi', KaderisasiSchema);
 
 export default Kaderisasi;

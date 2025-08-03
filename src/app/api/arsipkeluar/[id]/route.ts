@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
-import ArsipKeluar from "@/models/ArsipKeluar";
+import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '@/lib/db';
+import ArsipKeluar from '@/models/ArsipKeluar';
 
 export function GET(
   request: NextRequest,
@@ -14,20 +14,21 @@ export function GET(
       const arsipKeluar = await ArsipKeluar.findById(id);
 
       if (!arsipKeluar) {
-        resolve(NextResponse.json(
-          { message: "Arsip Keluar not found" },
-          { status: 404 }
-        ));
+        resolve(
+          NextResponse.json(
+            { message: 'Arsip Keluar not found' },
+            { status: 404 }
+          )
+        );
         return;
       }
 
       resolve(NextResponse.json(arsipKeluar));
     } catch (error) {
-      console.error("Error fetching arsip keluar:", error);
-      resolve(NextResponse.json(
-        { message: "Error fetching data" },
-        { status: 500 }
-      ));
+      console.error('Error fetching arsip keluar:', error);
+      resolve(
+        NextResponse.json({ message: 'Error fetching data' }, { status: 500 })
+      );
     }
   });
 }
@@ -48,20 +49,21 @@ export function PUT(
       });
 
       if (!updatedArsipKeluar) {
-        resolve(NextResponse.json(
-          { message: "Arsip Keluar not found" },
-          { status: 404 }
-        ));
+        resolve(
+          NextResponse.json(
+            { message: 'Arsip Keluar not found' },
+            { status: 404 }
+          )
+        );
         return;
       }
 
       resolve(NextResponse.json(updatedArsipKeluar));
     } catch (error) {
-      console.error("Error updating arsip keluar:", error);
-      resolve(NextResponse.json(
-        { message: "Error updating data" },
-        { status: 500 }
-      ));
+      console.error('Error updating arsip keluar:', error);
+      resolve(
+        NextResponse.json({ message: 'Error updating data' }, { status: 500 })
+      );
     }
   });
 }
@@ -78,20 +80,23 @@ export function DELETE(
       const deletedArsipKeluar = await ArsipKeluar.findByIdAndDelete(id);
 
       if (!deletedArsipKeluar) {
-        resolve(NextResponse.json(
-          { message: "Arsip Keluar not found" },
-          { status: 404 }
-        ));
+        resolve(
+          NextResponse.json(
+            { message: 'Arsip Keluar not found' },
+            { status: 404 }
+          )
+        );
         return;
       }
 
-      resolve(NextResponse.json({ message: "Arsip Keluar deleted successfully" }));
+      resolve(
+        NextResponse.json({ message: 'Arsip Keluar deleted successfully' })
+      );
     } catch (error) {
-      console.error("Error deleting arsip keluar:", error);
-      resolve(NextResponse.json(
-        { message: "Error deleting data" },
-        { status: 500 }
-      ));
+      console.error('Error deleting arsip keluar:', error);
+      resolve(
+        NextResponse.json({ message: 'Error deleting data' }, { status: 500 })
+      );
     }
   });
 }

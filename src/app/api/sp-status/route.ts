@@ -17,10 +17,11 @@ export async function GET(req: NextRequest) {
     const expired: string[] = [];
     const expiring: string[] = [];
 
-    kecamatanData.forEach((kec) => {
+    kecamatanData.forEach(kec => {
       // Menggunakan tanggal_sp untuk perhitungan
       const endDate = new Date(kec.tanggal_sp);
-      const diffInDays = (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+      const diffInDays =
+        (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
 
       if (diffInDays < 0) {
         expired.push(kec.kecamatan);
@@ -39,7 +40,9 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('Failed to fetch SP status:', error);
-    return NextResponse.json({ error: 'Failed to fetch SP status' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch SP status' },
+      { status: 500 }
+    );
   }
 }
-

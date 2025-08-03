@@ -1,6 +1,6 @@
-import db from "@/lib/db";
-import Kecamatan from "@/models/Kecamatan";
-import { NextResponse, NextRequest } from "next/server";
+import db from '@/lib/db';
+import Kecamatan from '@/models/Kecamatan';
+import { NextResponse, NextRequest } from 'next/server';
 
 export async function GET(
   req: NextRequest,
@@ -14,14 +14,14 @@ export async function GET(
     const data = await Kecamatan.findById(id);
     if (!data) {
       return NextResponse.json(
-        { message: "Data tidak ditemukan." },
+        { message: 'Data tidak ditemukan.' },
         { status: 404 }
       );
     }
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Terjadi kesalahan saat mengambil data." },
+      { message: 'Terjadi kesalahan saat mengambil data.' },
       { status: 500 }
     );
   }
@@ -50,18 +50,17 @@ export async function PUT(
 
     if (!updatedKecamatan) {
       return NextResponse.json(
-        { message: "Kecamatan tidak ditemukan atau gagal diperbarui." },
+        { message: 'Kecamatan tidak ditemukan atau gagal diperbarui.' },
         { status: 404 }
       );
     }
 
     return NextResponse.json(updatedKecamatan, { status: 200 });
   } catch (error: any) {
-    console.error("Error updating kecamatan:", error);
+    console.error('Error updating kecamatan:', error);
     return NextResponse.json(
-      { message: "Gagal memperbarui data kecamatan.", error: error.message },
+      { message: 'Gagal memperbarui data kecamatan.', error: error.message },
       { status: 500 }
     );
   }
 }
-

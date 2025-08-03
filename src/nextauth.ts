@@ -1,22 +1,22 @@
 // nextauth.ts
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import connectDB from "./lib/db";
-import Admin from "./models/Admin";
-import bcrypt from "bcryptjs";
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import db from './lib/db';
+import Admin from './models/Admin';
+import bcrypt from 'bcryptjs';
 
 export const authOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" },
+        username: { label: 'Username', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null;
 
-        await connectDB();
+        await db();
 
         const admin = await Admin.findOne({ username: credentials.username });
         if (!admin) return null;
@@ -27,9 +27,9 @@ export const authOptions = {
         );
 
         if (passwordMatch) {
-          const usernameParts = admin.username.split("_");
+          const usernameParts = admin.username.split('_');
           const org = usernameParts[0];
-          const role = usernameParts.length > 1 ? usernameParts[1] : "";
+          const role = usernameParts.length > 1 ? usernameParts[1] : '';
 
           return {
             id: admin._id,
@@ -44,10 +44,10 @@ export const authOptions = {
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
   session: {
-    strategy: "jwt" as const,
+    strategy: 'jwt' as const,
   },
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
@@ -77,10 +77,10 @@ export const authOptions = {
       name: `next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production", // Set secure to true in production
-        // domain dihapus karena di localhost tidak diperlukan
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
       },
     },
   },

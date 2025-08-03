@@ -1,5 +1,5 @@
 // app/components/admin/PRDataAdmin.tsx
-"use client";
+'use client';
 
 import {
   Button,
@@ -15,21 +15,21 @@ import {
   Alert,
   Select, // Import Select component
   SelectItem, // Import SelectItem component
-} from "@heroui/react";
-import { useEffect, useMemo, useState, useRef, useCallback } from "react"; // Import useCallback
+} from '@heroui/react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react'; // Import useCallback
 import {
   StarIcon,
   ArrowDownTrayIcon,
   XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
-import { Edit } from "lucide-react";
-import dayjs from "dayjs";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+} from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
+import { Edit } from 'lucide-react';
+import dayjs from 'dayjs';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 function PRDataAdmin() {
   const [prData, setPRData] = useState<any>({ data: [], total: 0 });
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -37,13 +37,13 @@ function PRDataAdmin() {
   const [editedData, setEditedData] = useState<any | null>(null);
 
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertColor, setAlertColor] = useState<"success" | "danger">("success");
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertColor, setAlertColor] = useState<'success' | 'danger'>('success');
 
   const [kecamatanList, setKecamatanList] = useState<any[]>([]);
-  const [kecamatanSearchTerm, setKecamatanSearchTerm] = useState<string>(""); // Nilai input live
+  const [kecamatanSearchTerm, setKecamatanSearchTerm] = useState<string>(''); // Nilai input live
   const [debouncedKecamatanSearchTerm, setDebouncedKecamatanSearchTerm] =
-    useState<string>(""); // Nilai debounced untuk filter data utama
+    useState<string>(''); // Nilai debounced untuk filter data utama
   const [selectedKecamatanId, setSelectedKecamatanId] = useState<
     string | undefined
   >(undefined); // ID dari item yang dipilih secara eksplisit
@@ -55,9 +55,9 @@ function PRDataAdmin() {
   useEffect(() => {
     const fetchKecamatan = async () => {
       try {
-        const response = await fetch("/api/kecamatanList");
+        const response = await fetch('/api/kecamatanList');
         if (!response.ok) {
-          throw new Error("Failed to fetch kecamatan list");
+          throw new Error('Failed to fetch kecamatan list');
         }
         const data = await response.json();
         const mappedKecamatan =
@@ -67,9 +67,9 @@ function PRDataAdmin() {
           })) || [];
         setKecamatanList(mappedKecamatan);
       } catch (error) {
-        console.error("Error fetching kecamatan list:", error);
-        setAlertMessage("Gagal memuat daftar kecamatan.");
-        setAlertColor("danger");
+        console.error('Error fetching kecamatan list:', error);
+        setAlertMessage('Gagal memuat daftar kecamatan.');
+        setAlertColor('danger');
       }
     };
     fetchKecamatan();
@@ -96,9 +96,9 @@ function PRDataAdmin() {
         setShowKecamatanSuggestions(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [kecamatanSearchRef]);
 
@@ -107,7 +107,7 @@ function PRDataAdmin() {
       setShowAlert(true);
       const timer = setTimeout(() => {
         setShowAlert(false);
-        setAlertMessage("");
+        setAlertMessage('');
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -128,10 +128,10 @@ function PRDataAdmin() {
   };
 
   const getStatusSP = (tanggal_sp: string) => {
-    if (!tanggal_sp) return "Tidak Aktif";
+    if (!tanggal_sp) return 'Tidak Aktif';
     const today = dayjs();
     const expiryDate = dayjs(tanggal_sp);
-    return expiryDate.isAfter(today) ? "Aktif" : "Tidak Aktif";
+    return expiryDate.isAfter(today) ? 'Aktif' : 'Tidak Aktif';
   };
 
   const handleKecamatanSelect = (item: any) => {
@@ -142,7 +142,7 @@ function PRDataAdmin() {
 
     const newSearchParams = new URLSearchParams();
     if (item._id) {
-      newSearchParams.set("kecamatan_id", item._id);
+      newSearchParams.set('kecamatan_id', item._id);
     }
     router.push(`${window.location.pathname}?${newSearchParams.toString()}`);
   };
@@ -151,7 +151,7 @@ function PRDataAdmin() {
     if (!kecamatanSearchTerm) {
       return kecamatanList;
     }
-    return kecamatanList.filter((kecamatan) =>
+    return kecamatanList.filter(kecamatan =>
       kecamatan.kecamatan
         .toLowerCase()
         .includes(kecamatanSearchTerm.toLowerCase())
@@ -160,11 +160,11 @@ function PRDataAdmin() {
 
   const handleClearKecamatanFilter = () => {
     setSelectedKecamatanId(undefined);
-    setKecamatanSearchTerm("");
-    setDebouncedKecamatanSearchTerm(""); // Bersihkan juga term debounced
+    setKecamatanSearchTerm('');
+    setDebouncedKecamatanSearchTerm(''); // Bersihkan juga term debounced
     setShowKecamatanSuggestions(false);
     const newSearchParams = new URLSearchParams();
-    newSearchParams.delete("kecamatan_id");
+    newSearchParams.delete('kecamatan_id');
     router.push(`${window.location.pathname}?${newSearchParams.toString()}`);
   };
 
@@ -190,10 +190,10 @@ function PRDataAdmin() {
 
     // Prioritaskan pilihan eksplisit, jika tidak gunakan term pencarian debounced
     if (selectedKecamatanId) {
-      params.set("kecamatan_id", selectedKecamatanId);
+      params.set('kecamatan_id', selectedKecamatanId);
     } else if (debouncedKecamatanSearchTerm) {
       // Jika tidak ada ID eksplisit yang dipilih, tetapi pengguna mengetik term pencarian, gunakan untuk filtering
-      params.set("search_kecamatan", debouncedKecamatanSearchTerm);
+      params.set('search_kecamatan', debouncedKecamatanSearchTerm);
     }
 
     if (params.toString()) {
@@ -201,17 +201,17 @@ function PRDataAdmin() {
     }
 
     fetch(apiUrl)
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setPRData({ data: data.data, total: data.data.length });
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.error("Error refetching data:", error);
+      .catch(error => {
+        console.error('Error refetching data:', error);
         setPRData({ data: [], total: 0 });
         setIsLoading(false);
-        setAlertMessage("Gagal memuat data Desa.");
-        setAlertColor("danger");
+        setAlertMessage('Gagal memuat data Desa.');
+        setAlertColor('danger');
       });
   }, [selectedKecamatanId, debouncedKecamatanSearchTerm]); // Dependencies for useCallback
 
@@ -226,21 +226,21 @@ function PRDataAdmin() {
       ...pr,
       // Pastikan tanggal_sp diformat untuk input type="date"
       tanggal_sp: pr.tanggal_sp
-        ? dayjs(pr.tanggal_sp).format("YYYY-MM-DD")
-        : "",
+        ? dayjs(pr.tanggal_sp).format('YYYY-MM-DD')
+        : '',
       // Pastikan jumlah_anggota adalah angka atau string kosong jika null/undefined
       jumlah_anggota:
         pr.jumlah_anggota !== undefined && pr.jumlah_anggota !== null
           ? pr.jumlah_anggota
-          : "",
+          : '',
     });
   };
 
   const handleSave = async (prId: string) => {
     try {
       const response = await fetch(`/api/desa/${prId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           // Hanya kirim field yang dapat diedit
           status_sp: editedData?.status_sp,
@@ -248,29 +248,29 @@ function PRDataAdmin() {
           nomor_sp: editedData?.nomor_sp,
           // Pastikan jumlah_anggota adalah angka, default ke 0 jika tidak valid
           jumlah_anggota:
-            typeof editedData?.jumlah_anggota === "number" &&
+            typeof editedData?.jumlah_anggota === 'number' &&
             !isNaN(editedData.jumlah_anggota)
               ? editedData.jumlah_anggota
-              : editedData?.jumlah_anggota === ""
-              ? 0
-              : Number(editedData?.jumlah_anggota) || 0, // Handle empty string from input
+              : editedData?.jumlah_anggota === ''
+                ? 0
+                : Number(editedData?.jumlah_anggota) || 0, // Handle empty string from input
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Gagal menyimpan data.");
+        throw new Error(errorData.message || 'Gagal menyimpan data.');
       }
 
-      setAlertMessage("Data berhasil disimpan!");
-      setAlertColor("success");
+      setAlertMessage('Data berhasil disimpan!');
+      setAlertColor('success');
       setEditingRowId(null);
       setEditedData(null);
       refetchData();
     } catch (error: any) {
-      console.error("Error saving data:", error);
+      console.error('Error saving data:', error);
       setAlertMessage(`Gagal menyimpan data: ${error.message}`);
-      setAlertColor("danger");
+      setAlertColor('danger');
     }
   };
 
@@ -281,60 +281,60 @@ function PRDataAdmin() {
 
   const handleDelete = async (prId: string) => {
     const isConfirmed = window.confirm(
-      "Apakah Anda yakin ingin menghapus data Desa ini?"
+      'Apakah Anda yakin ingin menghapus data Desa ini?'
     );
     if (isConfirmed) {
       try {
         const response = await fetch(`/api/desa/${prId}`, {
-          method: "DELETE",
+          method: 'DELETE',
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || "Gagal menghapus data.");
+          throw new Error(errorData.message || 'Gagal menghapus data.');
         }
 
-        setAlertMessage("Data berhasil dihapus!");
-        setAlertColor("success");
+        setAlertMessage('Data berhasil dihapus!');
+        setAlertColor('success');
         refetchData();
       } catch (error: any) {
-        console.error("Error deleting data:", error);
+        console.error('Error deleting data:', error);
         setAlertMessage(`Gagal menghapus data: ${error.message}`);
-        setAlertColor("danger");
+        setAlertColor('danger');
       }
     }
   };
 
   const handleExportToExcel = () => {
     const dataToExport = displayData.map((pr: any, index: number) => ({
-      "No.": index + 1,
-      "Nama Desa": pr.nama_desa || "-",
-      Kecamatan: pr.kecamatan_id?.kecamatan || "-",
-      "Status SP": getStatusSP(pr.tanggal_sp),
-      "Tanggal SP": pr.tanggal_sp || "-",
-      "Nomor SP": pr.nomor_sp || "-",
-      "Jumlah Anggota": pr.jumlah_anggota || "-",
+      'No.': index + 1,
+      'Nama Desa': pr.nama_desa || '-',
+      Kecamatan: pr.kecamatan_id?.kecamatan || '-',
+      'Status SP': getStatusSP(pr.tanggal_sp),
+      'Tanggal SP': pr.tanggal_sp || '-',
+      'Nomor SP': pr.nomor_sp || '-',
+      'Jumlah Anggota': pr.jumlah_anggota || '-',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Desa");
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Desa');
     const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
+      bookType: 'xlsx',
+      type: 'array',
     });
     const data = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
     });
-    saveAs(data, `Data Desa - ${dayjs().format("YYYY-MM-DD")}.xlsx`);
+    saveAs(data, `Data Desa - ${dayjs().format('YYYY-MM-DD')}.xlsx`);
   };
 
   const colSpanCount = 8; // Sesuaikan dengan jumlah kolom di tabel Anda
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {showAlert && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down">
+        <div className='fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down'>
           <Alert
             color={alertColor}
             title={alertMessage}
@@ -342,42 +342,42 @@ function PRDataAdmin() {
           />
         </div>
       )}
-      <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
+      <div className='flex flex-col sm:flex-row justify-between gap-4 items-center'>
         <Input
-          type="text"
-          placeholder="Cari Desa..."
+          type='text'
+          placeholder='Cari Desa...'
           value={searchTerm}
           onChange={handleSearchChange}
-          startContent={<StarIcon className="w-5 h-5 text-gray-400" />}
-          className="w-full sm:w-64"
+          startContent={<StarIcon className='w-5 h-5 text-gray-400' />}
+          className='w-full sm:w-64'
         />
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <div className="relative w-full sm:w-64" ref={kecamatanSearchRef}>
+        <div className='flex flex-col sm:flex-row gap-4 w-full sm:w-auto'>
+          <div className='relative w-full sm:w-64' ref={kecamatanSearchRef}>
             <Input
-              type="text"
-              placeholder="Filter Kecamatan..."
+              type='text'
+              placeholder='Filter Kecamatan...'
               value={kecamatanSearchTerm}
               onChange={handleKecamatanInputChange}
               onFocus={() => setShowKecamatanSuggestions(true)}
-              startContent={<StarIcon className="w-5 h-5 text-gray-400" />}
+              startContent={<StarIcon className='w-5 h-5 text-gray-400' />}
             />
             {selectedKecamatanId && kecamatanSearchTerm && (
               <Button
                 isIconOnly
-                variant="light"
+                variant='light'
                 onClick={handleClearKecamatanFilter}
-                className="absolute right-2 top-1/2 -translate-y-1/2"
+                className='absolute right-2 top-1/2 -translate-y-1/2'
               >
-                <XMarkIcon className="w-5 h-5" />
+                <XMarkIcon className='w-5 h-5' />
               </Button>
             )}
             {showKecamatanSuggestions &&
               filteredKecamatanSuggestions.length > 0 && (
-                <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
-                  {filteredKecamatanSuggestions.map((item) => (
+                <ul className='absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1'>
+                  {filteredKecamatanSuggestions.map(item => (
                     <li
                       key={item._id}
-                      className="p-2 cursor-pointer hover:bg-gray-100"
+                      className='p-2 cursor-pointer hover:bg-gray-100'
                       onClick={() => handleKecamatanSelect(item)}
                     >
                       {item.kecamatan}
@@ -387,127 +387,127 @@ function PRDataAdmin() {
               )}
           </div>
           <Button
-            color="secondary"
+            color='secondary'
             onClick={handleExportToExcel}
-            startContent={<ArrowDownTrayIcon className="w-5 h-5" />}
-            className="w-full sm:w-auto"
+            startContent={<ArrowDownTrayIcon className='w-5 h-5' />}
+            className='w-full sm:w-auto'
           >
             Ekspor Excel
           </Button>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <Table aria-label="Tabel Data Desa">
+      <div className='overflow-x-auto'>
+        <Table aria-label='Tabel Data Desa'>
           <TableHeader>
-            <TableColumn className="w-16 text-center">No.</TableColumn>
-            <TableColumn className="w-64">Nama Desa</TableColumn>
-            <TableColumn className="w-48">Kecamatan</TableColumn>
-            <TableColumn className="w-32 text-center">Status SP</TableColumn>
-            <TableColumn className="w-32 text-center">Tanggal SP</TableColumn>
-            <TableColumn className="w-32">Nomor SP</TableColumn>
-            <TableColumn className="w-32 text-center">
+            <TableColumn className='w-16 text-center'>No.</TableColumn>
+            <TableColumn className='w-64'>Nama Desa</TableColumn>
+            <TableColumn className='w-48'>Kecamatan</TableColumn>
+            <TableColumn className='w-32 text-center'>Status SP</TableColumn>
+            <TableColumn className='w-32 text-center'>Tanggal SP</TableColumn>
+            <TableColumn className='w-32'>Nomor SP</TableColumn>
+            <TableColumn className='w-32 text-center'>
               Jumlah Anggota
             </TableColumn>
-            <TableColumn className="w-48 text-center">Aksi</TableColumn>
+            <TableColumn className='w-48 text-center'>Aksi</TableColumn>
           </TableHeader>
           <TableBody
-            emptyContent={isLoading ? "Memuat data..." : "Tidak ada data."}
+            emptyContent={isLoading ? 'Memuat data...' : 'Tidak ada data.'}
           >
             {isLoading ? (
-              <TableRow key="loading">
-                <TableCell colSpan={colSpanCount} className="text-center py-8">
-                  <Spinner size="lg" />
+              <TableRow key='loading'>
+                <TableCell colSpan={colSpanCount} className='text-center py-8'>
+                  <Spinner size='lg' />
                 </TableCell>
               </TableRow>
             ) : (
               displayData.map((pr: any, index: number) => (
                 <TableRow key={pr._id}>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {index + 1}.
                   </TableCell>
-                  <TableCell className="py-2">{pr.nama_desa}</TableCell>
-                  <TableCell className="py-2">
-                    {pr.kecamatan_id?.kecamatan || "-"}
+                  <TableCell className='py-2'>{pr.nama_desa}</TableCell>
+                  <TableCell className='py-2'>
+                    {pr.kecamatan_id?.kecamatan || '-'}
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     <Chip
                       color={
-                        getStatusSP(pr.tanggal_sp) === "Aktif"
-                          ? "success"
-                          : "danger"
+                        getStatusSP(pr.tanggal_sp) === 'Aktif'
+                          ? 'success'
+                          : 'danger'
                       }
                     >
                       {getStatusSP(pr.tanggal_sp)}
                     </Chip>
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {editingRowId === pr._id ? (
                       <Input
-                        type="date"
-                        value={editedData?.tanggal_sp || ""}
-                        onChange={(e) =>
+                        type='date'
+                        value={editedData?.tanggal_sp || ''}
+                        onChange={e =>
                           setEditedData({
                             ...editedData,
                             tanggal_sp: e.target.value,
                           })
                         }
-                        className="w-full"
+                        className='w-full'
                       />
                     ) : pr.tanggal_sp ? (
-                      dayjs(pr.tanggal_sp).format("DD MMMMYYYY")
+                      dayjs(pr.tanggal_sp).format('DD MMMMYYYY')
                     ) : (
-                      "-"
+                      '-'
                     )}
                   </TableCell>
-                  <TableCell className="py-2">
+                  <TableCell className='py-2'>
                     {editingRowId === pr._id ? (
                       <Input
-                        type="text"
-                        value={editedData?.nomor_sp || ""}
-                        onChange={(e) =>
+                        type='text'
+                        value={editedData?.nomor_sp || ''}
+                        onChange={e =>
                           setEditedData({
                             ...editedData,
                             nomor_sp: e.target.value,
                           })
                         }
-                        className="w-full"
+                        className='w-full'
                       />
                     ) : (
-                      pr.nomor_sp || "-"
+                      pr.nomor_sp || '-'
                     )}
                   </TableCell>
-                  <TableCell className="text-center py-2">
+                  <TableCell className='text-center py-2'>
                     {editingRowId === pr._id ? (
                       <Input
-                        type="number"
-                        value={editedData?.jumlah_anggota || ""}
-                        onChange={(e) =>
+                        type='number'
+                        value={editedData?.jumlah_anggota || ''}
+                        onChange={e =>
                           setEditedData({
                             ...editedData,
                             jumlah_anggota: Number(e.target.value),
                           })
                         }
-                        className="w-full"
+                        className='w-full'
                       />
                     ) : (
                       pr.jumlah_anggota || 0
                     )}
                   </TableCell>
-                  <TableCell className="text-center py-2">
-                    <div className="flex gap-2 justify-center">
+                  <TableCell className='text-center py-2'>
+                    <div className='flex gap-2 justify-center'>
                       {editingRowId === pr._id ? (
                         <>
                           <Button
-                            size="sm"
-                            color="success"
+                            size='sm'
+                            color='success'
                             onClick={() => handleSave(pr._id)}
                           >
                             Simpan
                           </Button>
                           <Button
-                            size="sm"
-                            color="danger"
+                            size='sm'
+                            color='danger'
                             onClick={handleCancel}
                           >
                             Batal
@@ -516,18 +516,18 @@ function PRDataAdmin() {
                       ) : (
                         <>
                           <Button
-                            size="sm"
-                            color="primary"
+                            size='sm'
+                            color='primary'
                             onClick={() => handleEdit(pr)}
                             startContent={<Edit size={16} />}
                           >
                             Edit
                           </Button>
                           <Button
-                            size="sm"
-                            color="danger"
+                            size='sm'
+                            color='danger'
                             onClick={() => handleDelete(pr._id)}
-                            startContent={<XMarkIcon className="w-5 h-5" />} // Changed to XMarkIcon for delete, if Trash2 is not desired
+                            startContent={<XMarkIcon className='w-5 h-5' />} // Changed to XMarkIcon for delete, if Trash2 is not desired
                           >
                             Hapus
                           </Button>

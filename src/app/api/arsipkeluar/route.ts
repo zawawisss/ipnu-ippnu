@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import ArsipKeluar from "@/models/ArsipKeluar";
+import { NextRequest, NextResponse } from 'next/server';
+import ArsipKeluar from '@/models/ArsipKeluar';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
-    const searchQuery = searchParams.get("search") || "";
-    const getNextSequence = searchParams.get("getNextSequence");
+    const searchQuery = searchParams.get('search') || '';
+    const getNextSequence = searchParams.get('getNextSequence');
 
     if (getNextSequence) {
       const latestArsip = await ArsipKeluar.find({})
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     } else {
       let query: any = {};
       if (searchQuery) {
-        const regex = new RegExp(searchQuery, "i");
+        const regex = new RegExp(searchQuery, 'i');
         query = {
           $or: [
             { indeks: { $regex: regex } },
@@ -39,9 +39,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(arsipKeluar);
     }
   } catch (error) {
-    console.error("Error fetching arsip keluar:", error);
+    console.error('Error fetching arsip keluar:', error);
     return NextResponse.json(
-      { message: "Error fetching data" },
+      { message: 'Error fetching data' },
       { status: 500 }
     );
   }
@@ -63,19 +63,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const savedArsipKeluar = await newArsipKeluar.save();
     return NextResponse.json(savedArsipKeluar);
   } catch (error) {
-    console.error("Error saving arsip keluar:", error);
-    return NextResponse.json({ message: "Error saving data" }, { status: 500 });
+    console.error('Error saving arsip keluar:', error);
+    return NextResponse.json({ message: 'Error saving data' }, { status: 500 });
   }
 }
 
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { message: "Missing id parameter" },
+        { message: 'Missing id parameter' },
         { status: 400 }
       );
     }
@@ -83,16 +83,16 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
     const deletedArsipKeluar = await ArsipKeluar.findByIdAndDelete(id);
     if (!deletedArsipKeluar) {
       return NextResponse.json(
-        { message: "Arsip Keluar not found" },
+        { message: 'Arsip Keluar not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ message: "Arsip Keluar deleted successfully" });
+    return NextResponse.json({ message: 'Arsip Keluar deleted successfully' });
   } catch (error) {
-    console.error("Error deleting arsip keluar:", error);
+    console.error('Error deleting arsip keluar:', error);
     return NextResponse.json(
-      { message: "Error deleting data" },
+      { message: 'Error deleting data' },
       { status: 500 }
     );
   }

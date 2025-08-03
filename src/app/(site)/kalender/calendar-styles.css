@@ -6,11 +6,13 @@
   border-radius: 0.75rem; /* 12px */
   border: none;
   font-family: inherit;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .dark .rbc-calendar {
-    background-color: #18181b; /* zinc-900 */
+  background-color: #18181b; /* zinc-900 */
 }
 
 /* Toolbar styles */
@@ -31,7 +33,7 @@
 }
 
 .dark .rbc-toolbar .rbc-toolbar-label {
-    color: #f4f4f5; /* zinc-100 */
+  color: #f4f4f5; /* zinc-100 */
 }
 
 /* Header row (Sun, Mon, etc.) */
@@ -44,19 +46,20 @@
 }
 
 /* Date cell styles */
-.rbc-month-view, .rbc-month-row {
-    border: none;
+.rbc-month-view,
+.rbc-month-row {
+  border: none;
 }
 
 .rbc-day-bg {
   border-left: 1px solid #f4f4f5; /* zinc-100 */
 }
 .rbc-day-bg:first-child {
-    border-left: none;
+  border-left: none;
 }
 
 .dark .rbc-day-bg {
-    border-left-color: #27272a; /* zinc-800 */
+  border-left-color: #27272a; /* zinc-800 */
 }
 
 .rbc-date-cell {
@@ -66,7 +69,7 @@
 }
 
 .dark .rbc-date-cell {
-    color: #d4d4d8; /* zinc-300 */
+  color: #d4d4d8; /* zinc-300 */
 }
 
 .rbc-off-range-bg {
@@ -74,7 +77,7 @@
 }
 
 .dark .rbc-off-range-bg {
-    background-color: #27272a; /* zinc-800 */
+  background-color: #27272a; /* zinc-800 */
 }
 
 .rbc-today {
@@ -82,7 +85,7 @@
 }
 
 .dark .rbc-today {
-    background-color: #1e3a8a; /* blue-900 */
+  background-color: #1e3a8a; /* blue-900 */
 }
 
 /* Event styles */
@@ -101,5 +104,5 @@
 }
 
 .dark .rbc-event {
-    background-color: #2563eb; /* blue-600 */
+  background-color: #2563eb; /* blue-600 */
 }

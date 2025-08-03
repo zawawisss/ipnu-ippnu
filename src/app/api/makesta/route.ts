@@ -3,139 +3,205 @@ import db from '@/lib/db';
 import mongoose from 'mongoose';
 
 // GET - Read all MAKESTA data
-export async function GET() {
-    try {
-        await db();
-        
-        const ipnuCollection = mongoose.connection.collection('DATA_KADERISASI_IPNU');
-        const ippnuCollection = mongoose.connection.collection('DATA_KADERISASI_IPPNU');
+export async function GET(request: NextRequest) {
+  try {
+    await db();
 
-        // Get all data from both collections
-        const ipnuData = await ipnuCollection.find({}).toArray();
-        const ippnuData = await ippnuCollection.find({}).toArray();
+    const { searchParams } = new URL(request.url);
+    const organisasi = searchParams.get('organisasi'); // Filter by organization
 
-        // Combine and format data
-        const combinedData = [
-            ...ipnuData.map((item: any) => ({ ...item, organisasi: 'IPNU', collection: 'ipnu' })),
-            ...ippnuData.map((item: any) => ({ ...item, organisasi: 'IPPNU', collection: 'ippnu' }))
-        ];
+    const ipnuCollection = mongoose.connection.collection(
+      'DATA_KADERISASI_IPNU'
+    );
+    const ippnuCollection = mongoose.connection.collection(
+      'DATA_KADERISASI_IPPNU'
+    );
 
-        // Sort by date
-        combinedData.sort((a: any, b: any) => (b.TANGGAL || 0) - (a.TANGGAL || 0));
+    let combinedData: any[] = [];
 
-        return NextResponse.json(combinedData);
+    if (organisasi === 'IPNU') {
+      // Only get IPNU data
+      const ipnuData = await ipnuCollection.find({}).toArray();
+      combinedData = ipnuData.map((item: any) => ({
+        ...item,
+        organisasi: 'IPNU',
+        collection: 'ipnu',
+      }));
+    } else if (organisasi === 'IPPNU') {
+      // Only get IPPNU data
+      const ippnuData = await ippnuCollection.find({}).toArray();
+      combinedData = ippnuData.map((item: any) => ({
+        ...item,
+        organisasi: 'IPPNU',
+        collection: 'ippnu',
+      }));
+    } else {
+      // Get all data from both collections (default behavior)
+      const ipnuData = await ipnuCollection.find({}).toArray();
+      const ippnuData = await ippnuCollection.find({}).toArray();
 
-    } catch (error) {
-        console.error('Error fetching MAKESTA data:', error);
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+      combinedData = [
+        ...ipnuData.map((item: any) => ({
+          ...item,
+          organisasi: 'IPNU',
+          collection: 'ipnu',
+        })),
+        ...ippnuData.map((item: any) => ({
+          ...item,
+          organisasi: 'IPPNU',
+          collection: 'ippnu',
+        })),
+      ];
     }
+
+    // Sort by date
+    combinedData.sort((a: any, b: any) => (b.TANGGAL || 0) - (a.TANGGAL || 0));
+
+    return NextResponse.json(combinedData);
+  } catch (error) {
+    console.error('Error fetching MAKESTA data:', error);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
 }
 
 // POST - Create new MAKESTA data
 export async function POST(request: NextRequest) {
-    try {
-        await db();
-        
-        const body = await request.json();
-        const { organisasi, ...data } = body;
+  try {
+    await db();
 
-        // Validate required fields
-        if (!organisasi || !data.TANGGAL || !data.PENGKADERAN || !data.PIMPINAN || !data.TEMPAT || !data.JUMLAH) {
-            return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-        }
+    const body = await request.json();
+    const { organisasi, ...data } = body;
 
-        // Determine collection based on organization
-        const collection = organisasi === 'IPNU' 
-            ? mongoose.connection.collection('DATA_KADERISASI_IPNU')
-            : mongoose.connection.collection('DATA_KADERISASI_IPPNU');
-
-        // Insert new data
-        const result = await collection.insertOne({
-            ...data,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        return NextResponse.json({ 
-            message: 'Data created successfully', 
-            id: result.insertedId 
-        }, { status: 201 });
-
-    } catch (error) {
-        console.error('Error creating MAKESTA data:', error);
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    // Validate required fields
+    if (
+      !organisasi ||
+      !data.TANGGAL ||
+      !data.PENGKADERAN ||
+      !data.PIMPINAN ||
+      !data.TEMPAT ||
+      !data.JUMLAH
+    ) {
+      return NextResponse.json(
+        { message: 'Missing required fields' },
+        { status: 400 }
+      );
     }
+
+    // Determine collection based on organization
+    const collection =
+      organisasi === 'IPNU'
+        ? mongoose.connection.collection('DATA_KADERISASI_IPNU')
+        : mongoose.connection.collection('DATA_KADERISASI_IPPNU');
+
+    // Insert new data
+    const result = await collection.insertOne({
+      ...data,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    return NextResponse.json(
+      {
+        message: 'Data created successfully',
+        id: result.insertedId,
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Error creating MAKESTA data:', error);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
 }
 
 // PUT - Update MAKESTA data
 export async function PUT(request: NextRequest) {
-    try {
-        await db();
-        
-        const body = await request.json();
-        const { _id, organisasi, collection: collectionType, ...updateData } = body;
+  try {
+    await db();
 
-        if (!_id || !organisasi) {
-            return NextResponse.json({ message: 'Missing ID or organization' }, { status: 400 });
-        }
+    const body = await request.json();
+    const { _id, organisasi, collection: collectionType, ...updateData } = body;
 
-        // Determine collection
-        const collection = organisasi === 'IPNU' 
-            ? mongoose.connection.collection('DATA_KADERISASI_IPNU')
-            : mongoose.connection.collection('DATA_KADERISASI_IPPNU');
-
-        // Update data
-        const result = await collection.updateOne(
-            { _id: new mongoose.Types.ObjectId(_id) },
-            { 
-                $set: { 
-                    ...updateData, 
-                    updatedAt: new Date() 
-                } 
-            }
-        );
-
-        if (result.matchedCount === 0) {
-            return NextResponse.json({ message: 'Data not found' }, { status: 404 });
-        }
-
-        return NextResponse.json({ message: 'Data updated successfully' });
-
-    } catch (error) {
-        console.error('Error updating MAKESTA data:', error);
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    if (!_id || !organisasi) {
+      return NextResponse.json(
+        { message: 'Missing ID or organization' },
+        { status: 400 }
+      );
     }
+
+    // Determine collection
+    const collection =
+      organisasi === 'IPNU'
+        ? mongoose.connection.collection('DATA_KADERISASI_IPNU')
+        : mongoose.connection.collection('DATA_KADERISASI_IPPNU');
+
+    // Update data
+    const result = await collection.updateOne(
+      { _id: new mongoose.Types.ObjectId(_id) },
+      {
+        $set: {
+          ...updateData,
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ message: 'Data not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Data updated successfully' });
+  } catch (error) {
+    console.error('Error updating MAKESTA data:', error);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
 }
 
 // DELETE - Delete MAKESTA data
 export async function DELETE(request: NextRequest) {
-    try {
-        await db();
-        
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get('id');
-        const organisasi = searchParams.get('organisasi');
+  try {
+    await db();
 
-        if (!id || !organisasi) {
-            return NextResponse.json({ message: 'Missing ID or organization' }, { status: 400 });
-        }
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const organisasi = searchParams.get('organisasi');
 
-        // Determine collection
-        const collection = organisasi === 'IPNU' 
-            ? mongoose.connection.collection('DATA_KADERISASI_IPNU')
-            : mongoose.connection.collection('DATA_KADERISASI_IPPNU');
-
-        // Delete data
-        const result = await collection.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
-
-        if (result.deletedCount === 0) {
-            return NextResponse.json({ message: 'Data not found' }, { status: 404 });
-        }
-
-        return NextResponse.json({ message: 'Data deleted successfully' });
-
-    } catch (error) {
-        console.error('Error deleting MAKESTA data:', error);
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    if (!id || !organisasi) {
+      return NextResponse.json(
+        { message: 'Missing ID or organization' },
+        { status: 400 }
+      );
     }
+
+    // Determine collection
+    const collection =
+      organisasi === 'IPNU'
+        ? mongoose.connection.collection('DATA_KADERISASI_IPNU')
+        : mongoose.connection.collection('DATA_KADERISASI_IPPNU');
+
+    // Delete data
+    const result = await collection.deleteOne({
+      _id: new mongoose.Types.ObjectId(id),
+    });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ message: 'Data not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Data deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting MAKESTA data:', error);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
 }

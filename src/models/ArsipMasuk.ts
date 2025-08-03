@@ -16,6 +16,8 @@ const ArsipMasukSchema: Schema = new Schema({
   tanggal_surat: { type: String, required: true },
 });
 
-const ArsipMasuk = mongoose.models.ArsipMasuk || mongoose.model<IArsipMasuk>('ArsipMasuk', ArsipMasukSchema, 'arsipmasuk');
+const ArsipMasuk =
+  mongoose.models.ArsipMasuk ||
+  mongoose.model<IArsipMasuk>('ArsipMasuk', ArsipMasukSchema, 'arsipmasuk');
 
 export default ArsipMasuk;

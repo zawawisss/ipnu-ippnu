@@ -42,7 +42,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Failed to fetch kaderisasi data:', error);
-    return NextResponse.json({ error: 'Failed to fetch kaderisasi data' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch kaderisasi data' },
+      { status: 500 }
+    );
   }
 }
 
@@ -67,13 +70,22 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
 
     if (!id) {
-      return NextResponse.json({ error: 'ID is required for updating' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'ID is required for updating' },
+        { status: 400 }
+      );
     }
 
-    const updatedKaderisasi = await Kaderisasi.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    const updatedKaderisasi = await Kaderisasi.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedKaderisasi) {
-      return NextResponse.json({ error: 'Kaderisasi data not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Kaderisasi data not found' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(updatedKaderisasi);
@@ -90,16 +102,24 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'ID is required for deleting' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'ID is required for deleting' },
+        { status: 400 }
+      );
     }
 
     const deletedKaderisasi = await Kaderisasi.findByIdAndDelete(id);
 
     if (!deletedKaderisasi) {
-      return NextResponse.json({ error: 'Kaderisasi data not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Kaderisasi data not found' },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({ message: 'Kaderisasi data deleted successfully' });
+    return NextResponse.json({
+      message: 'Kaderisasi data deleted successfully',
+    });
   } catch (error: any) {
     console.error('Failed to delete kaderisasi data:', error);
     return NextResponse.json({ error: error.message }, { status: 400 });

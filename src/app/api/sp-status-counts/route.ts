@@ -38,6 +38,9 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('Failed to fetch active SP counts:', error);
-    return NextResponse.json({ error: 'Failed to fetch active SP counts' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch active SP counts' },
+      { status: 500 }
+    );
   }
 }

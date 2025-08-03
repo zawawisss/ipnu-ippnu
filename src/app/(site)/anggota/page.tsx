@@ -1,6 +1,16 @@
-"use client";
+'use client';
 import React, { useEffect, useState, useMemo } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spinner, Input } from '@heroui/react'; // Import Pagination, Spinner, Input
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Pagination,
+  Spinner,
+  Input,
+} from '@heroui/react'; // Import Pagination, Spinner, Input
 
 interface Anggota {
   _id: string;
@@ -21,7 +31,12 @@ interface PaginatedResponse<T> {
 }
 
 function AnggotaPage() {
-  const [anggotaData, setAnggotaData] = useState<PaginatedResponse<Anggota>>({ data: [], total: 0, page: 1, limit: 10 }); // Update state type and initial value
+  const [anggotaData, setAnggotaData] = useState<PaginatedResponse<Anggota>>({
+    data: [],
+    total: 0,
+    page: 1,
+    limit: 10,
+  }); // Update state type and initial value
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +49,9 @@ function AnggotaPage() {
       setError(null);
       try {
         // Fetch data with pagination parameters
-        const response = await fetch(`/api/anggota?page=${currentPage}&limit=${rowsPerPage}&search=${searchTerm}`); // Add search parameter
+        const response = await fetch(
+          `/api/anggota?page=${currentPage}&limit=${rowsPerPage}&search=${searchTerm}`
+        ); // Add search parameter
         if (!response.ok) {
           throw new Error(`Failed to fetch anggota data: ${response.status}`);
         }
@@ -71,42 +88,44 @@ function AnggotaPage() {
   }, [anggotaData.total, rowsPerPage]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center p-8">
-      <h1 className="text-4xl font-bold mb-8">Data Anggota</h1>
+    <div className='flex min-h-screen flex-col items-center p-8'>
+      <h1 className='text-4xl font-bold mb-8'>Data Anggota</h1>
 
-      <div className="w-full max-w-4xl mb-4"> {/* Add search input */}
+      <div className='w-full max-w-4xl mb-4'>
+        {' '}
+        {/* Add search input */}
         <Input
-          type="text"
-          placeholder="Cari Anggota..."
+          type='text'
+          placeholder='Cari Anggota...'
           value={searchTerm}
           onChange={handleSearchChange}
-          className="w-full"
+          className='w-full'
         />
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center p-24">
-          <Spinner size="lg" />
+        <div className='flex items-center justify-center p-24'>
+          <Spinner size='lg' />
         </div>
       ) : error ? (
-        <div className="flex items-center justify-center p-24">
-          <p className="text-red-500">Error: {error}</p>
+        <div className='flex items-center justify-center p-24'>
+          <p className='text-red-500'>Error: {error}</p>
         </div>
       ) : anggotaData.data.length === 0 ? ( // Access data property
         <p>No Anggota data available.</p>
       ) : (
-        <div className="w-full max-w-4xl">
-          <Table aria-label="Table of Anggota data">
+        <div className='w-full max-w-4xl'>
+          <Table aria-label='Table of Anggota data'>
             <TableHeader columns={columns}>
-              {(column) => (
+              {column => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
               )}
             </TableHeader>
-            <TableBody 
-              items={anggotaData.data} 
-              emptyContent="No Anggota data available."
+            <TableBody
+              items={anggotaData.data}
+              emptyContent='No Anggota data available.'
             >
-              {(item) => (
+              {item => (
                 <TableRow key={item._id}>
                   <TableCell>{item.nama_anggota}</TableCell>
                   <TableCell>{item.tempat_lahir}</TableCell>
@@ -122,7 +141,7 @@ function AnggotaPage() {
 
           {/* Add Pagination */}
           {anggotaData.total > 0 && (
-            <div className="flex justify-center mt-4">
+            <div className='flex justify-center mt-4'>
               <Pagination
                 total={totalPages}
                 initialPage={currentPage}

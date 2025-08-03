@@ -7,8 +7,10 @@ import type { ReactNode } from 'react';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <SessionProvider> {/* ✅ Tambahkan ini */}
-      <NextThemesProvider attribute="class" defaultTheme="light" enableSystem>
+    <SessionProvider>
+      {' '}
+      {/* ✅ Tambahkan ini */}
+      <NextThemesProvider attribute='class' defaultTheme='light' enableSystem>
         <HeroUIProvider>{children}</HeroUIProvider>
       </NextThemesProvider>
     </SessionProvider>

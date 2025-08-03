@@ -1,7 +1,17 @@
-"use client";
+'use client';
 import React, { useEffect, useState, useMemo } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spinner, Input } from '@heroui/react'; // Import Pagination, Spinner, Input
-import dayjs from "dayjs"; // Import dayjs
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Pagination,
+  Spinner,
+  Input,
+} from '@heroui/react'; // Import Pagination, Spinner, Input
+import dayjs from 'dayjs'; // Import dayjs
 
 interface Sekolah {
   _id: string;
@@ -19,7 +29,12 @@ interface PaginatedResponse<T> {
 }
 
 function SekolahPage() {
-  const [sekolahData, setSekolahData] = useState<PaginatedResponse<Sekolah>>({ data: [], total: 0, page: 1, limit: 10 }); // Memperbarui tipe status dan nilai awal
+  const [sekolahData, setSekolahData] = useState<PaginatedResponse<Sekolah>>({
+    data: [],
+    total: 0,
+    page: 1,
+    limit: 10,
+  }); // Memperbarui tipe status dan nilai awal
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,7 +47,9 @@ function SekolahPage() {
       setError(null);
       try {
         // Mengambil data dengan parameter paginasi
-        const response = await fetch(`/api/sekolah?page=${currentPage}&limit=${rowsPerPage}&search=${searchTerm}`); // Menambahkan parameter pencarian
+        const response = await fetch(
+          `/api/sekolah?page=${currentPage}&limit=${rowsPerPage}&search=${searchTerm}`
+        ); // Menambahkan parameter pencarian
         if (!response.ok) {
           throw new Error(`Failed to fetch sekolah data: ${response.status}`);
         }
@@ -54,7 +71,7 @@ function SekolahPage() {
   };
 
   const columns = [
-    { key: 'sekolah_maarif', label: 'Sekolah Ma\'arif' },
+    { key: 'sekolah_maarif', label: "Sekolah Ma'arif" },
     { key: 'status_sp', label: 'Status SP' },
     { key: 'tanggal_sp', label: 'Tanggal SP' },
     // Menambahkan kolom kecamatan_id jika diperlukan
@@ -67,49 +84,51 @@ function SekolahPage() {
   }, [sekolahData.total, rowsPerPage]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center p-8">
-      <h1 className="text-4xl font-bold mb-8">Data Sekolah</h1>
+    <div className='flex min-h-screen flex-col items-center p-8'>
+      <h1 className='text-4xl font-bold mb-8'>Data Sekolah</h1>
 
-      <div className="w-full max-w-4xl mb-4"> {/* Menambahkan input pencarian */}
+      <div className='w-full max-w-4xl mb-4'>
+        {' '}
+        {/* Menambahkan input pencarian */}
         <Input
-          type="text"
-          placeholder="Cari Sekolah..."
+          type='text'
+          placeholder='Cari Sekolah...'
           value={searchTerm}
           onChange={handleSearchChange}
-          className="w-full"
+          className='w-full'
         />
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center p-24">
-          <Spinner size="lg" />
+        <div className='flex items-center justify-center p-24'>
+          <Spinner size='lg' />
         </div>
       ) : error ? (
-        <div className="flex items-center justify-center p-24">
-          <p className="text-red-500">Error: {error}</p>
+        <div className='flex items-center justify-center p-24'>
+          <p className='text-red-500'>Error: {error}</p>
         </div>
       ) : sekolahData.data.length === 0 ? ( // Mengakses properti data
         <p>No Sekolah data available.</p>
       ) : (
-        <div className="w-full max-w-4xl">
-          <Table aria-label="Table of Sekolah data">
+        <div className='w-full max-w-4xl'>
+          <Table aria-label='Table of Sekolah data'>
             <TableHeader columns={columns}>
-              {(column) => (
+              {column => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
               )}
             </TableHeader>
             <TableBody
               items={sekolahData.data}
-              emptyContent="No Sekolah data available."
+              emptyContent='No Sekolah data available.'
             >
-              {(item) => (
+              {item => (
                 <TableRow key={item._id}>
                   <TableCell>{item.sekolah_maarif}</TableCell>
                   <TableCell>{item.status_sp}</TableCell>
                   <TableCell>
                     {item.tanggal_sp
-                      ? dayjs(item.tanggal_sp).format("DD MMMM YYYY") // Menggunakan dayjs untuk format tanggal
-                      : "-"}
+                      ? dayjs(item.tanggal_sp).format('DD MMMM YYYY') // Menggunakan dayjs untuk format tanggal
+                      : '-'}
                   </TableCell>
                 </TableRow>
               )}
@@ -118,7 +137,7 @@ function SekolahPage() {
 
           {/* Menambahkan Paginasi */}
           {sekolahData.total > 0 && (
-            <div className="flex justify-center mt-4">
+            <div className='flex justify-center mt-4'>
               <Pagination
                 total={totalPages}
                 initialPage={currentPage}
@@ -135,4 +154,3 @@ function SekolahPage() {
 }
 
 export default SekolahPage;
-

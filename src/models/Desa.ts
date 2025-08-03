@@ -1,5 +1,5 @@
 //models/Desa.ts
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IDesa extends Document {
   _id: mongoose.Types.ObjectId; // Mengubah tipe _id menjadi ObjectId
@@ -20,10 +20,10 @@ const DesaSchema: Schema = new Schema({
   jumlah_anggota: { type: Number, required: true },
   kecamatan_id: {
     type: Schema.Types.ObjectId,
-    ref: "Kecamatan",
+    ref: 'Kecamatan',
     required: true,
   },
 });
 
 export default mongoose.models.Desa ||
-  mongoose.model<IDesa>("Desa", DesaSchema, "database_ranting");
+  mongoose.model<IDesa>('Desa', DesaSchema, 'database_ranting');

@@ -1,6 +1,13 @@
-"use client";
+'use client';
 import React, { useEffect, useState } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@heroui/react';
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+} from '@heroui/react';
 import Link from 'next/link';
 import dayjs from 'dayjs'; // Import dayjs
 
@@ -40,7 +47,7 @@ function KecamatanListPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-24">
+      <div className='flex min-h-screen flex-col items-center justify-center p-24'>
         <p>Memuat data Kecamatan...</p>
       </div>
     );
@@ -48,8 +55,8 @@ function KecamatanListPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-24">
-        <p className="text-red-500">Error: {error}</p>
+      <div className='flex min-h-screen flex-col items-center justify-center p-24'>
+        <p className='text-red-500'>Error: {error}</p>
       </div>
     );
   }
@@ -61,30 +68,44 @@ function KecamatanListPage() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col items-center p-8">
-      <h1 className="text-4xl font-bold mb-8">Data Kecamatan</h1>
+    <div className='flex min-h-screen flex-col items-center p-8'>
+      <h1 className='text-4xl font-bold mb-8'>Data Kecamatan</h1>
       {kecamatanData.length === 0 ? (
         <p>Tidak ada data Kecamatan yang tersedia.</p>
       ) : (
-        <div className="w-full max-w-4xl"> {/* Menambahkan container untuk tabel */}
-          <Table aria-label="Table of Kecamatan data">
+        <div className='w-full max-w-4xl'>
+          {' '}
+          {/* Menambahkan container untuk tabel */}
+          <Table aria-label='Table of Kecamatan data'>
             <TableHeader columns={columns}>
-              {(column) => (
+              {column => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
               )}
             </TableHeader>
             <TableBody items={kecamatanData}>
-              {(item) => (
+              {item => (
                 <TableRow key={item._id}>
-                  {(columnKey) => (
+                  {columnKey => (
                     <TableCell>
-                       {columnKey === 'tanggal_sp' // Diubah ke tanggal_sp
-                        ? item.tanggal_sp ? dayjs(item.tanggal_sp).format('DD MMMM YYYY') : '-' // Mengakses langsung item.tanggal_sp dan format tanggal menggunakan dayjs
-                        : columnKey === 'kecamatan'
-                          ? <Link href={`/kecamatan/${item._id}`}>{item.kecamatan}</Link> // Link ke halaman detail
-                          : typeof item[columnKey as keyof Kecamatan] === 'object' && item[columnKey as keyof Kecamatan] instanceof Date
-                            ? dayjs(item[columnKey as keyof Kecamatan] as Date).format('DD MMMM YYYY')
-                            : String(item[columnKey as keyof Kecamatan])}
+                      {columnKey === 'tanggal_sp' ? ( // Diubah ke tanggal_sp
+                        item.tanggal_sp ? (
+                          dayjs(item.tanggal_sp).format('DD MMMM YYYY')
+                        ) : (
+                          '-'
+                        ) // Mengakses langsung item.tanggal_sp dan format tanggal menggunakan dayjs
+                      ) : columnKey === 'kecamatan' ? (
+                        <Link href={`/kecamatan/${item._id}`}>
+                          {item.kecamatan}
+                        </Link> // Link ke halaman detail
+                      ) : typeof item[columnKey as keyof Kecamatan] ===
+                          'object' &&
+                        item[columnKey as keyof Kecamatan] instanceof Date ? (
+                        dayjs(
+                          item[columnKey as keyof Kecamatan] as Date
+                        ).format('DD MMMM YYYY')
+                      ) : (
+                        String(item[columnKey as keyof Kecamatan])
+                      )}
                     </TableCell>
                   )}
                 </TableRow>
@@ -98,4 +119,3 @@ function KecamatanListPage() {
 }
 
 export default KecamatanListPage;
-

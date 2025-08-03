@@ -17,7 +17,7 @@ export interface IEvent extends Document {
 const EventSchema: Schema = new Schema(
   {
     name: { type: String, required: true }, // Nama acara
-    date: { type: Date, required: true },   // Tanggal acara
+    date: { type: Date, required: true }, // Tanggal acara
     time: { type: String, required: true }, // Waktu acara (contoh: "13.30 - selesai")
     location: { type: String, required: true }, // Lokasi acara
     delegation: { type: String, required: true }, // Delegasi dari departemen/lembaga/badan
@@ -30,6 +30,7 @@ const EventSchema: Schema = new Schema(
 );
 
 // Mengekspor model Event. Jika model sudah ada, gunakan yang sudah ada.
-const Event = mongoose.models.Event || mongoose.model<IEvent>('Event', EventSchema);
+const Event =
+  mongoose.models.Event || mongoose.model<IEvent>('Event', EventSchema);
 
 export default Event;

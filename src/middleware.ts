@@ -1,14 +1,17 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
 
 export default withAuth(
   async function middleware(req) {
     const { pathname } = req.nextUrl;
     const session = req.nextauth.token;
 
-    if (pathname.startsWith("/admin_ipnu") || pathname.startsWith("/admin_ippnu")) {
+    if (
+      pathname.startsWith('/admin_ipnu') ||
+      pathname.startsWith('/admin_ippnu')
+    ) {
       if (!session) {
-        return NextResponse.redirect(new URL("/login", req.url));
+        return NextResponse.redirect(new URL('/login', req.url));
       }
 
       // Optional: Add role-based checks here if needed
@@ -25,11 +28,11 @@ export default withAuth(
       authorized: ({ token }) => !!token,
     },
     pages: {
-      signIn: "/login",
+      signIn: '/login',
     },
   }
 );
 
 export const config = {
-  matcher: ["/admin_ipnu/:path*", "/admin_ippnu/:path*"],
+  matcher: ['/admin_ipnu/:path*', '/admin_ippnu/:path*'],
 };

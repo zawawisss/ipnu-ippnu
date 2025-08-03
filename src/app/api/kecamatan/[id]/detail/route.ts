@@ -1,9 +1,9 @@
-import db from "@/lib/db";
-import Anggota from "@/models/Anggota";
-import Desa from "@/models/Desa";
-import Sekolah from "@/models/Sekolah";
-import mongoose from "mongoose";
-import { NextRequest, NextResponse } from "next/server";
+import db from '@/lib/db';
+import Anggota from '@/models/Anggota';
+import Desa from '@/models/Desa';
+import Sekolah from '@/models/Sekolah';
+import mongoose from 'mongoose';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   req: NextRequest,
@@ -15,7 +15,7 @@ export async function GET(
 
   // Validasi ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json("ID tidak valid", { status: 400 });
+    return NextResponse.json('ID tidak valid', { status: 400 });
   }
 
   try {
@@ -38,7 +38,7 @@ export async function GET(
       totalAnggota,
     });
   } catch (error) {
-    console.error("Error fetching kecamatan detail:", error);
-    return NextResponse.json("Terjadi kesalahan server", { status: 500 });
+    console.error('Error fetching kecamatan detail:', error);
+    return NextResponse.json('Terjadi kesalahan server', { status: 500 });
   }
 }

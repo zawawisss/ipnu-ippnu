@@ -44,7 +44,10 @@ const EditArsipSuratMasukPage = () => {
     return <div>Loading...</div>;
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
     setSuratMasuk({
       ...suratMasuk,
       [field]: e.target.value,
@@ -80,70 +83,90 @@ const EditArsipSuratMasukPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 dark:text-gray-200">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">Edit Arsip Surat Masuk</h1>
+    <div className='container mx-auto p-4 dark:text-gray-200'>
+      <h1 className='text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200'>
+        Edit Arsip Surat Masuk
+      </h1>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="no" className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2">
+        <div className='mb-4'>
+          <label
+            htmlFor='no'
+            className='block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2'
+          >
             No:
           </label>
           <input
-            type="number"
-            id="no"
+            type='number'
+            id='no'
             value={suratMasuk.no}
-            onChange={(e) => handleChange(e, 'no')}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700"
+            onChange={e => handleChange(e, 'no')}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700'
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="nomor_surat" className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2">
+        <div className='mb-4'>
+          <label
+            htmlFor='nomor_surat'
+            className='block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2'
+          >
             Nomor Surat:
           </label>
           <input
-            type="text"
-            id="nomor_surat"
+            type='text'
+            id='nomor_surat'
             value={suratMasuk.nomor_surat}
-            onChange={(e) => handleChange(e, 'nomor_surat')}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700"
+            onChange={e => handleChange(e, 'nomor_surat')}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700'
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="pengirim" className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2">
+        <div className='mb-4'>
+          <label
+            htmlFor='pengirim'
+            className='block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2'
+          >
             Pengirim:
           </label>
           <input
-            type="text"
-            id="pengirim"
+            type='text'
+            id='pengirim'
             value={suratMasuk.pengirim}
-            onChange={(e) => handleChange(e, 'pengirim')}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700"
+            onChange={e => handleChange(e, 'pengirim')}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700'
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="perihal" className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2">
+        <div className='mb-4'>
+          <label
+            htmlFor='perihal'
+            className='block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2'
+          >
             Perihal:
           </label>
           <input
-            type="text"
-            id="perihal"
+            type='text'
+            id='perihal'
             value={suratMasuk.perihal}
-            onChange={(e) => handleChange(e, 'perihal')}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700"
+            onChange={e => handleChange(e, 'perihal')}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700'
           />
         </div>
-         <div className="mb-4">
-          <label htmlFor="tanggal_surat" className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2">
+        <div className='mb-4'>
+          <label
+            htmlFor='tanggal_surat'
+            className='block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2'
+          >
             Tanggal Surat:
           </label>
           <input
-            type="date"
-            id="tanggal_surat"
+            type='date'
+            id='tanggal_surat'
             value={suratMasuk.tanggal_surat}
-            onChange={(e) => handleChange(e, 'tanggal_surat')}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700"
+            onChange={e => handleChange(e, 'tanggal_surat')}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700'
           />
         </div>
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+        <button
+          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+          type='submit'
+        >
           Simpan
         </button>
       </form>
