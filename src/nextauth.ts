@@ -80,7 +80,6 @@ export const authOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
       },
     },
   },
