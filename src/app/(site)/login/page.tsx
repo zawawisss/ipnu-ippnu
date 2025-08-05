@@ -28,11 +28,6 @@ function LoginPage() {
     });
 
     if (res?.ok) {
-      // Clear all cookies
-      Cookies.remove('next-auth.session-token');
-      Cookies.remove('next-auth.csrf-token');
-      Cookies.remove('next-auth.callback-url');
-
       router.push(org === 'ipnu' ? '/admin_ipnu/dashboard' : '/admin_ippnu');
     } else {
       setError(true);
